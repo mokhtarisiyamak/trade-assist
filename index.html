@@ -1,0 +1,3346 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d1117">
+<title>Trade Bible Coach — Unified Dashboard v4.1</title>
+<style>
+  /* ===== SYSTEM FONTS (Offline Ready) ===== */
+  :root{
+    --bg:#06080a;
+    --panel:#0d1117;
+    --panel-2:#131820;
+    --panel-3:#1a2230;
+    --line:#1e2630;
+    --line-soft:#1a2028;
+    --text:#e8eaec;
+    --text-dim:#8b949e;
+    --text-faint:#7a8492;
+    --amber:#f0883e;
+    --amber-dim:#3d2612;
+    --amber-glow:rgba(240,136,62,0.15);
+    --green:#3fb950;
+    --green-dim:#122f1d;
+    --green-glow:rgba(63,185,80,0.15);
+    --red:#f85149;
+    --red-dim:#3d1515;
+    --red-glow:rgba(248,81,73,0.15);
+    --cyan:#39d0d8;
+    --cyan-dim:#112e30;
+    --cyan-glow:rgba(57,208,216,0.15);
+    --purple:#a371f7;
+    --purple-dim:#2d1f4d;
+    --radius:14px;
+    --radius-sm:10px;
+    --mono:ui-monospace,'Cascadia Mono','Segoe UI Mono','Ubuntu Mono','Roboto Mono',monospace;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  }
+
+  [data-theme="light"]{
+    --bg:#f6f8fa;
+    --panel:#ffffff;
+    --panel-2:#f3f4f6;
+    --panel-3:#e5e7eb;
+    --line:#d1d5db;
+    --line-soft:#e5e7eb;
+    --text:#111827;
+    --text-dim:#4b5563;
+    --text-faint:#9ca3af;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  html,body{overflow-x:hidden}
+  body{
+    margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);
+    line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh;
+    transition:background .3s,color .3s;
+  }
+  ::selection{background:var(--amber);color:#1a1200}
+  button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
+
+  /* Layout */
+  .app-layout{display:flex;min-height:100vh}
+  .sidebar{
+    width:260px;background:var(--panel);border-left:1px solid var(--line);
+    display:flex;flex-direction:column;position:fixed;right:0;top:0;bottom:0;z-index:100;overflow-y:auto;
+    transition:transform .3s, visibility .3s;
+    transform:translateX(0);
+    visibility:visible;
+    pointer-events:auto;
+  }
+  .sidebar-header{padding:22px 18px 14px;border-bottom:1px solid var(--line)}
+  .sidebar-header .logo{font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:10px}
+  .sidebar-header .logo::before{
+    content:"";width:10px;height:10px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 12px var(--green);flex-shrink:0;animation:pulse 2s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  .sidebar-header .sub{font-size:.7rem;color:var(--text-faint);margin-top:4px;font-family:var(--mono);direction:ltr}
+  .sidebar-nav{padding:12px 10px;display:flex;flex-direction:column;gap:4px;flex:1}
+  .nav-item{
+    all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;
+    padding:11px 14px;border-radius:var(--radius-sm);color:var(--text-dim);font-size:.88rem;
+    transition:all .15s;position:relative;
+  }
+  .nav-item:hover{background:var(--panel-2);color:var(--text)}
+  .nav-item.active{background:var(--panel-2);color:var(--text)}
+  .nav-item.active::before{
+    content:"";position:absolute;right:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--accent,var(--amber));
+  }
+  .nav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+  .nav-badge{
+    margin-right:auto;background:var(--panel-3);color:var(--text);font-family:var(--mono);
+    font-size:.65rem;padding:2px 7px;border-radius:999px;min-width:20px;text-align:center;
+  }
+  .sidebar-footer{padding:14px 18px;border-top:1px solid var(--line);font-size:.7rem;color:var(--text-faint);font-family:var(--mono);direction:ltr}
+  .main{flex:1;margin-right:260px;min-height:100vh;padding:22px 26px 60px;width:calc(100% - 260px);box-sizing:border-box}
+  .mobile-toggle{
+    display:none;position:fixed;top:10px;right:10px;z-index:200;background:var(--panel);
+    border:1px solid var(--line);color:var(--text);width:42px;height:42px;border-radius:var(--radius-sm);
+    font-size:1.2rem;cursor:pointer;align-items:center;justify-content:center;
+    box-shadow:0 4px 12px rgba(0,0,0,.4);
+  }
+  @media(max-width:900px){
+    .sidebar{transform:translateX(100%);transition:transform .3s, visibility .3s}
+    .sidebar.open{transform:translateX(0);visibility:visible;pointer-events:auto}
+    .main{margin-right:0;width:100%;padding:56px 14px 40px}
+    .mobile-toggle{display:flex}
+  }
+
+  /* Pages */
+  .page{display:none;animation:fadeIn .35s ease}
+  .page.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .page-header{margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .page-header h1{font-size:1.35rem;font-weight:800;margin-bottom:4px}
+  .page-header p{color:var(--text-dim);font-size:.85rem}
+
+  /* Cards */
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:14px;
+    transition:border-color .2s,background .3s;
+  }
+  .card:hover{border-color:var(--line-soft)}
+  .card h3{font-size:.95rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:768px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+  /* Risk Banner */
+  .risk-banner{
+    background:linear-gradient(135deg,var(--panel-2),var(--panel));
+    border:2px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin-bottom:18px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;
+    position:relative;overflow:hidden;
+  }
+  .risk-banner::before{
+    content:"";position:absolute;inset:0;opacity:.06;
+    background:radial-gradient(circle at 80% 20%,var(--accent,var(--green)),transparent 60%);
+  }
+  .risk-banner.allowed{border-color:var(--green);--accent:var(--green)}
+  .risk-banner.caution{border-color:var(--amber);--accent:var(--amber)}
+  .risk-banner.blocked{border-color:var(--red);--accent:var(--red)}
+  .risk-banner-content{position:relative;z-index:1}
+  .risk-banner h2{font-size:1.6rem;font-weight:800;margin-bottom:4px}
+  .risk-banner p{color:var(--text-dim);font-size:.88rem}
+  .risk-pill{
+    font-family:var(--mono);font-size:2.4rem;font-weight:800;padding:10px 24px;border-radius:var(--radius-sm);
+    background:var(--panel-3);border:1px solid var(--line);position:relative;z-index:1;min-width:100px;text-align:center;
+  }
+  .risk-pill.allowed{color:var(--green);border-color:var(--green);box-shadow:0 0 20px var(--green-glow)}
+  .risk-pill.caution{color:var(--amber);border-color:var(--amber);box-shadow:0 0 20px var(--amber-glow)}
+  .risk-pill.blocked{color:var(--red);border-color:var(--red);box-shadow:0 0 20px var(--red-glow)}
+
+  /* Radar Score Card */
+  .radar-wrap{position:relative;width:220px;height:220px;margin:0 auto}
+  .radar-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .radar-center .score{font-family:var(--mono);font-size:2.2rem;font-weight:800}
+  .radar-center .label{font-size:.7rem;color:var(--text-faint)}
+
+  /* Checklist */
+  .checklist-section{margin-bottom:18px}
+  .checklist-header{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 4px;
+  }
+  .checklist-header h4{font-size:.88rem;font-weight:700}
+  .checklist-progress{font-family:var(--mono);font-size:.72rem;color:var(--text-faint)}
+  .checklist-bar{
+    height:4px;background:var(--panel-3);border-radius:2px;margin-bottom:10px;overflow:hidden;
+  }
+  .checklist-bar-fill{height:100%;border-radius:2px;transition:width .5s ease}
+  .checklist{list-style:none}
+  .checklist li{
+    display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border-radius:8px;
+    margin-bottom:3px;transition:background .15s;font-size:.84rem;
+  }
+  .checklist li:hover{background:var(--panel-2)}
+  .checklist input[type="checkbox"]{
+    width:17px;height:17px;accent-color:var(--amber);margin-top:2px;flex-shrink:0;cursor:pointer;
+  }
+  .checklist label{cursor:pointer;flex:1;line-height:1.5}
+  .checklist input:checked + label{text-decoration:line-through;color:var(--text-faint)}
+  .checklist .pts{font-family:var(--mono);font-size:.68rem;color:var(--text-faint);margin-right:6px}
+  .critical-star{color:var(--red);font-size:.9rem;margin-right:4px}
+
+  /* Collapsible */
+  .collapse-toggle{
+    all:unset;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:space-between;
+    padding:14px 18px;background:var(--panel-2);border-radius:var(--radius-sm);border:1px solid var(--line);
+    font-size:.9rem;font-weight:700;transition:all .15s;margin-bottom:10px;
+  }
+  .collapse-toggle:hover{background:var(--panel-3)}
+  .collapse-toggle .chevron{transition:transform .25s;font-size:1.1rem}
+  .collapse-toggle.open .chevron{transform:rotate(180deg)}
+  .collapse-body{display:none;padding:4px 2px 12px;animation:fadeIn .3s ease}
+  .collapse-body.open{display:block}
+
+  /* Forms */
+  .form-group{margin-bottom:14px}
+  .form-group label{display:block;font-size:.78rem;font-weight:600;color:var(--text-dim);margin-bottom:5px}
+  .form-group input,.form-group select,.form-group textarea{
+    width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:9px 12px;color:var(--text);font-family:var(--sans);font-size:.86rem;transition:border-color .15s;
+  }
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--amber)}
+  .form-group textarea{resize:vertical;min-height:80px}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;
+    border-radius:var(--radius-sm);font-family:var(--sans);font-size:.84rem;font-weight:600;
+    cursor:pointer;border:none;transition:all .15s;
+  }
+  .btn-primary{background:var(--amber);color:#1a1200}
+  .btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn-success{background:var(--green);color:#0a1f14}
+  .btn-success:hover{filter:brightness(1.1)}
+  .btn-danger{background:var(--red);color:#1f0a0a}
+  .btn-danger:hover{filter:brightness(1.1)}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text-dim)}
+  .btn-ghost:hover{background:var(--panel-2);color:var(--text)}
+  .btn-sm{padding:5px 12px;font-size:.78rem}
+  .btn-block{width:100%}
+
+  /* Tables */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius-sm)}
+  table{width:100%;border-collapse:collapse;font-size:.8rem}
+  thead tr{background:var(--panel-2)}
+  th{padding:10px 12px;text-align:right;color:var(--text-dim);font-weight:600;font-size:.74rem;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:10px 12px;border-bottom:1px solid var(--line-soft)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(255,255,255,.02)}
+
+  /* Badges */
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:.72rem;font-weight:600}
+  .badge-buy{background:var(--green-dim);color:var(--green)}
+  .badge-sell{background:var(--red-dim);color:var(--red)}
+  .badge-wait{background:var(--amber-dim);color:var(--amber)}
+  .badge-win{background:var(--green-dim);color:var(--green)}
+  .badge-loss{background:var(--red-dim);color:var(--red)}
+  .badge-open{background:var(--cyan-dim);color:var(--cyan)}
+  .badge-tech{background:var(--cyan-dim);color:var(--cyan)}
+  .badge-risk{background:var(--amber-dim);color:var(--amber)}
+  .badge-mental{background:var(--purple-dim);color:var(--purple)}
+  .badge-learning{background:var(--green-dim);color:var(--green)}
+
+  /* Trade Cards */
+  .trade-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;
+    margin-bottom:10px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s;
+  }
+  .trade-card:hover{border-color:var(--line-soft)}
+  .trade-card-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+  .trade-card-title{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:7px}
+  .trade-card-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--text-dim)}
+  .trade-card-meta span{display:flex;align-items:center;gap:3px}
+  .trade-mini-bar{display:flex;gap:3px;margin-top:4px}
+  .trade-mini-seg{flex:1;height:5px;border-radius:3px;background:var(--panel-3);transition:background .3s}
+  .trade-mini-seg.on-tech{background:var(--cyan)}
+  .trade-mini-seg.on-risk{background:var(--amber)}
+  .trade-mini-seg.on-mental{background:var(--purple)}
+  .trade-mini-seg.on-learning{background:var(--green)}
+
+  /* Modal */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:300;
+    display:none;align-items:center;justify-content:center;padding:16px;
+  }
+  .modal-overlay.active{display:flex}
+  .modal{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);width:100%;
+    max-width:560px;max-height:92vh;overflow-y:auto;animation:modalIn .22s ease;
+  }
+  .modal.wide{max-width:720px}
+  @keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+  .modal-header{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .modal-header h3{font-size:1rem;font-weight:700}
+  .modal-close{background:none;border:none;color:var(--text-dim);font-size:1.3rem;cursor:pointer;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px}
+  .modal-close:hover{background:var(--panel-2);color:var(--text)}
+  .modal-body{padding:18px 20px}
+  .modal-footer{padding:12px 20px 18px;display:flex;justify-content:flex-end;gap:8px}
+
+  /* Empty */
+  .empty-state{text-align:center;padding:40px 16px;color:var(--text-faint)}
+  .empty-state .icon{font-size:2.6rem;margin-bottom:10px;opacity:.5}
+  .empty-state h3{font-size:1rem;color:var(--text-dim);margin-bottom:4px}
+  .empty-state p{font-size:.8rem}
+
+  /* Session bar */
+  .session-bar{display:flex;height:24px;border-radius:5px;overflow:hidden;border:1px solid var(--line-soft);margin-bottom:6px;position:relative}
+  .session-bar span{height:100%}
+  .session-now{position:absolute;top:-2px;width:2px;height:28px;background:#fff;box-shadow:0 0 6px #fff,0 0 10px var(--amber);border-radius:1px}
+  .session-live-status{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.8rem;font-weight:700}
+  .session-live-status .sdot{width:7px;height:7px;border-radius:50%;background:var(--text-faint);flex-shrink:0}
+  .session-live-status.is-asia .sdot{background:#4a90d9}
+  .session-live-status.is-london .sdot{background:var(--amber);box-shadow:0 0 6px var(--amber);animation:pulse 1.6s infinite}
+  .session-live-status.is-reset .sdot{background:var(--cyan)}
+  .session-live-status.is-overlap .sdot{background:#ff2d78;box-shadow:0 0 8px #ff2d78;animation:pulse 1.2s infinite}
+  .session-live-status.is-ny .sdot{background:var(--purple);box-shadow:0 0 6px var(--purple);animation:pulse 1.6s infinite}
+  .seg-quiet{background:#161b22}
+  .seg-london{background:var(--amber);position:relative;opacity:.92}
+  .seg-reset{background:var(--cyan);opacity:.55}
+  .seg-ny{background:var(--purple);position:relative;opacity:.92}
+  .session-ticks{display:flex;justify-content:space-between;font-family:var(--mono);direction:ltr;font-size:.6rem;color:var(--text-faint)}
+
+  /* Charts */
+  .chart-container{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;position:relative}
+  .chart-title{font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--text-dim)}
+  .chart-caption{font-size:.72rem;color:var(--text-faint);margin:0 0 10px;line-height:1.6}
+  .term{padding:10px 12px;border-radius:var(--radius-sm);background:var(--panel-2);margin-bottom:6px}
+  .term-name{font-family:var(--mono);direction:ltr;display:inline-block;font-weight:700;color:var(--accent,var(--amber));font-size:.8rem;background:color-mix(in srgb,var(--accent,var(--amber))12%,transparent);padding:2px 8px;border-radius:6px;margin-bottom:5px}
+  .term-def{color:var(--text-dim);font-size:.82rem;line-height:1.7;margin:0}
+  canvas{width:100%!important;height:auto!important}
+
+  /* Alerts */
+  .coach-alert{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;
+    margin-bottom:10px;display:flex;align-items:flex-start;gap:10px;font-size:.84rem;animation:slideIn .35s ease;
+  }
+  @keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+  .coach-alert-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+  .coach-alert-text{flex:1}
+  .coach-alert-title{font-weight:700;margin-bottom:2px}
+  .coach-alert-body{color:var(--text-dim);line-height:1.6;font-size:.8rem}
+  .coach-alert-good{border-color:color-mix(in srgb,var(--green)25%,transparent);background:var(--green-dim)}
+  .coach-alert-warn{border-color:color-mix(in srgb,var(--amber)25%,transparent);background:var(--amber-dim)}
+  .coach-alert-bad{border-color:color-mix(in srgb,var(--red)25%,transparent);background:var(--red-dim)}
+
+  /* Phase / Guide */
+  .guide-tabs{display:flex;gap:3px;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:1px;overflow-x:auto}
+  .guide-tab{all:unset;cursor:pointer;padding:9px 14px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;font-size:.8rem;color:var(--text-dim);white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+  .guide-tab:hover{color:var(--text);background:var(--panel-2)}
+  .guide-tab.active{color:var(--text);border-bottom-color:var(--accent,var(--amber));background:var(--panel-2)}
+  .guide-panel{display:none;animation:fadeIn .25s ease}
+  .guide-panel.active{display:block}
+  .step{display:flex;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--panel-2);margin-bottom:6px}
+  .step-idx{font-family:var(--mono);direction:ltr;font-size:.68rem;color:var(--accent,var(--amber));background:color-mix(in srgb,var(--accent,var(--amber))12%,transparent);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step p{margin:0;color:var(--text);font-size:.86rem}
+  .step ul{margin:6px 0 0;padding-inline-start:16px;color:var(--text-dim);font-size:.8rem}
+  .callout{border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;font-size:.84rem;border:1px solid var(--line-soft)}
+  .callout strong.head{display:block;margin-bottom:4px;font-size:.82rem}
+  .callout p{margin:0;color:var(--text-dim)}
+  .callout-buy{background:var(--green-dim);border-color:color-mix(in srgb,var(--green)25%,transparent)}
+  .callout-buy strong.head{color:var(--green)}
+  .callout-sell{background:var(--red-dim);border-color:color-mix(in srgb,var(--red)25%,transparent)}
+  .callout-sell strong.head{color:var(--red)}
+  .callout-wait{background:var(--amber-dim);border-color:color-mix(in srgb,var(--amber)25%,transparent)}
+  .callout-wait strong.head{color:var(--amber)}
+  .callout-note{background:var(--panel-2)}
+  .callout-note strong.head{color:var(--cyan)}
+  .phase{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+  .phase-head{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--panel-2);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .phase-head .phase-window{font-family:var(--mono);direction:ltr;font-size:.68rem;color:var(--text-faint);margin-inline-start:auto}
+  .phase-head h3{margin:0;font-size:.88rem}
+  .phase-body{padding:4px 16px 12px}
+  .phase-item{padding:10px 0;border-bottom:1px dashed var(--line-soft)}
+  .phase-item:last-child{border-bottom:none}
+  .phase-item .t{font-family:var(--mono);direction:ltr;font-size:.7rem;color:var(--accent,var(--amber));display:inline-block;margin-inline-end:6px}
+  .phase-item strong.title{color:var(--text)}
+  .phase-item p,.phase-item ul{margin:4px 0 0;color:var(--text-dim);font-size:.84rem}
+  .phase-item ul{padding-inline-start:16px}
+  .phase-item li{margin-bottom:3px}
+
+  /* Start Day Widget */
+  .start-day-widget{
+    background:linear-gradient(135deg,var(--green-dim),var(--panel-2));
+    border:1px solid var(--green);border-radius:var(--radius);padding:20px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap;
+  }
+  .start-day-widget h2{font-size:1.2rem;font-weight:800;color:var(--green)}
+  .start-day-widget p{color:var(--text-dim);font-size:.85rem}
+
+  /* Streak */
+  .streak-bar{
+    display:flex;gap:10px;align-items:center;margin-bottom:14px;padding:14px 16px;background:var(--panel-2);border-radius:var(--radius-sm);border:1px solid var(--line);
+  }
+  .streak-fire{font-size:1.6rem}
+  .streak-text{flex:1}
+  .streak-text div:first-child{font-weight:700;font-size:.95rem}
+  .streak-text div:last-child{font-size:.78rem;color:var(--text-dim)}
+
+  /* Contract Banner */
+  .contract-banner{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 18px;
+    margin-bottom:14px;font-size:1.05rem;line-height:1.7;color:var(--text-dim);border-right:3px solid var(--amber);
+  }
+  .contract-banner strong{color:var(--amber);font-size:1.1rem;}
+
+  /* Toast */
+  .toast-container{position:fixed;top:16px;left:16px;z-index:400;display:flex;flex-direction:column;gap:8px}
+  .toast{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px;
+    min-width:280px;max-width:360px;font-size:.85rem;box-shadow:0 8px 24px rgba(0,0,0,.4);
+    animation:toastIn .3s ease;display:flex;align-items:flex-start;gap:10px;
+  }
+  @keyframes toastIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+  .toast-success{border-color:var(--green);color:var(--green)}
+  .toast-error{border-color:var(--red);color:var(--red)}
+  .toast-warn{border-color:var(--amber);color:var(--amber)}
+
+  /* Filters */
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .filter-bar input,.filter-bar select{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:7px 10px;color:var(--text);font-size:.8rem;min-width:120px;
+  }
+
+  /* Theme Toggle */
+  .theme-toggle{
+    position:fixed;bottom:16px;left:16px;z-index:150;width:44px;height:44px;border-radius:50%;
+    background:var(--panel);border:1px solid var(--line);color:var(--text);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 12px rgba(0,0,0,.3);
+  }
+
+  /* Tag pills */
+  .tag-pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:.7rem;margin-left:4px;background:var(--panel-3);color:var(--text-dim);border:1px solid var(--line)}
+
+  /* Lockout overlay */
+  .lockout-overlay{
+    background:var(--red-dim);border:2px dashed var(--red);border-radius:var(--radius);padding:24px;text-align:center;margin-bottom:14px;
+  }
+  .lockout-overlay h3{color:var(--red);font-size:1.1rem;margin-bottom:6px}
+
+  /* Timer */
+  .forced-timer{font-family:var(--mono);font-size:2rem;color:var(--amber);text-align:center;padding:20px}
+
+  /* Responsive */
+  @media(max-width:900px){.sidebar{width:260px}}
+</style>
+</head>
+<body>
+
+<button class="mobile-toggle" onclick="toggleSidebar()" aria-label="منو">☰</button>
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="تغییر تم" aria-label="تغییر تم">🌙</button>
+
+<div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">Trade Bible Coach</div>
+      <div class="sub">UNIFIED DASHBOARD v4.1</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-page="dashboard" style="--accent:var(--green)" aria-label="داشبورد روزانه">
+        <span class="nav-icon">📊</span><span>داشبورد روزانه</span>
+        <span class="nav-badge" id="nav-score">0</span>
+      </button>
+      <button class="nav-item" data-page="guide" style="--accent:var(--amber)" aria-label="راهنمای مکانیکی">
+        <span class="nav-icon">📖</span><span>راهنمای مکانیکی</span>
+      </button>
+      <button class="nav-item" data-page="history" style="--accent:var(--cyan)" aria-label="آرشیو معاملات">
+        <span class="nav-icon">📚</span><span>آرشیو معاملات</span>
+        <span class="nav-badge" id="nav-trades">0</span>
+      </button>
+      <button class="nav-item" data-page="watchlist" style="--accent:var(--purple)" aria-label="واچ‌لیست">
+        <span class="nav-icon">👁️</span><span>واچ‌لیست</span>
+      </button>
+      <button class="nav-item" data-page="performance" style="--accent:var(--green)" aria-label="عملکرد">
+        <span class="nav-icon">📈</span><span>عملکرد</span>
+      </button>
+      <button class="nav-item" data-page="weekly" style="--accent:var(--cyan)" aria-label="بازبینی هفتگی">
+        <span class="nav-icon">🗓️</span><span>بازبینی هفتگی</span>
+      </button>
+      <button class="nav-item" data-page="settings" style="--accent:var(--text-dim)" aria-label="تنظیمات">
+        <span class="nav-icon">⚙️</span><span>تنظیمات</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div style="margin-bottom:8px;display:flex;gap:6px;">
+        <button class="btn btn-sm btn-primary" onclick="downloadBackup()" aria-label="دانلود پشتیبان" style="flex:1;">⬇️ پشتیبان</button>
+        <label class="btn btn-sm btn-ghost" style="flex:1;cursor:pointer;text-align:center;" aria-label="بازیابی پشتیبان">
+          ⬆️ بازیابی
+          <input type="file" accept=".json" style="display:none" onchange="restoreBackup(event)">
+        </label>
+      </div>
+      <button class="btn btn-sm btn-ghost btn-block" onclick="exportCSV()" style="margin-bottom:8px;" aria-label="خروجی CSV">📄 خروجی CSV</button>
+      COACH AI v4.1 · 2026.07<br>
+      Dynamic Checklist · Auto Lockout · Behavioral Analytics
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+
+    <!-- ==================== DASHBOARD ==================== -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1>داشبورد روزانه</h1>
+      </div>
+
+      <div id="macro-risk-warn" style="margin-bottom:14px;"></div>
+
+      <!-- Contract Banner -->
+      <div class="contract-banner" id="contractBanner" style="display:none;">
+        <strong style="display:block;">📜 قرارداد با خود:</strong>
+        <span id="contractText" style="display:block;margin-top:6px;"></span>
+      </div>
+
+      <!-- Daily Checklist (Dynamic) -->
+      <button class="collapse-toggle open" id="toggleDaily" onclick="toggleCollapse('daily')">
+        <span>☀️ چک‌لیست صبحگاهی (امتیاز پایه روزانه)</span>
+        <span class="chevron">▼</span>
+      </button>
+      <div class="collapse-body open" id="body-daily">
+        <div id="daily-checklist-container" class="grid-3"></div>
+        <div style="margin-top:8px;text-align:left;">
+          <button class="btn btn-sm btn-ghost" onclick="openChecklistSettings()">⚙️ ویرایش چک‌لیست</button>
+        </div>
+      </div>
+
+      <!-- Pre-Trade Checklist (MOVED BEFORE Trade Form) -->
+      <button class="collapse-toggle open" id="togglePre" onclick="toggleCollapse('pre')">
+        <span>✅ چک‌لیست قبل از ورود</span>
+        <span class="chevron">▼</span>
+      </button>
+      <div class="collapse-body open" id="body-pre">
+        <div class="card">
+          <div id="pre-checklist-container" class="grid-3"></div>
+          <div style="margin-top:10px; padding:10px; background:var(--panel-2); border-radius:var(--radius-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:.85rem; color:var(--text-dim);">امتیاز قبل از ورود:</span>
+              <span class="mono" style="font-size:1.1rem; font-weight:800; color:var(--amber);" id="pre-score-display">0/100</span>
+            </div>
+            <div class="checklist-bar" style="margin-top:8px;"><div class="checklist-bar-fill" id="pre-score-bar" style="width:0%;background:var(--amber)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Trade Section (AFTER Pre-Trade Checklist) -->
+      <button class="collapse-toggle open" id="toggleTrade" onclick="toggleCollapse('trade')">
+        <span>➕ ثبت معامله جدید</span>
+        <span class="chevron">▼</span>
+      </button>
+      <div class="collapse-body open" id="body-trade">
+        <div class="card">
+          <div id="forcedStopBanner" class="lockout-overlay" style="display:none;">
+            <h3>⏳ Forced Stop</h3>
+            <p>بعد از هر ضرر یا BE، قبل از معامله بعدی ۲ ساعت صبر کن.</p>
+            <div class="forced-timer" id="forcedTimer">02:00:00</div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group"><label>جفت‌ارز (هسته واچ‌لیست)</label>
+              <select id="nt-pair" onchange="updateTradePyramidWarn();checkCorrelatedRisk()"></select>
+            </div>
+            <div class="form-group"><label>جهت</label><select id="nt-dir"><option value="BUY">BUY</option><option value="SELL">SELL</option></select></div>
+          </div>
+          <div class="grid-3">
+            <div class="form-group"><label>قیمت ورود</label><input type="number" step="0.00001" id="nt-entry" placeholder="1.08500" oninput="updateLiveRR()"></div>
+            <div class="form-group"><label>قیمت استاپ</label><input type="number" step="0.00001" id="nt-sl" placeholder="1.08400" oninput="updateLiveRR()"></div>
+            <div class="form-group"><label>قیمت تارگت</label><input type="number" step="0.00001" id="nt-tp" placeholder="1.08700" oninput="updateLiveRR()"></div>
+          </div>
+          <div class="grid-3">
+            <div class="form-group"><label>R:R (خودکار)</label><input type="text" id="nt-rr" readonly style="opacity:.7"></div>
+            <div class="form-group"><label>ریسک مجاز امروز</label><input type="text" id="nt-allowed-risk" readonly style="opacity:.7;color:var(--amber);font-weight:700;"></div>
+            <div class="form-group"><label>احساس هنگام ورود</label>
+              <select id="nt-emotion"><option value="calm">😌 آرام</option><option value="rushed">⏱️ عجول</option><option value="fomo">😵 FOMO</option></select>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid var(--line);margin:12px 0;padding-top:12px;">
+            <h4 style="font-size:.8rem;color:var(--green);margin-bottom:8px;">🧬 Trade DNA</h4>
+            <div class="grid-3">
+              <div class="form-group"><label>نوع ستاپ</label>
+                <select id="nt-setup">
+                  <option value="Judas Swing">Judas Swing</option>
+                  <option value="Continuation">Continuation</option>
+                  <option value="Sweep نقدینگی داخلی">Sweep نقدینگی داخلی</option>
+                  <option value="Sweep نقدینگی خارجی">Sweep نقدینگی خارجی</option>
+                  <option value="برگشت از Order Block">برگشت از Order Block</option>
+                  <option value="پرشدن FVG">پرشدن FVG</option>
+                </select>
+              </div>
+              <div class="form-group"><label>نوع نقدینگی</label>
+                <select id="nt-liquidity">
+                  <option value="Asia High/Low Sweep">Asia High/Low Sweep</option>
+                  <option value="PDH/PDL Sweep">PDH/PDL Sweep</option>
+                  <option value="PWH/PWL Sweep">PWH/PWL Sweep</option>
+                  <option value="Equal Highs/Lows">Equal Highs/Lows</option>
+                  <option value="Trendline Liquidity">Trendline Liquidity</option>
+                  <option value="سقف/کف سشن">سقف/کف سشن</option>
+                </select>
+              </div>
+              <div class="form-group"><label>نوع POI</label>
+                <select id="nt-poi">
+                  <option value="Order Block">Order Block</option>
+                  <option value="Fair Value Gap">Fair Value Gap</option>
+                  <option value="OB + FVG">OB + FVG</option>
+                  <option value="Breaker Block">Breaker Block</option>
+                  <option value="Mitigation Block">Mitigation Block</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="correlated-warn" style="margin-bottom:10px;"></div>
+          <div id="nt-pyramid-warn" style="margin-bottom:12px;"></div>
+
+          <div class="form-group" style="margin-top:10px;"><label>یادداشت / دلیل ورود</label><textarea id="nt-note" placeholder="AH Sweep + OB H1 + CHoCH M15..."></textarea></div>
+          <button class="btn btn-primary btn-block" id="btn-save-trade" onclick="saveNewTrade()" aria-label="ثبت معامله">💾 ثبت معامله</button>
+        </div>
+      </div>
+
+      <!-- Today's Trades -->
+      <button class="collapse-toggle open" id="toggleToday" onclick="toggleCollapse('today')">
+        <span>💼 معاملات امروز</span>
+        <span class="chevron">▼</span>
+      </button>
+      <div class="collapse-body open" id="body-today">
+        <div id="today-trades-list">
+          <div class="empty-state"><div class="icon">💼</div><h3>هنوز معامله‌ای ثبت نشده</h3><p>معامله اول را از بخش بالا ثبت کنید</p></div>
+        </div>
+      </div>
+
+      <!-- End of Day Journal (Structured) -->
+      <button class="collapse-toggle" id="toggleJournal" onclick="toggleCollapse('journal')">
+        <span>📝 ژورنال پایان روز + تأمل</span>
+        <span class="chevron">▼</span>
+      </button>
+      <div class="collapse-body" id="body-journal">
+        <div class="card">
+          <h4 style="color:var(--purple);margin-bottom:12px;">🧠 Evening Reflection — ۳ سوال ثابت</h4>
+          <div class="grid-3">
+            <div class="form-group">
+              <label>۱. آیا امروز Revenge Trading کردم؟</label>
+              <select id="j-revenge" oninput="updateAutoJournalScore()"><option value="no">خیر</option><option value="yes">بله</option></select>
+            </div>
+            <div class="form-group">
+              <label>۲. آیا از پلن خارج شدم؟</label>
+              <select id="j-deviate" oninput="updateAutoJournalScore()"><option value="no">خیر</option><option value="yes">بله</option></select>
+            </div>
+            <div class="form-group">
+              <label>۳. اگر فردا تکرار شود، چه می‌کنم؟</label>
+              <input type="text" id="j-tomorrow" placeholder="یک جمله...">
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--line);margin:14px 0;padding-top:14px;">
+            <h4 style="color:var(--cyan);margin-bottom:4px;font-size:.9rem;">📊 نمره‌دهی روزانه — خودکار</h4>
+            <p style="font-size:.76rem;color:var(--text-faint);margin-bottom:10px;">بر اساس چک‌لیست‌های امروز + معاملات ثبت‌شده + پاسخ‌های بالا محاسبه می‌شود.</p>
+            <div class="grid-3">
+              <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);">
+                <div style="font-family:var(--mono);font-size:.68rem;color:var(--text-faint);">تکنیکال</div>
+                <div style="font-size:1.4rem;font-weight:800;margin-top:4px;color:var(--cyan);" id="j-auto-tech">—</div>
+              </div>
+              <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);">
+                <div style="font-family:var(--mono);font-size:.68rem;color:var(--text-faint);">ریسک</div>
+                <div style="font-size:1.4rem;font-weight:800;margin-top:4px;color:var(--amber);" id="j-auto-risk">—</div>
+              </div>
+              <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);">
+                <div style="font-family:var(--mono);font-size:.68rem;color:var(--text-faint);">روحی/جسمی</div>
+                <div style="font-size:1.4rem;font-weight:800;margin-top:4px;color:var(--purple);" id="j-auto-mental">—</div>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top:10px;">
+              <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);">
+                <div style="font-family:var(--mono);font-size:.68rem;color:var(--text-faint);">یادگیری</div>
+                <div style="font-size:1.4rem;font-weight:800;margin-top:4px;color:var(--green);" id="j-auto-learning">—</div>
+              </div>
+              <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);">
+                <div style="font-family:var(--mono);font-size:.68rem;color:var(--text-faint);">اجرا (میانگین معاملات بسته‌شده امروز)</div>
+                <div style="font-size:1.4rem;font-weight:800;margin-top:4px;color:#ff2d78;" id="j-auto-execution">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>یادداشت روز / درس کلیدی</label>
+            <textarea id="j-text" placeholder="امروز چه اتفاقی افتاد؟ چه درسی گرفتم؟"></textarea>
+          </div>
+          <div class="form-group">
+            <label>تگ‌های روز (با کاما جدا کن)</label>
+            <input type="text" id="j-tags" placeholder="FOMO, patience, setup-A">
+          </div>
+          <button class="btn btn-success btn-block" onclick="saveJournal()" aria-label="ذخیره ژورنال">📝 ذخیره ژورنال روزانه</button>
+          <div id="journal-history-today" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PERFORMANCE (charts + analytics merged) ==================== -->
+    <div class="page" id="page-performance">
+      <div class="page-header"><h1>عملکرد</h1><p>روند، آمار، و الگوهای رفتاری در بازه‌ی زمانی انتخابی</p></div>
+
+      <div class="card" style="padding:14px;">
+        <div class="filter-bar" style="margin-bottom:0;">
+          <select id="perf-range" onchange="onPerfRangeChange()">
+            <option value="week" selected>هفته اخیر (۷ روز)</option>
+            <option value="month">ماه اخیر (۳۰ روز)</option>
+            <option value="d90">۹۰ روز اخیر</option>
+            <option value="all">کل تاریخچه</option>
+            <option value="custom">بازه سفارشی</option>
+          </select>
+          <input type="date" id="perf-from" style="display:none" onchange="drawPerformancePage()">
+          <input type="date" id="perf-to" style="display:none" onchange="drawPerformancePage()">
+        </div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:14px;">
+        <div class="card" style="padding:14px;text-align:center;"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">WIN RATE</div><div id="perf-wr" style="font-size:1.3rem;font-weight:800;margin-top:3px;color:var(--cyan);">0%</div></div>
+        <div class="card" style="padding:14px;text-align:center;"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">PROFIT FACTOR</div><div id="perf-pf" style="font-size:1.3rem;font-weight:800;margin-top:3px;">-</div></div>
+        <div class="card" style="padding:14px;text-align:center;"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">EXPECTANCY ($)</div><div id="perf-exp" style="font-size:1.3rem;font-weight:800;margin-top:3px;">$0</div></div>
+        <div class="card" style="padding:14px;text-align:center;"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">AVG R</div><div id="perf-avgr" style="font-size:1.3rem;font-weight:800;margin-top:3px;">-</div></div>
+      </div>
+      <div class="grid-3" style="margin-bottom:14px;">
+        <div class="card" style="padding:14px;text-align:center;"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">PAYOFF RATIO</div><div id="perf-payoff" style="font-size:1.15rem;font-weight:800;margin-top:3px;">-</div></div>
+        <div class="card" style="padding:14px;text-align:center;"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">رکورد ضرر متوالی</div><div id="perf-streak" style="font-size:1.15rem;font-weight:800;margin-top:3px;color:var(--red);">0</div></div>
+        <div class="card" style="padding:14px;text-align:center;"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">تعداد معامله</div><div id="perf-count" style="font-size:1.15rem;font-weight:800;margin-top:3px;">0</div></div>
+        <div class="card" style="padding:14px;text-align:center;"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">میانگین Execution Score</div><div id="perf-exec" style="font-size:1.15rem;font-weight:800;margin-top:3px;color:#ff2d78;">-</div></div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:14px;">
+        <div class="chart-container">
+          <div class="chart-title">🎯 رادار سه‌بعدی — امروز vs میانگین ۷ روز</div>
+          <p class="chart-caption">در کدام بُعد (تکنیکال/ریسک/روحی-جسمی) نسبت به میانگین ۷ روز اخیر قوی‌تر یا ضعیف‌تری.</p>
+          <canvas id="chartRadar" width="400" height="280"></canvas>
+        </div>
+        <div class="chart-container">
+          <div class="chart-title">📈 P&L انباشته — بازه انتخابی</div>
+          <p class="chart-caption">روند تجمعی سود و زیان در بازه‌ی انتخاب‌شده — صعودی یعنی داری پیشرفت می‌کنی.</p>
+          <canvas id="chartPnL" width="400" height="280"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:var(--green);margin-bottom:10px;">🧭 همبستگی امتیاز چک‌لیست با نتیجه</h3>
+        <p class="chart-caption">آیا معاملاتی که با امتیاز اجرای بالاتر گرفته شده‌اند، واقعاً وین‌ریت بهتری داشته‌اند؟</p>
+        <div id="score-correlation"></div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:14px;">
+        <div class="chart-container">
+          <div class="chart-title">⚔️ Win / Loss / BE — بازه انتخابی</div>
+          <p class="chart-caption">چند درصد معاملات این بازه برد، باخت یا سربه‌سر بودند.</p>
+          <canvas id="chartWinLoss" width="400" height="260"></canvas>
+        </div>
+        <div class="chart-container">
+          <div class="chart-title">📏 R-Multiple Distribution</div>
+          <p class="chart-caption">نسبت سود به ریسک واقعی معاملات — هرچه بیشتر سمت راست، بهتر.</p>
+          <canvas id="chartRMultiple" width="400" height="260"></canvas>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:14px;">
+        <div class="chart-container">
+          <div class="chart-title">📊 Performance by Day of Week</div>
+          <p class="chart-caption">کدام روز هفته بهترین یا بدترین نتیجه را در این بازه داشته.</p>
+          <canvas id="chartDayOfWeek" width="400" height="260"></canvas>
+        </div>
+        <div class="chart-container">
+          <div class="chart-title">💱 Performance by Pair</div>
+          <p class="chart-caption">کدام ابزار بیشترین سود یا ضرر را در این بازه ساخته.</p>
+          <canvas id="chartPair" width="400" height="260"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-container" style="margin-bottom:14px;">
+        <div class="chart-title">🌍 عملکرد بر اساس بازه زمانی روز</div>
+        <p class="chart-caption">آسیا / قبل از لندن / لندن / قبل از نیویورک / نیویورک — کدام بازه بهتر عمل کرده‌ای.</p>
+        <canvas id="chartSession" width="400" height="260"></canvas>
+      </div>
+
+      <div class="chart-container" style="margin-bottom:14px;">
+        <div class="chart-title">🧬 عملکرد بر اساس نوع ستاپ (Trade DNA)</div>
+        <p class="chart-caption">کدام نوع ستاپ (Judas Swing، Continuation، Sweep و ...) برایت بهتر جواب داده.</p>
+        <canvas id="chartSetup" width="400" height="260"></canvas>
+      </div>
+
+      <div class="card">
+        <h3 style="color:var(--red);margin-bottom:4px;">🧠 تحلیل رفتاری — بردها در برابر باخت‌ها</h3>
+        <p class="chart-caption" style="margin-bottom:10px;">پرتکرارترین تگ، جفت‌ارز و احساس در معاملات ضررده‌ی این بازه، در مقایسه با بردها.</p>
+        <div id="behavioral-analysis"></div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:14px;">
+        <div class="chart-container">
+          <div class="chart-title">📉 Equity Curve + Drawdown (کل تاریخچه، مستقل از فیلتر بازه)</div>
+          <p class="chart-caption">بیشترین افت سرمایه از قله‌ی قبلی — نشان می‌دهد ریسک واقعی چقدر بوده.</p>
+          <canvas id="chartDrawdown" width="400" height="260"></canvas>
+        </div>
+        <div class="chart-container">
+          <div class="chart-title">🍩 توزیع کلی نتایج</div>
+          <p class="chart-caption">نسبت کلی برد/باخت/سربه‌سر در بازه‌ی انتخاب‌شده.</p>
+          <canvas id="chartPie" width="400" height="260"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== GUIDE ==================== -->
+    <div class="page" id="page-guide">
+      <div class="page-header"><h1>راهنمای مکانیکی ترید</h1><p>نُه گام تصمیم‌گیری بدون دخالت احساسات + قوانین محافظتی 🛡️</p></div>
+      <div class="guide-tabs">
+        <button class="guide-tab active" data-gtab="g-bias" style="--accent:var(--cyan)">۰۱ بایاس</button>
+        <button class="guide-tab" data-gtab="g-liq" style="--accent:var(--amber)">۰۲ نقدینگی</button>
+        <button class="guide-tab" data-gtab="g-poi" style="--accent:var(--green)">۰۳ POI</button>
+        <button class="guide-tab" data-gtab="g-entry" style="--accent:var(--red)">۰۴ ورود و مدیریت سرمایه</button>
+        <button class="guide-tab" data-gtab="g-routine" style="--accent:var(--purple)">۰۵ روتین</button>
+        <button class="guide-tab" data-gtab="g-barriers" style="--accent:var(--red)">۰۶ موانع فیزیکی</button>
+        <button class="guide-tab" data-gtab="g-glossary" style="--accent:var(--cyan)">۰۷ واژه‌نامه</button>
+      </div>
+      <div class="guide-panel active" id="g-bias">
+        <div class="card">
+          <h3 style="color:var(--cyan)">پیش‌نیاز · قبل از هر معامله‌ی واقعی</h3>
+          <div class="callout callout-wait"><strong class="head">حداقل بک‌تست/دمو</strong><p>حداقل <strong>۳۰ نمونه‌ی</strong> کامل (بک‌تست یا دمو) از کل این نُه گام ثبت شود، پیش از اولین معامله‌ی واقعی. اگر Win Rate و Profit Factor آن ۳۰ نمونه با انتظار همخوانی نداشت، برگرد به گام اول و خودِ قوانین را بازبینی کن — نه اینکه با سرمایه‌ی واقعی امتحان کنی.</p></div>
+          <div class="callout callout-note"><strong class="head">بازبینی دوره‌ای خودِ سیستم</strong><p>هر ۳ ماه، مستقل از عملکردت، بپرس: «آیا این قوانین هنوز روی بازار واقعی جواب می‌دهند؟» نمودار «همبستگی امتیاز چک‌لیست با نتیجه» در تب عملکرد دقیقاً برای همین ساخته شده — نه فقط پایش خودت، پایش خودِ سیستم.</p></div>
+          <div class="callout callout-buy"><strong class="head">معیار افزایش ریسک</strong><p>ریسک پایه (۳٪/۱.۵٪) را افزایش نده مگر بعد از حداقل <strong>۴ هفته‌ی سبز متوالی</strong> ثبت‌شده در بازبینی هفتگی. اپ خودش این عدد را می‌شمارد و در «پیشنهاد این هفته» گزارش می‌دهد.</p></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--cyan)">گام اول · تعیین بایاس روزانه</h3>
+          <div class="step"><span class="step-idx">1</span><p>چارت Daily را باز کرده و از آخرین سقف/کف تشکیل‌شده شروع کنید.</p></div>
+          <div class="step"><span class="step-idx">2</span><p>نزدیک‌ترین پولبک معتبر را به عنوان <strong>IDM</strong> علامت بزنید.</p></div>
+          <div class="step"><span class="step-idx">3</span><p>قیمت باید IDM را با شدو پاکسازی کند تا سوینگ ماژور تایید شود.</p></div>
+          <div class="step"><span class="step-idx">4</span><div><p><strong>تشخیص جهت:</strong></p><ul><li>Body Close بالای سقف → <strong style="color:var(--green)">بایاس صعودی</strong></li><li>Body Close پایین کف → <strong style="color:var(--red)">بایاس نزولی</strong></li></ul></div></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--cyan)">گام دوم · هم‌راستایی H4</h3>
+          <div class="table-wrap">
+            <table><thead><tr><th>Daily</th><th>H4</th><th>اقدام</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge badge-buy">صعودی</span></td><td><span class="badge badge-buy">صعودی</span></td><td style="color:var(--green)">چراغ سبز → فقط BUY</td></tr>
+                <tr><td><span class="badge badge-buy">صعودی</span></td><td><span class="badge badge-sell">نزولی</span></td><td style="color:var(--amber)">صبر → تا CHoCH صعودی H4</td></tr>
+                <tr><td><span class="badge badge-sell">نزولی</span></td><td><span class="badge badge-sell">نزولی</span></td><td style="color:var(--red)">چراغ سبز → فقط SELL</td></tr>
+                <tr><td><span class="badge badge-sell">نزولی</span></td><td><span class="badge badge-buy">صعودی</span></td><td style="color:var(--amber)">صبر → تا CHoCH نزولی H4</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--red)">🛡️ قوانین ابطال بایاس</h3>
+          <p class="chart-caption" style="margin-bottom:10px;">بایاس تعیین‌شده ثابت نیست؛ در هرکدام از این موارد باطل می‌شود و باید به گام اول برگردید، نه اینکه با همان بایاس قدیمی ادامه دهید:</p>
+          <div class="callout callout-sell"><strong class="head">رد بدون Sweep تمیز</strong><p>قیمت بدون یک Sweep تمیز، IDM را با بدنه‌ی کندل رد کند.</p></div>
+          <div class="callout callout-sell"><strong class="head">CHoCH خلاف در H4</strong><p>بعد از تعیین بایاس، ساختار H4 با یک CHoCH در جهت مخالف تغییر کند.</p></div>
+          <div class="callout callout-wait"><strong class="head">POI مصرف‌شده</strong><p>POI که یک‌بار Mitigate شده دیگر معتبر نیست. دنبال POI بعدی در همان جهت بگردید — نه اینکه کل بایاس را زیر سوال ببرید.</p></div>
+        </div>
+      </div>
+      <div class="guide-panel" id="g-liq">
+        <div class="card">
+          <h3 style="color:var(--amber)">گام سوم · انواع نقدینگی (به ترتیب اهمیت)</h3>
+          <p class="chart-caption" style="margin-bottom:10px;">نقدینگی یعنی خوشه‌ای از استاپ‌لاس/سفارش‌های در انتظار که قیمت طبیعتاً به سمتشان کشیده می‌شود (Draw on Liquidity). همه‌ی POI ها در نهایت برای رسیدن به یکی از موارد زیر تحلیل می‌شوند:</p>
+          <div class="step"><span class="step-idx">1</span><div><p><strong>BSL / SSL (نقدینگی خرید/فروش):</strong> پایه‌ی همه‌چیز. BSL = استاپ‌های فروشندگان بالای سقف‌ها؛ SSL = استاپ‌های خریداران زیر کف‌ها.</p></div></div>
+          <div class="step"><span class="step-idx">2</span><div><p><strong>نقدینگی بیرونی / درونی (External / Internal):</strong> بیرونی = سقف/کف اصلیِ رنج، هدف نهایی حرکت؛ درونی = نقدینگی داخل رنج مثل IDM، OB، FVG — توقف‌گاه‌های میانی.</p></div></div>
+          <div class="step"><span class="step-idx">3</span><div><p><strong>سقف/کف برابر (EQH / EQL):</strong> دو یا چند سقف/کف نزدیک به هم. چون آماتورها همیشه استاپشان را دقیقاً همان‌جا می‌گذارند، متراکم‌ترین و قابل‌اعتمادترین نوع است.</p></div></div>
+          <div class="step"><span class="step-idx">4</span><div><p><strong>سقف/کف روز و هفته‌ی قبل (PDH/PDL، PWH/PWL):</strong> به‌خصوص در تایم‌فریم بالا، از پرمشاهده‌ترین سطوح توسط همه‌ی معامله‌گران.</p></div></div>
+          <div class="step"><span class="step-idx">5</span><div><p><strong>سقف/کف سشن‌ها (آسیا، لندن، نیویورک قبلی):</strong> پیاده‌سازی مشخص همین ردیف در روتین ما، دقیقاً همان چیزی که در کارت زیر آمده.</p></div></div>
+          <div class="step"><span class="step-idx">6</span><div><p><strong>نقدینگی خط روند (Trendline Liquidity):</strong> استاپ‌های آماتورها کنار یک خط روند دیده‌شده. اعتبار نهادی کمتر، ولی در بازارهای شلوغ رایج.</p></div></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--amber)">📌 مثال کاربردی گام سوم — نقدینگی سشن آسیا</h3>
+          <p class="chart-caption" style="margin-bottom:10px;">پیاده‌سازی مشخص ردیف ۵ لیست بالا در روتین روزانه‌ی ما — نه یک گام جدید، بلکه همان مفهوم روی یک نمونه‌ی واقعی:</p>
+          <div class="grid-2">
+            <div style="text-align:center;padding:18px;background:var(--panel-2);border-radius:var(--radius-sm);"><div style="font-family:var(--mono);font-size:.68rem;color:var(--text-faint);">AH</div><div style="font-weight:700;margin-top:5px;">بالاترین سقف آسیا</div></div>
+            <div style="text-align:center;padding:18px;background:var(--panel-2);border-radius:var(--radius-sm);"><div style="font-family:var(--mono);font-size:.68rem;color:var(--text-faint);">AL</div><div style="font-weight:700;margin-top:5px;">پایین‌ترین کف آسیا</div></div>
+          </div>
+          <div class="callout callout-sell" style="margin-top:10px;"><strong class="head">AH Sweep</strong><p>صعود و شدوزدن AH → جهت واقعی لندن = SELL</p></div>
+          <div class="callout callout-buy"><strong class="head">AL Sweep</strong><p>سقوط و شدوزدن AL → جهت واقعی لندن = BUY</p></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--amber)">گام چهارم · هدف قیمتی</h3>
+          <div class="callout callout-note"><strong class="head">تارگت اول</strong><p>هدف اول = نقدینگی سمت مقابل رنج آسیا</p></div>
+          <div class="callout callout-wait"><strong class="head">حداقل R:R</strong><p>نسبت سود به زیان حداقل <span class="mono" style="color:var(--amber);font-weight:700;">2:1</span></p></div>
+        </div>
+      </div>
+      <div class="guide-panel" id="g-poi">
+        <div class="card">
+          <h3 style="color:var(--green)">گام پنجم · انواع POI (به ترتیب اولویت)</h3>
+          <p class="chart-caption" style="margin-bottom:10px;">POI یعنی ناحیه‌ای که انتظار واکنش نهادی در آن می‌رود. به این ترتیب اولویت بررسی می‌شوند:</p>
+          <div class="step"><span class="step-idx">1</span><div><p><strong>Order Block (OB):</strong> اولویت اول این سیستم — آخرین کندل مخالف قبل از حرکت قدرتمند. شروط اعتبار آن در کارت زیر آمده.</p></div></div>
+          <div class="step"><span class="step-idx">2</span><div><p><strong>FVG (Fair Value Gap):</strong> شکاف سه‌کندلی که سایه‌ی کندل اول و سوم هم‌پوشانی ندارد؛ می‌تواند مستقل از OB هم POI باشد، نه فقط شرط چهارمِ اعتبار OB.</p></div></div>
+          <div class="step"><span class="step-idx">3</span><div><p><strong>Breaker Block:</strong> یک OB شکست‌خورده — قیمت با بدنه از آن عبور کرد و ساختار خلاف جهت شکل گرفت. همان ناحیه حالا قطبیت برعکس دارد (مقاومت شده حمایت، یا برعکس).</p></div></div>
+          <div class="step"><span class="step-idx">4</span><div><p><strong>Mitigation Block:</strong> شبیه Breaker، ولی امضای شکست متفاوت دارد (بدون تشکیل سقف/کف جدید در همان جهت پیش از بازگشت)؛ در بازگشت‌های نرم‌تر رایج‌تر است.</p></div></div>
+          <div class="step"><span class="step-idx">5</span><div><p><strong>Rejection Block:</strong> کندلی با سایه‌ی بلند که به‌وضوح رد شده. ضعیف‌ترین ولی در دسترس‌ترین POI کمکی، وقتی هیچ‌کدام از موارد بالا حاضر نیست.</p></div></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--green)">شروط اعتبار OB</h3>
+          <p style="color:var(--text-dim);font-size:.85rem;margin:-6px 0 12px;">POI معتبر باید هر چهار شرط را داشته باشد:</p>
+          <div class="step"><span class="step-idx">1</span><p><strong>Sweep:</strong> کندل OB سقف/کف مجاور را با شدو پاکسازی کند.</p></div>
+          <div class="step"><span class="step-idx">2</span><p><strong>Inside Bar:</strong> کندل داخلی نباشد. کندل مادر ملاک است.</p></div>
+          <div class="step"><span class="step-idx">3</span><p><strong>Unmitigated:</strong> کاملاً بکر و لمس‌نشده.</p></div>
+          <div class="step"><span class="step-idx">4</span><p><strong>FVG:</strong> شکاف ارزش بلافاصله بعد از بلاک.</p></div>
+        </div>
+      </div>
+      <div class="guide-panel" id="g-entry">
+        <div class="card">
+          <h3 style="color:var(--red)">گام ششم · تایید ورود (حداقل M15)</h3>
+          <div class="step"><span class="step-idx">1</span><p>برخورد قیمت در M15 به POI معتبر.</p></div>
+          <div class="step"><span class="step-idx">2</span><p>منتظر <strong>CHoCH</strong> حداقل روی M15 (تغییر ماهیت با بدنه) — M1 نویز بالایی دارد و مجاز نیست.</p></div>
+          <div class="step"><span class="step-idx">3</span><p><strong>ورود دو پله‌ای:</strong> پله اول روی بلاک تاییدکننده | پله دوم روی Extreme OB</p></div>
+          <div class="callout callout-sell" style="margin-top:6px;"><strong class="head">حد ضرر</strong><p>استاپ دقیقاً <strong>۱ پیپ فراتر از کف/سقف نهایی HTF</strong></p></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--red)">گام هفتم · مدیریت سرمایه</h3>
+          <p class="chart-caption" style="margin-bottom:10px;">ریسک مجاز ثابت نیست — به امتیاز چک‌لیست همان روز وابسته است و در فیلد «ریسک مجاز امروز» بالای فرم معامله محاسبه می‌شود:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>امتیاز چک‌لیست</th><th>ریسک کل مجاز</th><th>پله ۱ — Probe</th><th>پله ۲ — Confirmation</th></tr></thead>
+              <tbody>
+                <tr><td>۸۰ به بالا</td><td class="mono" style="color:var(--green);font-weight:700;">۳٪</td><td class="mono">۱٪</td><td class="mono">۲٪</td></tr>
+                <tr><td>۵۰ تا ۷۹</td><td class="mono" style="color:var(--amber);font-weight:700;">۱.۵٪</td><td class="mono">۰.۵٪</td><td class="mono">۱٪</td></tr>
+                <tr><td>زیر ۵۰ یا آیتم بحرانی جاافتاده</td><td class="mono" style="color:var(--red);font-weight:700;">۰٪ — ورود ممنوع</td><td class="mono">—</td><td class="mono">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-sell" style="margin-top:10px;"><strong class="head">قفل ریسک</strong><p>در بهترین حالت (امتیاز ≥۸۰)، مجموع دو پله (Probe + Confirmation) هرگز از <strong>۳٪ کل سرمایه</strong> عبور نمی‌کند — این سقف مطلق است، نه هدف.</p></div>
+          <div class="callout callout-note" style="margin-top:10px;"><strong class="head">فرمول محاسبه‌ی حجم</strong><p>حجم پوزیشن = (موجودی حساب × ریسک مجاز٪) ÷ (فاصله‌ی استاپ به پیپ × ارزش هر پیپ). مثال: موجودی $۱۰٬۰۰۰، ریسک پله ۱٪ = $۱۰۰؛ اگر استاپ ۲۰ پیپ و ارزش هر پیپ $۱۰ باشد → حجم = $۱۰۰ ÷ (۲۰×$۱۰) = ۰.۵ لات.</p></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--green)">گام هشتم · اجرای پله‌ای ورود</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>پله</th><th>حجم</th><th>ورود</th><th>SL</th><th>ریسک</th></tr></thead>
+              <tbody>
+                <tr><td>۱ — Probe</td><td>۴۰٪</td><td>لمس اول POI (Inducement دیده شد)</td><td>زیر/بالای کل OB روی H4</td><td>۱٪</td></tr>
+                <tr><td>۲ — Confirmation</td><td>۶۰٪</td><td>بعد از CHoCH M15 + OB کوچک M5</td><td>زیر/بالای OB کوچک</td><td>۲٪</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">قانون کلیدی</strong><p>Inducement = سیگنال ورود پله اول، نه سیگنال خروج پوزیشن باز. بیش از ۲ پله روی یک ابزار بدون توجیه روشن ممنوع است.</p></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--cyan)">گام نهم · خروج پله‌ای — سیستم Tranche</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>لایه</th><th>حجم</th><th>TP بر اساس</th><th>خروج اجباری</th></tr></thead>
+              <tbody>
+                <tr><td>A — اسکلپ</td><td>۴۰٪</td><td>نقدینگی M15/H1 (۱:۱ تا ۱.۵:۱)</td><td>TP یا CHoCH خلاف M15</td></tr>
+                <tr><td>B — سوئینگ</td><td>۳۵٪</td><td>نقدینگی بعدی H4</td><td>CHoCH خلاف H4</td></tr>
+                <tr><td>C — پوزیشن</td><td>۲۵٪</td><td>هدف Daily</td><td>فقط CHoCH خلاف Daily</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="color:var(--text-dim);font-size:.85rem;margin-top:10px;">این ساختار مشکل «نگه‌داشتن کامل پوزیشن تا سود شناور صفر شود» را حل می‌کند و سود را طبیعتاً بین چند روز پخش می‌کند.</p>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--amber)">🛡️ Consistency Rule پراپ‌فرم</h3>
+          <p style="color:var(--text-dim);font-size:.85rem;">سود Realize‌شده هر روز نباید بیش از سقف تعیین‌شده باشد، وگرنه هدف فاز به‌طور خودکار افزایش می‌یابد.</p>
+          <div class="callout callout-note" style="margin-top:8px;"><strong class="head">فرمول</strong><p>هدف جدید (در صورت نقض) = سود بزرگ‌ترین‌روز ÷ درصد سقف Consistency</p></div>
+          <p style="color:var(--text-dim);font-size:.82rem;">این نسبت به کل سود انباشته‌شده تا آن لحظه حساب می‌شود، نه فقط هدف نهایی — اوایل دوره روزهای کوچیک‌تر لازم است.</p>
+          <div id="consistency-live" style="margin-top:10px;"></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--red)">🛡️ ریسک همبسته (Correlated Risk)</h3>
+          <div class="callout callout-sell"><strong class="head">قبل از چند پوزیشن هم‌زمان روی ابزارهای مختلف</strong><p>بپرس: آیا همه این معاملات در واقع یک شرط تکراری هستند؟ (مثلاً «دلار ضعیف می‌شود» هم‌زمان روی طلا، ین و بیت‌کوین). اگر بله، ریسک را جمع بزن، نه هر کدام را جداگانه. سقف ریسک تجمعی برای معاملات هم‌جهت: <strong>۳٪</strong> — همان سقف مطلق یک معامله‌ی تکی (گام هفتم)، نه کمتر از آن؛ وگرنه حتی یک معامله‌ی تکی هم این سقف را نقض می‌کرد.</p></div>
+        </div>
+      </div>
+      <div class="guide-panel" id="g-routine">
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="color:var(--amber)">⏰ نکته‌ی مهم درباره‌ی ساعت‌ها</h3>
+          <p style="color:var(--text-dim);font-size:.85rem;margin-bottom:10px;">ایران از سال ۲۰۲۲ ساعت تابستانی ندارد (همیشه UTC+۳:۳۰ ثابت)، ولی بریتانیا و آمریکا هنوز دارند. یعنی فاصله‌ی ساعت تهران با کیل‌زون‌های واقعی هرسال دو بار، هرکدام یک ساعت، جابه‌جا می‌شود. زمان‌بندی فازهای زیر میانگین دو حالت است؛ بر اساس جدول، حدود یک ساعت با فصل تنظیم کنید:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>فاز</th><th>زمستان بریتانیا/آمریکا (~آبان تا اسفند)</th><th>تابستان بریتانیا/آمریکا (~فروردین تا مهر)</th></tr></thead>
+              <tbody>
+                <tr><td>Kill Zone لندن</td><td class="mono">۱۰:۳۰–۱۳:۳۰</td><td class="mono">۰۹:۳۰–۱۲:۳۰</td></tr>
+                <tr><td>Overlap + نیویورک</td><td class="mono">۱۵:۳۰–۱۸:۳۰</td><td class="mono">۱۴:۳۰–۱۷:۳۰</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase"><div class="phase-head" style="--accent:var(--purple)"><h3>فاز اول · زمینه‌سازی عصبی</h3><span class="phase-window">06:30 – 08:30</span></div>
+          <div class="phase-body">
+            <div class="phase-item"><span class="t">06:30</span><strong class="title">بیداری</strong><ul><li>۵۰۰ml آب ولرم</li><li>۲۰ دقیقه اول گوشی نباشد</li></ul></div>
+            <div class="phase-item"><span class="t">06:50</span><strong class="title">مدیتیشن</strong><ul><li>تنفس مربعی ۴-۴-۴-۴ به مدت ۱۰ دقیقه</li><li>۵-۱۰ دقیقه نور طبیعی</li></ul></div>
+            <div class="phase-item"><span class="t">07:10</span><strong class="title">صبحانه</strong><ul><li>پروتئین + چربی سالم + کربوهیدرات پیچیده</li><li>قند ساده ممنوع</li></ul></div>
+            <div class="phase-item"><span class="t">07:40</span><strong class="title">تحلیل ماکرو</strong><ul><li>Daily و H4 / IDM / AH-AL</li></ul></div>
+          </div>
+        </div>
+        <div class="phase"><div class="phase-head" style="--accent:var(--amber)"><h3>فاز دوم · Kill Zone لندن</h3><span class="phase-window">08:30 – 12:30</span></div>
+
+          <div class="phase-body">
+            <div class="phase-item"><span class="t">08:30</span><strong class="title">فیلتر اخبار</strong><p>High Impact → ۱۰ دقیقه قبل و بعد <strong style="color:var(--red)">هیچ اوردری</strong>. برای پوزیشن‌های از قبل باز: استاپ را جابجا نکن؛ اگر SL داخل بازه‌ی احتمالی اسپایک خبر است، حجم را نصف کن یا کامل ببند — تصمیم را قبل از خبر بگیر، نه وسط آن.</p></div>
+            <div class="phase-item"><span class="t">08:30–12:30</span><strong class="title">Kill Zone لندن</strong><ul><li>M15 / Sweep آسیا / POI / CHoCH حداقل M15</li><li>هیدراتاسیون هر ۳۰ دقیقه</li></ul></div>
+          </div>
+        </div>
+        <div class="phase"><div class="phase-head" style="--accent:var(--cyan)"><h3>فاز سوم · ریست</h3><span class="phase-window">12:30 – 15:30</span></div>
+          <div class="phase-body">
+            <div class="phase-item"><span class="t">12:30</span><strong class="title">خروج مطلق</strong><p>مانیتورها خاموش</p></div>
+            <div class="phase-item"><span class="t">12:45</span><strong class="title">ناهار سبک</strong></div>
+            <div class="phase-item"><span class="t">13:30</span><strong class="title">Power Nap</strong><p>۲۰ دقیقه در اتاق تاریک</p></div>
+          </div>
+        </div>
+        <div class="phase"><div class="phase-head" style="--accent:var(--amber)"><h3>فاز چهارم · Overlap + سشن نیویورک</h3><span class="phase-window">15:30 – 19:30</span></div>
+          <div class="phase-body">
+            <div class="phase-item"><span class="t">15:30</span><strong class="title">به‌روزرسانی</strong></div>
+            <div class="phase-item"><span class="t">15:30–17:30</span><strong class="title">Overlap لندن-نیویورک</strong><p>بالاترین نقدینگی روز — اگر ۱٪ در لندن خورده → <strong style="color:var(--red)">نیویورک تعطیل</strong></p></div>
+            <div class="phase-item"><span class="t">17:30–19:30</span><strong class="title">نیویورک خالص</strong><ul><li>نقدینگی کمتر از Overlap — احتیاط در حجم</li></ul></div>
+          </div>
+        </div>
+        <div class="phase"><div class="phase-head" style="--accent:var(--purple)"><h3>فاز پنجم · تخلیه</h3><span class="phase-window">19:30 →</span></div>
+          <div class="phase-body">
+            <div class="phase-item"><span class="t">19:30</span><strong class="title">ژورنال</strong><p>عکس چارت / دلیل ورود / «۱۰۰٪ مکانیکی بودم؟»</p></div>
+            <div class="phase-item"><span class="t">20:00</span><strong class="title">خاموشی</strong></div>
+            <div class="phase-item"><span class="t">20:30</span><strong class="title">ورزش</strong></div>
+            <div class="phase-item"><span class="t">22:00</span><strong class="title">خواب ۸ ساعته</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Physical Barriers -->
+      <div class="guide-panel" id="g-barriers">
+        <div class="card">
+          <h3 style="color:var(--red)">🛡️ ۱۱ مانع فیزیکی — غیرقابل‌مذاکره</h3>
+          <p style="color:var(--text-dim);font-size:.85rem;margin-bottom:10px;">این‌ها قانون ذهنی نیستند؛ باید فیزیکی اجرا شوند. تصمیم لحظه‌ای زیر فشار همیشه قانون ذهنی را دور می‌زند، نه مانع واقعی را.</p>
+          <div class="step"><span class="step-idx">1</span><p>بعد از هر BE یا ضرر → پلتفرم <strong>۲ ساعت</strong> بسته می‌شود.</p></div>
+          <div class="step"><span class="step-idx">2</span><p>قبل از هر ورود → هر دو چک‌لیست (صبحگاهی + قبل از ورود) باید <strong>۱۰۰٪</strong> و بدون مورد الزامیِ ناقص تکمیل شوند.</p></div>
+          <div class="step"><span class="step-idx">3</span><p>حداکثر ریسک تجمعی روزانه برای معاملات هم‌جهت/همبسته: <strong>۳٪</strong> (همان سقف تک‌معامله در گام هفتم).</p></div>
+          <div class="step"><span class="step-idx">4</span><p>گرسنه یا خسته‌ای؟ چارت بسته می‌ماند.</p></div>
+          <div class="step"><span class="step-idx">5</span><p>ضرر یک معامله بیش از <strong>۳٪ موجودی حساب</strong> (سقف مطلق گام هفتم) شد → توقف کامل و بازبینی سیستم؛ یعنی چیزی فراتر از پلن رخ داده (استاپ رعایت نشده یا اسلیپیج شدید). این آستانه از موجودی واقعی حساب در تنظیمات محاسبه می‌شود، نه یک عدد ثابت.</p></div>
+          <div class="step"><span class="step-idx">6</span><p>حس FOMO کردی؟ چارت را ببند، ۳۰ دقیقه قدم بزن.</p></div>
+          <div class="step"><span class="step-idx">7</span><p>معامله‌ای بدون تو حرکت کرد؟ دنبالش نرو — نه هم‌جهت، نه خلاف آن.</p></div>
+          <div class="step"><span class="step-idx">8</span><p>حداقل تایم‌فریم تأیید ورود: <strong>M15</strong>. هرگز M1 یا پایین‌تر.</p></div>
+          <div class="step"><span class="step-idx">9</span><p>قبل از پله سوم روی یک ابزار → توقف اجباری: «این تصمیم تازه است یا اضافه‌کردن روی ضرر/FOMO؟»</p></div>
+          <div class="step"><span class="step-idx">10</span><p>ضرر انباشته‌ی ۷ روز اخیر بیش از <strong>۶٪</strong> سرمایه → معامله تا هفته‌ی بعد متوقف. ضرر انباشته‌ی ۳۰ روز اخیر بیش از <strong>۱۰٪</strong> → توقف کامل و بازبینی سیستم. این دو، خودکار از موجودی حساب محاسبه و در بالای داشبورد نشان داده می‌شوند.</p></div>
+          <div class="step"><span class="step-idx">11</span><p>حداکثر <strong>۲ ایده‌ی معاملاتی جدید</strong> در هر Kill Zone (پله‌های تکمیلی همان ایده حساب نمی‌شوند). عدد کنار «آرشیو معاملات» در نوار کناری، تعداد معاملات امروز را نشان می‌دهد — قبل از هر ورود آن را چک کن.</p></div>
+        </div>
+      </div>
+      <div class="guide-panel" id="g-glossary">
+        <div class="card">
+          <h3 style="color:var(--cyan)">ساختار و بایاس</h3>
+          <div class="term"><span class="term-name" style="--accent:var(--cyan)">IDM</span><p class="term-def"><strong>Inducement</strong> — یک استخر نقدینگی کوچک‌تر و واضح‌تر که قبل از POI اصلی قرار دارد و طعمه‌ی ورودکنندگان زودهنگام است. مثال: در گام اول، «نزدیک‌ترین پولبک معتبر» همین است.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--cyan)">CHoCH</span><p class="term-def"><strong>Change of Character</strong> — اولین شکست ساختار خلاف روند غالب؛ نشانه‌ی احتمال برگشت. مثال: در روند صعودی، بسته‌شدن با بدنه زیر آخرین کف بالاتر.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--cyan)">BOS</span><p class="term-def"><strong>Break of Structure</strong> — شکست ساختار هم‌جهت با روند؛ تاییدِ ادامه (نه برگشت).</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--cyan)">Sweep</span><p class="term-def">عبور کوتاه قیمت (معمولاً فقط با سایه) از یک سقف/کف شناخته‌شده برای فعال‌کردن استاپ‌های آنجا، قبل از برگشت واقعی.</p></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--amber)">نقدینگی</h3>
+          <div class="term"><span class="term-name" style="--accent:var(--amber)">BSL / SSL</span><p class="term-def">نقدینگی خرید/فروش — خوشه‌ی استاپ‌های فروشندگان بالای سقف‌ها (BSL) یا خریداران زیر کف‌ها (SSL).</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--amber)">External / Internal</span><p class="term-def">نقدینگی بیرونی = سقف/کف اصلیِ رنج (هدف نهایی)؛ درونی = نقدینگی داخل رنج مثل IDM/OB/FVG.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--amber)">EQH / EQL</span><p class="term-def">سقف‌ها یا کف‌های برابر — دو یا چند سطح نزدیک به هم که استاپ‌های زیادی زیرشان/بالایشان جمع شده.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--amber)">PDH / PDL</span><p class="term-def">سقف/کف روز قبل (Previous Day High/Low)؛ به همین شکل PWH/PWL برای هفته‌ی قبل.</p></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--green)">POI و ورود</h3>
+          <div class="term"><span class="term-name" style="--accent:var(--green)">POI</span><p class="term-def"><strong>Point of Interest</strong> — ناحیه‌ای که انتظار واکنش نهادی قیمت در آن می‌رود.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--green)">OB</span><p class="term-def"><strong>Order Block</strong> — آخرین کندل مخالف قبل از یک حرکت قدرتمند.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--green)">FVG</span><p class="term-def"><strong>Fair Value Gap</strong> — شکاف سه‌کندلی که سایه‌ی کندل اول و سوم هم‌پوشانی ندارند.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--green)">Breaker Block</span><p class="term-def">یک OB شکست‌خورده که قطبیتش برعکس شده (مقاومت شده حمایت، یا برعکس).</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--green)">Mitigation Block</span><p class="term-def">شبیه Breaker، ولی امضای شکست متفاوت دارد؛ در بازگشت‌های نرم‌تر رایج‌تر است.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--green)">Rejection Block</span><p class="term-def">کندلی با سایه‌ی بلند که به‌وضوح رد شده؛ ضعیف‌ترین ولی رایج‌ترین POI کمکی.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--green)">Mitigated</span><p class="term-def">ناحیه‌ای که قبلاً یک‌بار لمس شده. Unmitigated یعنی دست‌نخورده و «تازه».</p></div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--purple)">مدیریت و روتین</h3>
+          <div class="term"><span class="term-name" style="--accent:var(--purple)">Kill Zone</span><p class="term-def">بازه‌ی زمانی کوتاه و پرحجم دور از باز شدن یک سشن (لندن/نیویورک)، نه کل سشن.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--purple)">Tranche</span><p class="term-def">تقسیم ورود یا خروج یک معامله به چند لایه‌ی حجمی جدا، به‌جای یک اجرای یک‌باره.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--purple)">Consistency Rule</span><p class="term-def">قانون پراپ‌فرم که سود Realize‌شده‌ی هر روز را به سقفی نسبت به کل سود انباشته محدود می‌کند.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--purple)">Correlated Risk</span><p class="term-def">ریسک چند پوزیشن هم‌زمان که در واقع یک شرط تکراری‌اند (مثلاً همه روی «دلار ضعیف»)؛ باید جمع زده شوند، نه جدا.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== HISTORY ==================== -->
+    <div class="page" id="page-history">
+      <div class="page-header"><h1>آرشیو معاملات</h1><p>تمام معاملات با فیلتر پیشرفته</p></div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="grid-4">
+          <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">TOTAL</div><div style="font-size:1.4rem;font-weight:800;margin-top:3px;" id="hist-total">0</div></div>
+          <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">WINS</div><div style="font-size:1.4rem;font-weight:800;margin-top:3px;color:var(--green);" id="hist-wins">0</div></div>
+          <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">LOSSES</div><div style="font-size:1.4rem;font-weight:800;margin-top:3px;color:var(--red);" id="hist-losses">0</div></div>
+          <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">NET P&L ($)</div><div style="font-size:1.4rem;font-weight:800;margin-top:3px;" id="hist-pnl">0</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;">
+          <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">WIN RATE</div><div style="font-size:1.4rem;font-weight:800;margin-top:3px;color:var(--cyan);" id="hist-wr">0%</div></div>
+          <div style="text-align:center;padding:14px;background:var(--panel-2);border-radius:var(--radius-sm);"><div style="font-family:var(--mono);font-size:.65rem;color:var(--text-faint);">EXPECTANCY ($)</div><div style="font-size:1.4rem;font-weight:800;margin-top:3px;" id="hist-exp">0</div></div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="card" style="padding:14px;">
+        <div class="filter-bar">
+          <input type="text" id="filter-pair" placeholder="جفت‌ارز (مثلاً EURUSD)" oninput="renderHistory()">
+          <select id="filter-result" onchange="renderHistory()">
+            <option value="">همه نتایج</option>
+            <option value="win">سود</option>
+            <option value="loss">ضرر</option>
+            <option value="be">سر به سر</option>
+            <option value="open">باز</option>
+          </select>
+          <select id="filter-emotion" onchange="renderHistory()">
+            <option value="">همه احساسات</option>
+            <option value="calm">آرام</option>
+            <option value="rushed">عجول</option>
+            <option value="fomo">FOMO</option>
+          </select>
+          <input type="date" id="filter-from" onchange="renderHistory()">
+          <input type="date" id="filter-to" onchange="renderHistory()">
+          <button class="btn btn-sm btn-ghost" onclick="clearFilters()">پاک کردن</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>تاریخ</th><th>جفت‌ارز</th><th>جهت</th><th>نتیجه</th><th>P&L $</th><th>تکنیکال</th><th>ریسک</th><th>روحی/جسمی</th><th>یادگیری</th><th>تگ‌ها</th><th>عملیات</th></tr></thead>
+          <tbody id="history-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== WATCHLIST ==================== -->
+    <div class="page" id="page-watchlist">
+      <div class="page-header"><h1>واچ‌لیست — ابزارهای مجاز</h1><p>فقط این ابزارها معامله شوند؛ کیفیت مهم‌تر از تعداد است</p></div>
+      <div class="card">
+        <h3 style="color:var(--green)">🟢 هسته اصلی (قابل ویرایش در تنظیمات)</h3>
+        <div id="watchlist-core-display" style="display:grid;gap:10px;"></div>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--amber)">🟡 با احتیاط</h3>
+        <div style="padding:14px 16px;background:var(--panel-2);border-radius:var(--radius-sm);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span class="mono" style="font-weight:700;">ETH/USD</span></div>
+          <p style="margin:0;color:var(--text-dim);font-size:.85rem;">همبستگی ۰.۸–۰.۹ با BTC — نگه‌داشتن هر دو هم‌زمان تنوع واقعی نمی‌دهد، فقط ریسک روند کریپتو را دوبرابر می‌کند.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--red)">🔴 ممنوع</h3>
+        <div style="padding:14px 16px;background:var(--panel-2);border-radius:var(--radius-sm);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span class="mono" style="font-weight:700;">جفت‌ارزهای Exotic</span></div>
+          <p style="margin:0;color:var(--text-dim);font-size:.85rem;">TRY، ZAR، MXN و مشابه — اسپرد بالا، نقدینگی کم. اضافه نشود.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== WEEKLY REVIEW ==================== -->
+    <div class="page" id="page-weekly">
+      <div class="page-header"><h1>بازبینی هفتگی</h1><p>خلاصه‌ی خودکار هفته + چند سوال هدفمند برای رشد</p></div>
+
+      <div class="card">
+        <div class="form-group" style="max-width:220px;"><label>هفته منتهی به</label><input type="date" id="wr-date" onchange="renderWeeklyAutoSummary()"></div>
+        <h3 style="color:var(--cyan);margin:6px 0 10px;">📊 خلاصه‌ی خودکار هفته منتهی به <span id="wr-summary-date" class="mono"></span></h3>
+        <div id="weekly-auto-summary"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:var(--amber);margin-bottom:8px;">🤖 پیشنهاد این هفته</h3>
+        <p class="chart-caption">بر اساس همین آمار بالا — نه حدس.</p>
+        <div id="weekly-suggestions"></div>
+      </div>
+
+      <div class="chart-container" style="margin-bottom:14px;">
+        <div class="chart-title">📈 روند هفته‌به‌هفته — وین‌ریت (توپر) / پایبندی (نقطه‌چین)</div>
+        <canvas id="chartWeeklyTrend" width="400" height="220"></canvas>
+      </div>
+
+      <div class="card">
+        <div id="wr-hint" style="font-size:.82rem;color:var(--text-dim);background:var(--panel-2);border-radius:var(--radius-sm);padding:10px 12px;border-right:3px solid var(--cyan);margin-bottom:14px;"></div>
+        <div class="form-group"><label>۱. بزرگترین اشتباه هفته و علتش چه بود؟</label><textarea id="wr-mistake"></textarea></div>
+        <div class="form-group"><label>۲. کدام تصمیم بیشترین ارزش را داشت؟</label><textarea id="wr-best"></textarea></div>
+        <div class="form-group"><label>۳. هدف هفته آینده؟</label><textarea id="wr-goal"></textarea></div>
+        <div class="form-group"><label>۴. یک درس کلیدی (یک جمله)</label><input type="text" id="wr-lesson"></div>
+        <button class="btn btn-primary btn-block" onclick="saveWeeklyReview()" aria-label="ذخیره بازبینی هفتگی">💾 ذخیره بازبینی هفتگی</button>
+      </div>
+      <div id="weekly-list" style="margin-top:14px;"></div>
+    </div>
+
+    <!-- ==================== SETTINGS ==================== -->
+    <div class="page" id="page-settings">
+      <div class="page-header"><h1>تنظیمات</h1><p>شخصی‌سازی چک‌لیست، قرارداد، سلامت، و ظاهر</p></div>
+
+      <div class="card">
+        <h3>💰 موجودی اولیه حساب</h3>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:10px;">برای محاسبه‌ی درست درصد Drawdown در تب «عملکرد» استفاده می‌شود.</p>
+        <div class="form-group"><input type="number" step="0.01" id="account-balance-input" placeholder="10000"></div>
+        <button class="btn btn-primary" onclick="saveAccountBalance()" aria-label="ذخیره موجودی">ذخیره موجودی</button>
+      </div>
+
+      <div class="card">
+        <h3>📐 سقف Consistency Rule پراپ‌فرم (٪)</h3>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:10px;">حداکثر درصدی که سود یک روز می‌تواند از کل سود انباشته باشد (طبق قوانین پراپ‌فرم شما — رقم رایج ۲۰ تا ۴۰٪). برای محاسبه‌ی زنده در گام مدیریت سرمایه استفاده می‌شود.</p>
+        <div class="form-group"><input type="number" step="1" id="consistency-cap-input" placeholder="30"></div>
+        <button class="btn btn-primary" onclick="saveConsistencyCap()" aria-label="ذخیره سقف">ذخیره سقف</button>
+      </div>
+
+      <div class="card">
+        <h3>📜 قرارداد تریدر</h3>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:10px;">این متن هر روز در داشبورد نمایش داده می‌شود.</p>
+        <div class="form-group">
+          <textarea id="contract-input" rows="3">من متعهد می‌شوم که اگر ۲ استاپ بخورم، امروز کامپیوتر را خاموش می‌کنم. من فقط ستاپ A+ می‌گیرم و زیر ۲:۱ وارد نمی‌شوم.</textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveContract()" aria-label="ذخیره قرارداد">ذخیره قرارداد</button>
+      </div>
+
+      <div class="card">
+        <h3>☀️/🌙 تم</h3>
+        <button class="btn btn-ghost" onclick="toggleTheme()" aria-label="تغییر تم">تغییر تم روشن/تیره</button>
+      </div>
+
+      <div class="card">
+        <h3>👁️ هسته اصلی واچ‌لیست</h3>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:10px;">فقط این ابزارها در فرم «ثبت معامله» قابل انتخابند — از تایپ آزاد و ناهماهنگی نام‌ها جلوگیری می‌کند.</p>
+        <div id="settings-watchlist-list"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <input type="text" id="new-watchlist-item" placeholder="مثلاً EURUSD" style="flex:1;">
+          <button class="btn btn-sm btn-success" onclick="addWatchlistItem()" aria-label="افزودن ابزار">+ افزودن</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>⚙️ مدیریت چک‌لیست صبحگاهی</h3>
+        <div id="settings-daily-list"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="new-daily-text" placeholder="متن آیتم" style="flex:1;min-width:120px;">
+          <select id="new-daily-cat">
+            <option value="tech">تکنیکال</option>
+            <option value="risk">ریسک</option>
+            <option value="mental">روحی/جسمی</option>
+            <option value="learning">یادگیری</option>
+          </select>
+          <input type="number" id="new-daily-pts" placeholder="امتیاز" style="width:70px;" value="3">
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;color:var(--text-dim);"><input type="checkbox" id="new-daily-critical"> حیاتی</label>
+          <button class="btn btn-sm btn-success" onclick="addDailyItem()" aria-label="افزودن آیتم">+</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>⚙️ مدیریت چک‌لیست قبل از ورود</h3>
+        <div id="settings-pre-list"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="new-pre-text" placeholder="متن آیتم" style="flex:1;min-width:120px;">
+          <select id="new-pre-cat">
+            <option value="tech">تکنیکال</option>
+            <option value="risk">ریسک</option>
+            <option value="mental">روحی/جسمی</option>
+            <option value="learning">یادگیری</option>
+          </select>
+          <input type="number" id="new-pre-pts" placeholder="امتیاز" style="width:70px;" value="3">
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;color:var(--text-dim);"><input type="checkbox" id="new-pre-critical"> حیاتی</label>
+          <button class="btn btn-sm btn-success" onclick="addPreItem()" aria-label="افزودن آیتم">+</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <h3 style="margin:0;">🗑️ آیتم‌های حذف‌شده (سطل بازیافت)</h3>
+          <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="clearTrash()">پاک‌کردن کامل سطل</button>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-dim);margin-bottom:10px;">آیتم‌های چک‌لیست حذف‌شده تا ۲۰ مورد آخر اینجا نگه داشته می‌شوند و قابل بازگردانی‌اند.</p>
+        <div id="settings-trash-list"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Result Modal with Post-Trade Checklist -->
+<div class="modal-overlay" id="editItemModal">
+  <div class="modal">
+    <div class="modal-header"><h3>✏️ ویرایش آیتم چک‌لیست</h3></div>
+    <div class="modal-body">
+      <input type="hidden" id="ei-list-type">
+      <input type="hidden" id="ei-idx">
+      <div class="form-group"><label>متن آیتم</label><input type="text" id="ei-text"></div>
+      <div class="grid-2">
+        <div class="form-group"><label>دسته</label>
+          <select id="ei-cat">
+            <option value="tech">تکنیکال</option>
+            <option value="risk">ریسک</option>
+            <option value="mental">روحی/جسمی</option>
+            <option value="learning">یادگیری</option>
+          </select>
+        </div>
+        <div class="form-group"><label>امتیاز</label><input type="number" id="ei-pts" min="1" max="10"></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.85rem;">
+        <input type="checkbox" id="ei-critical"> آیتم الزامی (★) — بدون تیک این، ورود مجاز نیست
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEditItemModal()" aria-label="انصراف">انصراف</button>
+      <button class="btn btn-primary" onclick="saveEditedItem()" aria-label="ذخیره تغییرات">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="resultModal">
+  <div class="modal wide">
+    <div class="modal-header"><h3>ثبت نتیجه معامله</h3><button class="modal-close" onclick="closeResultModal()" aria-label="بستن">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="res-id">
+      <div class="grid-2">
+        <div class="form-group"><label>نتیجه</label>
+          <select id="res-result" onchange="toggleResFields()">
+            <option value="open">باز</option><option value="win">✅ سود</option><option value="loss">❌ ضرر</option><option value="be">➖ سر به سر</option>
+          </select>
+        </div>
+        <div class="form-group"><label>P&L ($)</label><input type="number" step="0.01" id="res-pnl" placeholder="+25.00"></div>
+      </div>
+
+      <div style="border-top:1px solid var(--line);margin:14px 0;padding-top:14px;">
+        <h4 style="font-size:.85rem;color:var(--text-dim);margin-bottom:10px;">🧮 Post-Trade Checklist — ۳ سوال اجباری</h4>
+        <div class="form-group">
+          <label>۱. آیا استاپ را جابجا کردم؟</label>
+          <select id="pt-q1"><option value="no">خیر</option><option value="yes">بله</option></select>
+        </div>
+        <div class="form-group">
+          <label>۲. آیا خارج از پلن خارج شدم؟</label>
+          <select id="pt-q2"><option value="no">خیر</option><option value="yes">بله</option></select>
+        </div>
+        <div class="form-group">
+          <label>۳. آیا احساسات دخیل بود؟</label>
+          <select id="pt-q3"><option value="no">خیر</option><option value="yes">بله</option></select>
+        </div>
+      </div>
+
+      <div class="form-group"><label>تگ‌های معامله (با کاما جدا کن)</label><input type="text" id="res-tags" placeholder="FOMO, overtrading, setup-A"></div>
+      <div class="form-group"><label>یادداشت نتیجه / درس</label><textarea id="res-note" placeholder="چرا این نتیجه رخ داد؟"></textarea><p class="chart-caption" style="margin-top:4px;">یک یادداشت واقعی (حداقل ۱۵ حرف) در Learning Score این معامله لحاظ می‌شود.</p></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeResultModal()">انصراف</button>
+      <button class="btn btn-primary" onclick="saveResult()" aria-label="ذخیره نتیجه">ذخیره نتیجه</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contract Modal -->
+<div class="modal-overlay" id="contractModal">
+  <div class="modal">
+    <div class="modal-header"><h3>📜 قرارداد با خود</h3></div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--text-dim);line-height:1.8;margin-bottom:14px;">
+        قبل از شروع، این تعهد را بخوان و بپذیر:<br><br>
+        <strong id="contractModalText" style="color:var(--text)"></strong>
+      </p>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.85rem;">
+        <input type="checkbox" id="contract-agree"> این قرارداد را می‌پذیرم و هر روز آن را به یاد دارم.
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary btn-block" onclick="acceptContract()" aria-label="تأیید و شروع">تأیید و شروع</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== CONFIG & STATE =====
+const STORAGE = {
+  trades:'tbc_v4_trades', journal:'tbc_v4_journal',
+  dailyChecks:'tbc_v4_daily_checks', preChecks:'tbc_v4_pre_checks', scores:'tbc_v4_scores',
+  settings:'tbc_v4_settings', weekly:'tbc_v4_weekly',
+  backup:'tbc_v4_last_backup'
+};
+let trades=[], journals=[], dailyChecks={}, preChecks={}, scoresCache={}, settings={}, weeklyReviews=[];
+let editingResultId=null;
+let forcedStopEnd=0;
+let forcedTimerInterval=null;
+
+const DEFAULT_DAILY = [
+  {id:'dt1',text:'بایاس Daily با IDM مشخص شد',cat:'tech',pts:3,critical:true},
+  {id:'dt2',text:'هم‌راستایی H4 تایید شد',cat:'tech',pts:3,critical:false},
+  {id:'dt3',text:'مرزهای آسیا (AH/AL) رسم شد',cat:'tech',pts:3,critical:false},
+  {id:'dt4',text:'تقویم اقتصادی چک شد',cat:'tech',pts:3,critical:false},
+  {id:'dr1',text:'سقف ریسک روزانه (Consistency) تعیین شد',cat:'risk',pts:4,critical:true},
+  {id:'dr2',text:'هیچ معامله باز شبانه/استرس‌زا نیست',cat:'risk',pts:4,critical:false},
+  {id:'dm1',text:'خواب ۸ ساعته کامل',cat:'mental',pts:2,critical:false},
+  {id:'dm2',text:'۵۰۰ml آب + ۱۰ دقیقه مدیتیشن',cat:'mental',pts:2,critical:false},
+  {id:'dm3',text:'صبحانه سالم (بدون قند ساده)',cat:'mental',pts:2,critical:false},
+  {id:'dm4',text:'۲۰ دقیقه اول گوشی چک نشد',cat:'mental',pts:2,critical:false}
+];
+const DEFAULT_PRE = [
+  {id:'pt1',text:'POI معتبر شناسایی شد',cat:'tech',pts:3,critical:true},
+  {id:'pt2',text:'CHoCH تایید شد (حداقل M15)',cat:'tech',pts:3,critical:true},
+  {id:'pt3',text:'FVG بلافاصله بعد از OB دیده شد',cat:'tech',pts:3,critical:false},
+  {id:'pr1',text:'R:R حداقل ۲:۱',cat:'risk',pts:4,critical:true},
+  {id:'pr2',text:'استاپ مکانیکی (۱ پیپ فراتر HTF)',cat:'risk',pts:4,critical:false},
+  {id:'pr3',text:'حجم بر اساس ریسک مجاز محاسبه شد',cat:'risk',pts:4,critical:false},
+  {id:'pr4',text:'ورود دو پله‌ای در نظر گرفته شد',cat:'risk',pts:4,critical:false},
+  {id:'pm1',text:'بدون FOMO یا عجله',cat:'mental',pts:2,critical:true},
+  {id:'pm2',text:'تمرکز کامل؛ حواس‌پرتی نیست',cat:'mental',pts:2,critical:false},
+  {id:'pl1',text:'این ستاپ را قبلاً دیده و مستند کرده‌ام',cat:'learning',pts:3,critical:false},
+  {id:'pl2',text:'اگر ستاپ مشابه قبلاً ضرر داده، می‌دانم این بار چه فرقی دارد',cat:'learning',pts:3,critical:false},
+  {id:'pl3',text:'یادداشت دلیل ورود قبل از کلیک نوشته شد',cat:'learning',pts:3,critical:true}
+];
+
+const DEFAULT_WATCHLIST = ['EURUSD','GBPUSD','USDJPY','XAUUSD','BTCUSD'];
+
+const SETUP_TYPES = ['Judas Swing','Continuation','Sweep نقدینگی داخلی','Sweep نقدینگی خارجی','برگشت از Order Block','پرشدن FVG'];
+const LIQUIDITY_TYPES = ['Asia High/Low Sweep','PDH/PDL Sweep','PWH/PWL Sweep','Equal Highs/Lows','Trendline Liquidity','سقف/کف سشن'];
+const POI_TYPES = ['Order Block','Fair Value Gap','OB + FVG','Breaker Block','Mitigation Block'];
+
+const CORRELATIONS = {
+  'EURUSD':['GBPUSD','CHFUSD'],
+  'GBPUSD':['EURUSD','AUDUSD'],
+  'USDJPY':['USDCAD'],
+  'XAUUSD':['BTCUSD'],
+  'BTCUSD':['ETHUSD','XAUUSD'],
+  'ETHUSD':['BTCUSD']
+};
+
+function localDateStr(d){
+  d = d || new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+// ===== SECURITY: escape user-provided text before inserting into innerHTML =====
+function escapeHTML(str){
+  if(str===null || str===undefined) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+// Trade DNA — auto time-of-day zone (Tehran time boundaries)
+function getTimeOfDayZone(d){
+  d = d || new Date();
+  const h = d.getHours() + d.getMinutes()/60;
+  if(h>=0 && h<6.5) return 'آسیا';
+  if(h>=6.5 && h<8.5) return 'قبل از لندن';
+  if(h>=8.5 && h<12.5) return 'لندن';
+  if(h>=12.5 && h<15.5) return 'قبل از نیویورک';
+  return 'نیویورک';
+}
+
+function loadAll(){
+  try{
+    const t=localStorage.getItem(STORAGE.trades); if(t) trades=JSON.parse(t);
+    const j=localStorage.getItem(STORAGE.journal); if(j) journals=JSON.parse(j);
+    const c=localStorage.getItem(STORAGE.dailyChecks); if(c) dailyChecks=JSON.parse(c);
+    const pc=localStorage.getItem(STORAGE.preChecks); if(pc) preChecks=JSON.parse(pc);
+    const s=localStorage.getItem(STORAGE.scores); if(s) scoresCache=JSON.parse(s);
+    const set=localStorage.getItem(STORAGE.settings); if(set) settings=JSON.parse(set); else initSettings();
+    if(settings.startingBalance===undefined) settings.startingBalance=10000;
+    if(settings.consistencyCapPercent===undefined) settings.consistencyCapPercent=30;
+    if(!settings.watchlist) settings.watchlist=JSON.parse(JSON.stringify(DEFAULT_WATCHLIST));
+    if(!settings.trash) settings.trash=[];
+    const w=localStorage.getItem(STORAGE.weekly); if(w) weeklyReviews=JSON.parse(w);
+  }catch(e){console.error(e); initSettings();}
+}
+function initSettings(){
+  settings = {
+    contract:'من متعهد می‌شوم که اگر ۲ استاپ بخورم، امروز کامپیوتر را خاموش می‌کنم. من فقط ستاپ A+ می‌گیرم و زیر ۲:۱ وارد نمی‌شوم.',
+    contractAccepted:false,
+    dailyItems:JSON.parse(JSON.stringify(DEFAULT_DAILY)),
+    preItems:JSON.parse(JSON.stringify(DEFAULT_PRE)),
+    theme:'dark',
+    startingBalance:10000,
+    consistencyCapPercent:30,
+    watchlist:JSON.parse(JSON.stringify(DEFAULT_WATCHLIST)),
+    trash:[]
+  };
+  saveSettings();
+}
+function saveTrades(){localStorage.setItem(STORAGE.trades,JSON.stringify(trades))}
+function saveJournals(){localStorage.setItem(STORAGE.journal,JSON.stringify(journals))}
+function saveDailyChecks(){localStorage.setItem(STORAGE.dailyChecks,JSON.stringify(dailyChecks))}
+function savePreChecks(){localStorage.setItem(STORAGE.preChecks,JSON.stringify(preChecks))}
+function saveScores(){localStorage.setItem(STORAGE.scores,JSON.stringify(scoresCache))}
+function saveSettings(){localStorage.setItem(STORAGE.settings,JSON.stringify(settings))}
+function saveWeekly(){localStorage.setItem(STORAGE.weekly,JSON.stringify(weeklyReviews))}
+
+// ===== THEME =====
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', settings.theme||'dark');
+  document.getElementById('themeBtn').textContent = (settings.theme==='light') ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  settings.theme = (settings.theme==='light') ? 'dark' : 'light';
+  saveSettings();
+  applyTheme();
+}
+
+// ===== NAVIGATION =====
+const navItems=document.querySelectorAll('.nav-item');
+const pages=document.querySelectorAll('.page');
+navItems.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const page=btn.dataset.page;
+    navItems.forEach(n=>n.classList.remove('active'));
+    btn.classList.add('active');
+    pages.forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+page).classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+    if(page==='dashboard'){ updateDashboard(); renderTodayTrades(); renderJournalHistory(); }
+    if(page==='history') renderHistory();
+    if(page==='performance') drawPerformancePage();
+    if(page==='weekly') initWeeklyPage();
+    if(page==='watchlist') renderWatchlistPage();
+    if(page==='settings') renderSettings();
+  });
+});
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+
+// ===== GUIDE TABS =====
+document.querySelectorAll('.guide-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.guide-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.guide-panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(tab.dataset.gtab).classList.add('active');
+  });
+});
+
+// ===== COLLAPSE =====
+function toggleCollapse(id){
+  const btn=document.getElementById('toggle'+id.charAt(0).toUpperCase()+id.slice(1));
+  const body=document.getElementById('body-'+id);
+  if(btn){btn.classList.toggle('open'); body.classList.toggle('open');}
+}
+
+// ===== TOAST =====
+function toast(msg,type='success'){
+  const c=document.getElementById('toastContainer');
+  const el=document.createElement('div');
+  el.className='toast toast-'+type;
+  el.textContent=msg;
+  c.appendChild(el);
+  setTimeout(()=>el.remove(),3000);
+}
+
+// ===== DYNAMIC CHECKLIST RENDER =====
+function renderDailyChecklist(){
+  const container=document.getElementById('daily-checklist-container');
+  const cats={tech:'📈 تکنیکال',risk:'🛡️ ریسک',mental:'🧠 روحی/جسمی'};
+  const colors={tech:'#39d0d8',risk:'#f0883e',mental:'#a371f7'};
+  const today=localDateStr();
+  const checks=dailyChecks[today]||{};
+  let html='';
+  for(const cat of ['mental','risk','tech']){
+    const items=settings.dailyItems.filter(i=>i.cat===cat);
+    if(!items.length) continue;
+    let checked=0;
+    items.forEach(i=>{if(checks[i.id])checked++});
+    const pct=Math.round((checked/items.length)*100);
+    html+=`<div class="card" style="padding:14px;">
+      <div class="checklist-section">
+        <div class="checklist-header"><h4 style="color:${colors[cat]}">${cats[cat]}</h4><span class="checklist-progress">${checked}/${items.length}</span></div>
+        <div class="checklist-bar"><div class="checklist-bar-fill" style="width:${pct}%;background:${colors[cat]}"></div></div>
+        <ul class="checklist" data-layer="daily" data-cat="${cat}">
+          ${items.map(i=>`<li><input type="checkbox" id="${i.id}" data-key="${i.id}" ${checks[i.id]?'checked':''} onchange="onDailyCheck(this)">
+            <label for="${i.id}">${i.critical?'<span class="critical-star">★</span>':''}${escapeHTML(i.text)}</label>
+            <span class="pts">+${i.pts}</span></li>`).join('')}
+        </ul>
+      </div>
+    </div>`;
+  }
+  container.innerHTML=html;
+}
+
+function renderPreChecklist(){
+  const container=document.getElementById('pre-checklist-container');
+  const cats={tech:'📈 تکنیکال',risk:'🛡️ ریسک',mental:'🧠 روحی/جسمی'};
+  const colors={tech:'#39d0d8',risk:'#f0883e',mental:'#a371f7'};
+  const today=localDateStr();
+  const checks=preChecks[today]||{};
+  let html='';
+  for(const cat of ['mental','risk','tech']){
+    const items=settings.preItems.filter(i=>i.cat===cat);
+    if(!items.length) continue;
+    let checked=0;
+    items.forEach(i=>{if(checks[i.id])checked++});
+    const pct=Math.round((checked/items.length)*100);
+    html+=`<div>
+      <div class="checklist-header"><span style="color:${colors[cat]};font-size:.8rem;font-weight:700;">${cats[cat]}</span><span class="checklist-progress">${checked}/${items.length}</span></div>
+      <div class="checklist-bar" style="margin-bottom:8px;"><div class="checklist-bar-fill" style="width:${pct}%;background:${colors[cat]}"></div></div>
+      <ul class="checklist" data-layer="pre" data-cat="${cat}" style="font-size:.8rem;">
+        ${items.map(i=>`<li><input type="checkbox" id="${i.id}" data-key="${i.id}" ${checks[i.id]?'checked':''} onchange="onPreCheck(this)">
+          <label for="${i.id}">${i.critical?'<span class="critical-star">★</span>':''}${escapeHTML(i.text)}</label>
+          <span class="pts">+${i.pts}</span></li>`).join('')}
+      </ul>
+    </div>`;
+  }
+  container.innerHTML=html;
+  updatePreScoreDisplay();
+}
+
+function onDailyCheck(cb){
+  const today=localDateStr();
+  if(!dailyChecks[today]) dailyChecks[today]={};
+  dailyChecks[today][cb.dataset.key]=cb.checked;
+  saveDailyChecks();
+  updateDashboard();
+}
+
+function onPreCheck(cb){
+  const today=localDateStr();
+  if(!preChecks[today]) preChecks[today]={};
+  preChecks[today][cb.dataset.key]=cb.checked;
+  savePreChecks();
+  updateDashboard();
+  updatePreScoreDisplay();
+}
+
+function updatePreScoreDisplay(){
+  const ps=calcPreTradeScore();
+  const el=document.getElementById('pre-score-display');
+  const bar=document.getElementById('pre-score-bar');
+  if(el) el.textContent = ps.total + '/100';
+  if(bar) bar.style.width = ps.total + '%';
+}
+
+// ===== SCORING =====
+function calcDailyScore(){
+  const today=localDateStr();
+  const checks=dailyChecks[today]||{};
+  const out={tech:0,risk:0,mental:0,learning:0};
+  const cats=['tech','risk','mental','learning'];
+  cats.forEach(cat=>{
+    const items=settings.dailyItems.filter(i=>i.cat===cat);
+    if(!items.length){out[cat]=0;return;}
+    let totalPts=0, earnedPts=0;
+    items.forEach(i=>{
+      totalPts+=i.pts;
+      if(checks[i.id]) earnedPts+=i.pts;
+    });
+    out[cat]=Math.round((earnedPts/totalPts)*100);
+  });
+  const activeCats=cats.filter(c=>settings.dailyItems.some(i=>i.cat===c));
+  out.total=activeCats.length?Math.round(activeCats.reduce((s,c)=>s+out[c],0)/activeCats.length):0;
+  const missedCritical=settings.dailyItems.some(i=>i.critical && !checks[i.id]);
+  out.criticalMissed=missedCritical;
+  return out;
+}
+
+function calcPreTradeScore(){
+  const today=localDateStr();
+  const checks=preChecks[today]||{};
+  const out={tech:0,risk:0,mental:0,learning:0};
+  const cats=['tech','risk','mental','learning'];
+  cats.forEach(cat=>{
+    const items=settings.preItems.filter(i=>i.cat===cat);
+    if(!items.length){out[cat]=0;return;}
+    let checked=0, total=items.length;
+    items.forEach(i=>{if(checks[i.id])checked++});
+    out[cat]=Math.round((checked/total)*100);
+  });
+  const activeCats=cats.filter(c=>settings.preItems.some(i=>i.cat===c));
+  out.total=activeCats.length?Math.round(activeCats.reduce((s,c)=>s+out[c],0)/activeCats.length):0;
+  const missedCritical=settings.preItems.some(i=>i.critical && !checks[i.id]);
+  out.criticalMissed=missedCritical;
+  return out;
+}
+
+function calcCombinedScore(){
+  const ds=calcDailyScore();
+  const ps=calcPreTradeScore();
+  const out={
+    tech: Math.round((ds.tech + ps.tech) / 2),
+    risk: Math.round((ds.risk + ps.risk) / 2),
+    mental: Math.round((ds.mental + ps.mental) / 2),
+    learning: Math.round((ds.learning + ps.learning) / 2),
+    total: Math.round((ds.total + ps.total) / 2),
+    criticalMissed: ds.criticalMissed || ps.criticalMissed
+  };
+  return out;
+}
+
+// Execution Score: retrospective, computed per-trade from Post-Trade Checklist answers.
+// Distinct from Technical (was the analysis correct?) — Execution asks: did you follow the plan mechanically?
+function calcExecutionScore(trade){
+  if(!trade || !trade.postTrade || trade.result==='open') return null;
+  const pt=trade.postTrade;
+  let violations=0;
+  if(pt.q1==='yes') violations++;
+  if(pt.q2==='yes') violations++;
+  if(pt.q3==='yes') violations++;
+  return Math.round(100 - (violations*(100/3)));
+}
+
+function getRiskPercent(combinedTotal, criticalMissed){
+  if(criticalMissed) return 0;
+  if(combinedTotal>=80) return 3;
+  if(combinedTotal>=50) return 1.5;
+  return 0;
+}
+
+function getScoreColor(val){
+  if(val>=80) return '#3fb950';
+  if(val>=50) return '#f0883e';
+  return '#f85149';
+}
+
+// ===== RADAR UPDATE =====
+// ===== LOCKOUT & FORCED STOP =====
+function isLockedOut(){
+  const today=localDateStr();
+  const todayLosses=trades.filter(t=>t.date===today && t.result==='loss').length;
+  return todayLosses>=2;
+}
+function isForcedStop(){
+  return Date.now() < forcedStopEnd;
+}
+function startForcedStop(){
+  forcedStopEnd = Date.now() + 2*60*60*1000; // 2 hours — matches guide's physical-barrier rule (every loss/BE)
+  if(forcedTimerInterval) clearInterval(forcedTimerInterval);
+  forcedTimerInterval = setInterval(()=>{
+    if(!isForcedStop()){
+      clearInterval(forcedTimerInterval);
+      forcedTimerInterval=null;
+      updateDashboard();
+      return;
+    }
+    const left=Math.ceil((forcedStopEnd-Date.now())/1000);
+    const hh=Math.floor(left/3600), mm=Math.floor((left%3600)/60), ss=left%60;
+    const timerEl=document.getElementById('forcedTimer');
+    if(timerEl) timerEl.textContent=`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  }, 1000);
+  updateDashboard();
+}
+
+// ===== CORRELATED RISK =====
+function checkCorrelatedRisk(){
+  const pair=document.getElementById('nt-pair').value.trim().toUpperCase().replace('/','');
+  const box=document.getElementById('correlated-warn');
+  if(!pair || !CORRELATIONS[pair]){ box.innerHTML=''; return; }
+  const today=localDateStr();
+  const openPairs=trades.filter(t=>t.date===today && t.result==='open').map(t=>t.pair.replace('/',''));
+  const correlated=CORRELATIONS[pair].filter(p=>openPairs.includes(p));
+  if(correlated.length){
+    box.innerHTML=`<div class="coach-alert coach-alert-warn" style="margin:0;"><span class="coach-alert-icon">⚠️</span><div class="coach-alert-text"><div class="coach-alert-title">ریسک همبسته</div><div class="coach-alert-body">امروز روی ${correlated.join(' و ')} پوزیشن باز داری. ورود روی ${pair} ریسک تجمعی ایجاد می‌کند.</div></div></div>`;
+  } else { box.innerHTML=''; }
+}
+
+// ===== STREAK TRACKER =====
+// ===== CONTRACT =====
+function showContractIfNeeded(){
+  if(!settings.contractAccepted){
+    const el=document.getElementById('contractModalText');
+    if(el) el.textContent='«'+(settings.contract||'')+'»';
+    document.getElementById('contractModal').classList.add('active');
+  }
+}
+function acceptContract(){
+  if(!document.getElementById('contract-agree').checked){
+    toast('ابتدا تیک پذیرش را بزنید','error'); return;
+  }
+  settings.contractAccepted=true;
+  saveSettings();
+  document.getElementById('contractModal').classList.remove('active');
+  updateDashboard();
+}
+function saveContract(){
+  settings.contract=document.getElementById('contract-input').value.trim();
+  saveSettings();
+  toast('قرارداد ذخیره شد');
+  updateDashboard();
+}
+function saveAccountBalance(){
+  const v=parseFloat(document.getElementById('account-balance-input').value);
+  settings.startingBalance = (!isNaN(v) && v>0) ? v : 10000;
+  saveSettings();
+  toast('✅ موجودی حساب ذخیره شد');
+  drawPerformancePage();
+}
+function saveConsistencyCap(){
+  const v=parseFloat(document.getElementById('consistency-cap-input').value);
+  settings.consistencyCapPercent = (!isNaN(v) && v>0 && v<=100) ? v : 30;
+  saveSettings();
+  toast('✅ سقف Consistency ذخیره شد');
+  renderConsistencyCheck();
+}
+function renderConsistencyCheck(){
+  const box=document.getElementById('consistency-live');
+  if(!box) return;
+  const cap=parseFloat(settings.consistencyCapPercent)||30;
+  const closed=trades.filter(t=>t.result==='win'||t.result==='loss'||t.result==='be');
+  const totalPnl=closed.reduce((s,t)=>s+(parseFloat(t.pnlUsd)||0),0);
+  if(closed.length===0 || totalPnl<=0){
+    box.innerHTML='<p style="color:var(--text-faint);font-size:.8rem;">هنوز سود انباشته‌ای برای محاسبه‌ی این قانون وجود ندارد.</p>';
+    return;
+  }
+  const dayMap={};
+  closed.forEach(t=>{ dayMap[t.date]=(dayMap[t.date]||0)+(parseFloat(t.pnlUsd)||0); });
+  let bestDay=null, bestDayPnl=-Infinity;
+  Object.entries(dayMap).forEach(([d,p])=>{ if(p>bestDayPnl){bestDayPnl=p; bestDay=d;} });
+  const ratio=(bestDayPnl/totalPnl)*100;
+  const violated=ratio>cap;
+  const newTarget=violated ? (bestDayPnl/(cap/100)) : null;
+  box.innerHTML=`<div class="callout ${violated?'callout-sell':'callout-buy'}">
+    <strong class="head">${violated?'⚠️ نقض شده':'✅ رعایت شده'}</strong>
+    <p>بزرگ‌ترین روز: <span class="mono">${bestDay}</span> با ${bestDayPnl>=0?'+$':'$'}${bestDayPnl.toFixed(2)} — معادل <strong>${ratio.toFixed(0)}٪</strong> از کل سود انباشته (سقف شما: ${cap}٪).${violated?` هدف جدید طبق فرمول: <strong>$${newTarget.toFixed(2)}</strong>.`:''}</p>
+  </div>`;
+}
+
+// ===== DASHBOARD =====
+function checkWeeklyMonthlyDrawdown(){
+  const box=document.getElementById('macro-risk-warn');
+  if(!box) return;
+  const bal=parseFloat(settings.startingBalance)||10000;
+  const today=new Date();
+  const weekFrom=new Date(today); weekFrom.setDate(weekFrom.getDate()-6);
+  const monthFrom=new Date(today); monthFrom.setDate(monthFrom.getDate()-29);
+  const weekFromStr=localDateStr(weekFrom), monthFromStr=localDateStr(monthFrom), todayStr=localDateStr(today);
+  const weekPnl=trades.filter(t=>t.date>=weekFromStr&&t.date<=todayStr).reduce((s,t)=>s+(parseFloat(t.pnlUsd)||0),0);
+  const monthPnl=trades.filter(t=>t.date>=monthFromStr&&t.date<=todayStr).reduce((s,t)=>s+(parseFloat(t.pnlUsd)||0),0);
+  if(monthPnl < -bal*0.10){
+    box.innerHTML=`<div class="coach-alert coach-alert-bad"><span class="coach-alert-icon">🚨</span><div class="coach-alert-text"><div class="coach-alert-title">توقف ماهانه فعال است</div><div class="coach-alert-body">ضرر انباشته‌ی ۳۰ روز اخیر از ۱۰٪ سرمایه عبور کرده (${monthPnl.toFixed(2)}$). طبق قانون، معامله متوقف و کل سیستم باید بازبینی شود — نه فقط اجرا.</div></div></div>`;
+  } else if(weekPnl < -bal*0.06){
+    box.innerHTML=`<div class="coach-alert coach-alert-bad"><span class="coach-alert-icon">🚨</span><div class="coach-alert-text"><div class="coach-alert-title">توقف هفتگی فعال است</div><div class="coach-alert-body">ضرر انباشته‌ی ۷ روز اخیر از ۶٪ سرمایه عبور کرده (${weekPnl.toFixed(2)}$). طبق قانون، تا شروع هفته‌ی بعد معامله نکن.</div></div></div>`;
+  } else {
+    box.innerHTML='';
+  }
+}
+function updateDashboard(){
+  renderDailyChecklist();
+  renderPreChecklist();
+  checkWeeklyMonthlyDrawdown();
+  renderConsistencyCheck();
+  const cs=calcCombinedScore();
+  const rp=getRiskPercent(cs.total, cs.criticalMissed);
+
+  const cb=document.getElementById('contractBanner');
+  const ct=document.getElementById('contractText');
+  if(settings.contract && settings.contractAccepted){
+    cb.style.display='block'; ct.textContent=settings.contract;
+  } else { cb.style.display='none'; }
+
+  const btnSave=document.getElementById('btn-save-trade');
+  if(isLockedOut()){
+    if(btnSave){btnSave.disabled=true; btnSave.style.opacity='0.5'; btnSave.textContent='🔒 قفل شده (۲ ضرر امروز)';}
+  } else {
+    if(btnSave && !isForcedStop()){btnSave.disabled=false; btnSave.style.opacity='1'; btnSave.textContent='💾 ثبت معامله';}
+  }
+
+  const fsb=document.getElementById('forcedStopBanner');
+  if(isForcedStop()){
+    if(fsb) fsb.style.display='block';
+    const left=Math.ceil((forcedStopEnd-Date.now())/1000);
+    const hh=Math.floor(left/3600), mm=Math.floor((left%3600)/60), ss=left%60;
+    const ft=document.getElementById('forcedTimer');
+    if(ft) ft.textContent=`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    if(btnSave){btnSave.disabled=true; btnSave.style.opacity='0.5';}
+  } else {
+    if(fsb) fsb.style.display='none';
+    if(!isLockedOut() && btnSave){btnSave.disabled=false; btnSave.style.opacity='1';}
+  }
+
+  const navScore=document.getElementById('nav-score');
+  if(navScore){
+    navScore.textContent=cs.total;
+    navScore.style.background=getScoreColor(cs.total);
+    navScore.style.color=cs.total>=50?'#000':'#fff';
+  }
+  const navTrades=document.getElementById('nav-trades');
+  if(navTrades) navTrades.textContent=trades.filter(t=>t.date===localDateStr()).length;
+
+  const arField=document.getElementById('nt-allowed-risk');
+  if(arField){
+    if(rp===0) arField.value='ورود ممنوع';
+    else arField.value = `${rp}٪ ریسک مجاز (Probe ${(rp/3).toFixed(1)}٪ + Confirmation ${(rp*2/3).toFixed(1)}٪)`;
+  }
+
+  updateAutoJournalScore();
+}
+
+// ===== Auto-computed end-of-day journal score =====
+function updateAutoJournalScore(){
+  const techEl=document.getElementById('j-auto-tech');
+  if(!techEl) return; // journal section not in DOM (shouldn't happen, but safe)
+
+  const cs=calcCombinedScore();
+  let tech=cs.tech!==undefined?cs.tech:cs.total;
+  let risk=cs.risk!==undefined?cs.risk:cs.total;
+  let mental=cs.mental!==undefined?cs.mental:cs.total;
+  let learning=cs.learning!==undefined?cs.learning:cs.total;
+
+  const today=localDateStr();
+  const todayTrades=trades.filter(t=>t.date===today);
+
+  if(todayTrades.length>0){
+    const avg=(key)=>todayTrades.reduce((s,t)=>s+(parseFloat(t[key])||0),0)/todayTrades.length;
+    tech = tech*0.4 + avg('scoreTech')*0.6;
+    risk = risk*0.4 + avg('scoreRisk')*0.6;
+    mental = mental*0.4 + avg('scoreMental')*0.6;
+    learning = learning*0.4 + avg('scoreLearning')*0.6;
+  }
+
+  const revengeSel=document.getElementById('j-revenge');
+  const deviateSel=document.getElementById('j-deviate');
+  if(revengeSel && revengeSel.value==='yes') risk-=30;
+  if(deviateSel && deviateSel.value==='yes') risk-=20;
+
+  const fomoCount=todayTrades.filter(t=>t.emotion==='fomo'||t.emotion==='rushed').length;
+  if(fomoCount>0) mental-=Math.min(30, fomoCount*15);
+
+  const violationCount=todayTrades.filter(t=>t.postTrade && (t.postTrade.q1==='yes'||t.postTrade.q2==='yes'||t.postTrade.q3==='yes'));
+  if(violationCount.length>0) risk-=Math.min(30, violationCount.length*15);
+
+  tech=Math.max(0,Math.min(100,Math.round(tech)));
+  risk=Math.max(0,Math.min(100,Math.round(risk)));
+  mental=Math.max(0,Math.min(100,Math.round(mental)));
+  learning=Math.max(0,Math.min(100,Math.round(learning)));
+
+  const closedToday=todayTrades.filter(t=>t.scoreExecution!==undefined && t.scoreExecution!==null);
+  const avgExecution = closedToday.length ? Math.round(closedToday.reduce((s,t)=>s+parseFloat(t.scoreExecution),0)/closedToday.length) : null;
+
+  techEl.textContent=tech;
+  techEl.style.color=getScoreColor(tech);
+  const riskEl=document.getElementById('j-auto-risk');
+  const mentalEl=document.getElementById('j-auto-mental');
+  const learningEl=document.getElementById('j-auto-learning');
+  const execEl=document.getElementById('j-auto-execution');
+  if(riskEl){riskEl.textContent=risk; riskEl.style.color=getScoreColor(risk);}
+  if(mentalEl){mentalEl.textContent=mental; mentalEl.style.color=getScoreColor(mental);}
+  if(learningEl){learningEl.textContent=learning; learningEl.style.color=getScoreColor(learning);}
+  if(execEl){execEl.textContent=avgExecution!==null?avgExecution:'—'; if(avgExecution!==null) execEl.style.color=getScoreColor(avgExecution);}
+
+  window._autoJournalScore={tech,risk,mental,learning,execution:avgExecution};
+}
+
+// ===== TRADE FORM =====
+function updateLiveRR(){
+  const entry=parseFloat(document.getElementById('nt-entry').value);
+  const sl=parseFloat(document.getElementById('nt-sl').value);
+  const tp=parseFloat(document.getElementById('nt-tp').value);
+  const rrField=document.getElementById('nt-rr');
+  if(!isNaN(entry)&&!isNaN(sl)&&!isNaN(tp)&&sl!==entry){
+    const risk=Math.abs(entry-sl), reward=Math.abs(tp-entry);
+    rrField.value = risk>0 ? (reward/risk).toFixed(2)+':1' : '';
+    rrField.style.color = (risk>0 && reward/risk<2) ? '#f85149' : '#3fb950';
+  } else { rrField.value=''; }
+}
+
+function updateTradePyramidWarn(){
+  const pair=document.getElementById('nt-pair').value.trim().toUpperCase();
+  const box=document.getElementById('nt-pyramid-warn');
+  if(!pair){ box.innerHTML=''; return; }
+  const today=localDateStr();
+  const sameToday=trades.filter(t=>t.date===today && t.pair===pair);
+  const step=sameToday.length+1;
+  if(step>=3){
+    box.innerHTML=`<div class="coach-alert coach-alert-bad" style="margin:0;"><span class="coach-alert-icon">🛑</span><div class="coach-alert-text"><div class="coach-alert-title">پله ${step}ام روی ${pair}</div><div class="coach-alert-body">فقط با توجیه روشن و نه به خاطر ضرر/FOMO.</div></div></div>
+      <label style="cursor:pointer;display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--panel-2);border-radius:var(--radius-sm);border:1px solid var(--red);margin-top:6px;">
+        <input type="checkbox" id="nt-pyramid-confirm" style="margin-top:2px;">
+        <span style="font-size:.82rem;">تایید می‌کنم این پله ${step}ام یک تصمیم تازه و توجیه‌شده است</span>
+      </label>`;
+  } else if(step===2){
+    box.innerHTML=`<div class="coach-alert coach-alert-warn" style="margin:0;"><span class="coach-alert-icon">⚠️</span><div class="coach-alert-text"><div class="coach-alert-title">پله دوم روی ${pair}</div><div class="coach-alert-body">ریسک تجمعی را چک کن — سقف ۳٪.</div></div></div>`;
+  } else { box.innerHTML=''; }
+}
+
+function saveNewTrade(){
+  if(isLockedOut()){ toast('🔴 Lockout فعال است — امروز ۲ ضرر خورده‌ای، تا فردا صبر کن','error'); return; }
+  if(isForcedStop()){ toast('⏳ قفل ۲ ساعته فعال است — صبر کن','error'); return; }
+
+  const cs=calcCombinedScore();
+  const rp=getRiskPercent(cs.total, cs.criticalMissed);
+  if(rp===0){ toast('🔴 ورود ممنوع — ابتدا هر دو چک‌لیست را تکمیل کن.','error'); return; }
+
+  const pair=document.getElementById('nt-pair').value.trim().toUpperCase();
+  if(!pair){toast('جفت‌ارز را وارد کنید','error');return}
+
+  const todayForPyramid=localDateStr();
+  const sameTodayCount=trades.filter(t=>t.date===todayForPyramid && t.pair===pair).length;
+  if(sameTodayCount>=2){
+    const confirmBox=document.getElementById('nt-pyramid-confirm');
+    if(!confirmBox || !confirmBox.checked){
+      toast('🛑 تیک تاییدیه پله سوم را بزن یا این معامله را نگیر','error');
+      return;
+    }
+  }
+
+  const preScore=calcPreTradeScore();
+  const now=new Date();
+
+  const data={
+    id:Date.now().toString(),
+    date:localDateStr(),
+    time:now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0'),
+    pair:pair,
+    dir:document.getElementById('nt-dir').value,
+    entry:document.getElementById('nt-entry').value,
+    sl:document.getElementById('nt-sl').value,
+    tp:document.getElementById('nt-tp').value,
+    rr:document.getElementById('nt-rr').value,
+    emotion:document.getElementById('nt-emotion').value,
+    note:document.getElementById('nt-note').value.trim(),
+    setup:document.getElementById('nt-setup').value,
+    liquidity:document.getElementById('nt-liquidity').value,
+    poi:document.getElementById('nt-poi').value,
+    timeZone:getTimeOfDayZone(now),
+    scoreTech:preScore.tech,
+    scoreRisk:preScore.risk,
+    scoreMental:preScore.mental,
+    scoreLearning:preScore.learning,
+    result:'open',
+    pnlUsd:'',
+    resNote:'',
+    tags:'',
+    postTrade:{q1:'no',q2:'no',q3:'no'},
+    createdAt:Date.now()
+  };
+  trades.unshift(data);
+  saveTrades();
+
+  ['nt-pair','nt-entry','nt-sl','nt-tp','nt-rr','nt-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nt-dir').value='BUY';
+  document.getElementById('nt-emotion').value='calm';
+
+  // reset pre-trade checklist so the NEXT trade requires a fresh check
+  preChecks[localDateStr()]={};
+  savePreChecks();
+  renderPreChecklist();
+
+  toast('✅ معامله ثبت شد');
+  renderTodayTrades();
+  updateDashboard();
+  updateTradePyramidWarn();
+}
+
+function renderTodayTrades(){
+  const today=localDateStr();
+  const list=trades.filter(t=>t.date===today);
+  const container=document.getElementById('today-trades-list');
+  if(list.length===0){
+    container.innerHTML=`<div class="empty-state"><div class="icon">💼</div><h3>هنوز معامله‌ای ثبت نشده</h3><p>معامله اول را از بخش بالا ثبت کنید</p></div>`;
+    return;
+  }
+  container.innerHTML=list.map(t=>{
+    const badge=t.dir==='BUY'?'badge-buy':'badge-sell';
+    const resBadge=t.result==='win'?'badge-win':t.result==='loss'?'badge-loss':t.result==='be'?'badge-wait':'badge-open';
+    const resText=t.result==='win'?'سود':t.result==='loss'?'ضرر':t.result==='be'?'سر به سر':'باز';
+    const pnlNum=parseFloat(t.pnlUsd);
+    const pnlColor=!isNaN(pnlNum) && pnlNum>0?'#3fb950':!isNaN(pnlNum) && pnlNum<0?'#f85149':'#8b949e';
+    const emo=t.emotion==='fomo'?'😵 FOMO':t.emotion==='rushed'?'⏱️ عجول':'😌 آرام';
+    const tags=t.tags? t.tags.split(',').map(x=>`<span class="tag-pill">${escapeHTML(x.trim())}</span>`).join(''):'';
+    return `<div class="trade-card">
+      <div class="trade-card-header">
+        <div class="trade-card-title"><span class="badge ${badge}">${t.dir}</span><span class="mono">${t.pair}</span></div>
+        <span class="badge ${resBadge}">${resText}</span>
+      </div>
+      <div class="trade-card-meta">
+        <span>ورود: <span class="mono">${t.entry||'-'}</span></span>
+        <span>استاپ: <span class="mono">${t.sl||'-'}</span></span>
+        <span>تارگت: <span class="mono">${t.tp||'-'}</span></span>
+        <span>R:R: <span class="mono">${t.rr||'-'}</span></span>
+        <span style="color:${pnlColor};font-weight:700;">P&L: <span class="mono">${t.pnlUsd?((!isNaN(pnlNum) && pnlNum>0?'+$':'$')+t.pnlUsd):'-'}</span></span>
+        <span>${emo}</span>
+      </div>
+      ${(t.setup||t.liquidity||t.poi)?`<div style="display:flex;gap:6px;flex-wrap:wrap;font-size:.7rem;">
+        ${t.setup?`<span class="tag-pill">🧬 ${t.setup}</span>`:''}
+        ${t.liquidity?`<span class="tag-pill">💧 ${t.liquidity}</span>`:''}
+        ${t.poi?`<span class="tag-pill">📍 ${t.poi}</span>`:''}
+        ${t.timeZone?`<span class="tag-pill">🕐 ${t.timeZone}</span>`:''}
+      </div>`:''}
+      <div style="display:flex;gap:10px;font-size:.74rem;color:var(--text-dim);flex-wrap:wrap;">
+        <span style="color:var(--cyan)">تکنیکال: ${t.scoreTech}/100</span>
+        <span style="color:var(--amber)">ریسک: ${t.scoreRisk}/100</span>
+        <span style="color:var(--purple)">روحی/جسمی: ${t.scoreMental}/100</span>
+        <span style="color:var(--green)">یادگیری: ${t.scoreLearning!==undefined?t.scoreLearning:'-'}/100</span>
+        ${t.scoreExecution!==null&&t.scoreExecution!==undefined?`<span style="color:#ff2d78">اجرا: ${t.scoreExecution}/100</span>`:''}
+        ${tags}
+      </div>
+      <div class="trade-mini-bar">
+        <div class="trade-mini-seg ${t.scoreTech>=60?'on-tech':''}"></div>
+        <div class="trade-mini-seg ${t.scoreRisk>=60?'on-risk':''}"></div>
+        <div class="trade-mini-seg ${t.scoreMental>=60?'on-mental':''}"></div>
+        <div class="trade-mini-seg ${t.scoreLearning>=60?'on-learning':''}"></div>
+      </div>
+      ${t.note?`<div style="font-size:.8rem;color:var(--text-dim);background:var(--panel-2);padding:8px 10px;border-radius:6px;">${escapeHTML(t.note)}</div>`:''}
+      <div style="display:flex;gap:6px;margin-top:4px;">
+        <button class="btn btn-sm ${t.result==='open'?'btn-primary':'btn-ghost'}" onclick="openResultModal('${t.id}')">${t.result==='open'?'✅ ثبت نتیجه':'✏️ ویرایش نتیجه'}</button>
+        <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteTrade('${t.id}')">🗑️ حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteTrade(id){if(!confirm('آیا مطمئنید؟'))return;trades=trades.filter(t=>t.id!==id);saveTrades();renderTodayTrades();updateDashboard();renderHistory();}
+
+// ===== RESULT MODAL =====
+function openResultModal(id){
+  editingResultId=id;
+  const t=trades.find(x=>x.id===id);
+  if(!t)return;
+  document.getElementById('res-id').value=id;
+  document.getElementById('res-result').value=t.result||'open';
+  document.getElementById('res-pnl').value=t.pnlUsd||'';
+  document.getElementById('res-note').value=t.resNote||'';
+  document.getElementById('res-tags').value=t.tags||'';
+  const pt=t.postTrade||{};
+  document.getElementById('pt-q1').value=pt.q1||'no';
+  document.getElementById('pt-q2').value=pt.q2||'no';
+  document.getElementById('pt-q3').value=pt.q3||'no';
+  toggleResFields();
+  document.getElementById('resultModal').classList.add('active');
+}
+function closeResultModal(){document.getElementById('resultModal').classList.remove('active');editingResultId=null;}
+function toggleResFields(){
+  const result=document.getElementById('res-result').value;
+  const pnlGroup=document.getElementById('res-pnl').closest('.form-group');
+  if(pnlGroup) pnlGroup.style.display = (result==='open') ? 'none' : 'block';
+}
+function saveResult(){
+  const id=document.getElementById('res-id').value;
+  const idx=trades.findIndex(t=>t.id===id);
+  if(idx===-1)return;
+  const result=document.getElementById('res-result').value;
+  trades[idx].result=result;
+  trades[idx].pnlUsd=document.getElementById('res-pnl').value;
+  const resNoteVal=document.getElementById('res-note').value.trim();
+  trades[idx].resNote=resNoteVal;
+  trades[idx].tags=document.getElementById('res-tags').value.trim();
+  trades[idx].postTrade={
+    q1:document.getElementById('pt-q1').value,
+    q2:document.getElementById('pt-q2').value,
+    q3:document.getElementById('pt-q3').value
+  };
+
+  // Execution Score: retrospective — did you follow the plan mechanically?
+  trades[idx].scoreExecution=calcExecutionScore(trades[idx]);
+
+  // Learning Score: blend pre-trade learning checklist with post-trade lesson quality
+  const lessonWritten = resNoteVal.length>=15;
+  const preLearning = parseFloat(trades[idx].scoreLearning)||0;
+  trades[idx].scoreLearning = Math.round(preLearning*0.5 + (lessonWritten?100:0)*0.5);
+
+  saveTrades();
+  closeResultModal();
+
+  if(result==='loss' || result==='be'){
+    startForcedStop();
+  }
+  if(result==='loss'){
+    const today=localDateStr();
+    const todayLosses=trades.filter(t=>t.date===today && t.result==='loss').length;
+    if(todayLosses>=2){
+      toast('🚫 دومین ضرر امروز — علاوه بر قفل ۲ ساعته، تا پایان امروز قفل کامل فعال شد','error');
+    } else {
+      toast('⏳ قفل ۲ ساعته فعال شد (طبق قانون: بعد از هر ضرر یا BE)','error');
+    }
+    const lossAmt=Math.abs(parseFloat(trades[idx].pnlUsd)||0);
+    const bal=parseFloat(settings.startingBalance)||10000;
+    if(lossAmt > bal*0.03){
+      toast('🚨 این ضرر از سقف مطلق ۳٪ سرمایه عبور کرده — طبق موانع فیزیکی #۵، سیستم را کامل بازبینی کن','error');
+    }
+  } else if(result==='be'){
+    toast('⏳ قفل ۲ ساعته فعال شد (طبق قانون: بعد از هر ضرر یا BE)','error');
+  }
+
+  renderTodayTrades();
+  updateDashboard();
+}
+
+// ===== JOURNAL (Structured) =====
+function saveJournal(){
+  const today=localDateStr();
+  const text=document.getElementById('j-text').value.trim();
+  if(!text){toast('متن یادداشت را وارد کنید','error');return}
+  updateAutoJournalScore();
+  const auto=window._autoJournalScore||{tech:0,risk:0,mental:0,learning:0};
+  journals.unshift({
+    id:Date.now().toString(),date:today,text,
+    tech:auto.tech,
+    risk:auto.risk,
+    mental:auto.mental,
+    learning:auto.learning,
+    revenge:document.getElementById('j-revenge').value,
+    deviate:document.getElementById('j-deviate').value,
+    tomorrow:document.getElementById('j-tomorrow').value,
+    tags:document.getElementById('j-tags').value,
+    createdAt:Date.now()
+  });
+  saveJournals();
+  document.getElementById('j-text').value='';
+  document.getElementById('j-revenge').value='no';
+  document.getElementById('j-deviate').value='no';
+  document.getElementById('j-tomorrow').value='';
+  document.getElementById('j-tags').value='';
+  updateAutoJournalScore();
+  renderJournalHistory();
+  toast('✅ ژورنال ذخیره شد');
+}
+function renderJournalHistory(){
+  const today=localDateStr();
+  const items=journals.filter(j=>j.date===today);
+  const container=document.getElementById('journal-history-today');
+  if(items.length===0){container.innerHTML='';return;}
+  container.innerHTML=items.map(j=>{
+    const tags=j.tags? j.tags.split(',').map(x=>`<span class="tag-pill">${escapeHTML(x.trim())}</span>`).join(''):'';
+    return `<div style="background:var(--panel-2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;border-right:3px solid var(--amber);">
+      <div style="font-size:.78rem;color:var(--text-dim);white-space:pre-wrap;margin-bottom:6px;">${escapeHTML(j.text)}</div>
+      <div style="display:flex;gap:10px;font-size:.72rem;flex-wrap:wrap;margin-bottom:6px;">
+        ${j.tech?`<span style="color:var(--cyan)">تکنیکال: ${j.tech}</span>`:''}
+        ${j.risk?`<span style="color:var(--amber)">ریسک: ${j.risk}</span>`:''}
+        ${j.mental?`<span style="color:var(--purple)">روحی/جسمی: ${j.mental}</span>`:''}
+        ${j.learning?`<span style="color:var(--green)">یادگیری: ${j.learning}</span>`:''}
+        ${j.revenge==='yes'?'<span style="color:var(--red)">⚠️ Revenge Trading</span>':''}
+        ${j.deviate==='yes'?'<span style="color:var(--red)">⚠️ خروج از پلن</span>':''}
+      </div>
+      ${j.tomorrow?`<div style="font-size:.75rem;color:var(--text-faint);margin-bottom:4px;">فردا: ${j.tomorrow}</div>`:''}
+      <div>${tags}</div>
+      <button class="btn btn-sm btn-ghost" style="color:var(--red);margin-top:6px;" onclick="deleteJournal('${j.id}')">حذف</button>
+    </div>`;
+  }).join('');
+}
+function deleteJournal(id){if(!confirm('آیا مطمئنید؟'))return;journals=journals.filter(j=>j.id!==id);saveJournals();renderJournalHistory();}
+
+// ===== PERFORMANCE: shared time-range + stats engine =====
+function getPerfRange(){
+  const sel=document.getElementById('perf-range');
+  const key = sel ? sel.value : 'week';
+  const today=new Date();
+  const todayStr=localDateStr(today);
+  let fromStr=null, toStr=todayStr;
+  if(key==='week'){ const f=new Date(today); f.setDate(f.getDate()-6); fromStr=localDateStr(f); }
+  else if(key==='month'){ const f=new Date(today); f.setDate(f.getDate()-29); fromStr=localDateStr(f); }
+  else if(key==='d90'){ const f=new Date(today); f.setDate(f.getDate()-89); fromStr=localDateStr(f); }
+  else if(key==='all'){ fromStr=null; toStr=null; }
+  else if(key==='custom'){
+    const f=document.getElementById('perf-from').value;
+    const t=document.getElementById('perf-to').value;
+    fromStr=f||null; toStr=t||null;
+  }
+  return {key, from:fromStr, to:toStr};
+}
+function getFilteredTrades(){
+  const r=getPerfRange();
+  return trades.filter(t=>{
+    if(r.from && t.date<r.from) return false;
+    if(r.to && t.date>r.to) return false;
+    return true;
+  });
+}
+// day-by-day charts need concrete from/to strings, capped to last 365 days for performance
+function getEffectiveRangeDates(){
+  const r=getPerfRange();
+  let from=r.from, to=r.to;
+  if(!to) to=localDateStr();
+  if(!from){
+    if(trades.length){ from=trades.map(t=>t.date).sort()[0]; }
+    else { from=to; }
+  }
+  const cap=new Date(); cap.setDate(cap.getDate()-365);
+  const capStr=localDateStr(cap);
+  if(from<capStr) from=capStr;
+  return {from,to};
+}
+function enumerateDays(fromStr,toStr){
+  const out=[];
+  let d=new Date(fromStr); const end=new Date(toStr);
+  if(isNaN(d)||isNaN(end)||d>end) return [toStr];
+  while(d<=end){ out.push(localDateStr(d)); d.setDate(d.getDate()+1); }
+  return out;
+}
+function calcPerfStats(list){
+  const closed=list.filter(t=>t.result==='win'||t.result==='loss'||t.result==='be');
+  const wins=closed.filter(t=>t.result==='win');
+  const losses=closed.filter(t=>t.result==='loss');
+  const bes=closed.filter(t=>t.result==='be');
+  const grossWin=wins.reduce((s,t)=>s+(parseFloat(t.pnlUsd)||0),0);
+  const grossLoss=losses.reduce((s,t)=>s+(parseFloat(t.pnlUsd)||0),0); // <=0
+  const totalPnl=grossWin+grossLoss+bes.reduce((s,t)=>s+(parseFloat(t.pnlUsd)||0),0);
+  const wr=(wins.length+losses.length)>0?Math.round((wins.length/(wins.length+losses.length))*100):0;
+  const avgWin=wins.length?grossWin/wins.length:0;
+  const avgLoss=losses.length?grossLoss/losses.length:0; // negative
+  const expectancy=(wr/100)*avgWin+(1-wr/100)*avgLoss;
+  let profitFactor;
+  if(losses.length===0){ profitFactor = wins.length>0 ? Infinity : null; }
+  else { profitFactor = grossWin/Math.abs(grossLoss); }
+  const payoff = (avgLoss!==0) ? (avgWin/Math.abs(avgLoss)) : null;
+
+  const rList=list.map(t=>{
+    const entry=parseFloat(t.entry), sl=parseFloat(t.sl), pnl=parseFloat(t.pnlUsd)||0;
+    if(!entry||!sl||entry===sl) return null;
+    const r=pnl/Math.abs(entry-sl);
+    return isFinite(r)?r:null;
+  }).filter(x=>x!==null);
+  const avgR = rList.length ? (rList.reduce((s,v)=>s+v,0)/rList.length) : null;
+
+  const chron=[...closed].sort((a,b)=>a.date.localeCompare(b.date)||((a.createdAt||0)-(b.createdAt||0)));
+  let curStreak=0, maxStreak=0;
+  chron.forEach(t=>{ if(t.result==='loss'){curStreak++; maxStreak=Math.max(maxStreak,curStreak);} else {curStreak=0;} });
+
+  const scored=list.filter(t=>t.scoreTech!==undefined && t.scoreTech!==null);
+  const adherence = scored.length ? Math.round(scored.reduce((s,t)=>s+((parseFloat(t.scoreTech)+parseFloat(t.scoreRisk)+parseFloat(t.scoreMental)+(parseFloat(t.scoreLearning)||0))/4),0)/scored.length) : null;
+
+  const execScored=closed.filter(t=>t.scoreExecution!==undefined && t.scoreExecution!==null);
+  const avgExecution = execScored.length ? Math.round(execScored.reduce((s,t)=>s+parseFloat(t.scoreExecution),0)/execScored.length) : null;
+
+  const pickExtreme=(arr,wantMax)=>{
+    if(!arr.length) return null;
+    return arr.reduce((m,t)=>{
+      const tv=parseFloat(t.pnlUsd), mv=parseFloat(m.pnlUsd);
+      const tvv=isNaN(tv)?(wantMax?-Infinity:Infinity):tv;
+      const mvv=isNaN(mv)?(wantMax?-Infinity:Infinity):mv;
+      return (wantMax? tvv>mvv : tvv<mvv) ? t : m;
+    }, arr[0]);
+  };
+
+  return {
+    count:list.length, closedCount:closed.length, wins:wins.length, losses:losses.length, bes:bes.length,
+    totalPnl, wr, avgWin, avgLoss, expectancy, profitFactor, payoff, avgR, maxLossStreak:maxStreak, adherence, avgExecution,
+    bestTrade:pickExtreme(closed,true), worstTrade:pickExtreme(closed,false)
+  };
+}
+function renderPerfStatCards(stats){
+  const wrEl=document.getElementById('perf-wr'); if(wrEl) wrEl.textContent=stats.wr+'%';
+  const pfEl=document.getElementById('perf-pf');
+  if(pfEl){ pfEl.textContent = stats.profitFactor===null?'-':(stats.profitFactor===Infinity?'∞':stats.profitFactor.toFixed(2)); }
+  const expEl=document.getElementById('perf-exp');
+  if(expEl){ expEl.textContent=(stats.expectancy>=0?'+$':'$')+stats.expectancy.toFixed(2); expEl.style.color=stats.expectancy>=0?'#3fb950':'#f85149'; }
+  const avgREl=document.getElementById('perf-avgr'); if(avgREl) avgREl.textContent = stats.avgR!==null ? stats.avgR.toFixed(2)+'R' : '-';
+  const payoffEl=document.getElementById('perf-payoff'); if(payoffEl) payoffEl.textContent = stats.payoff!==null ? stats.payoff.toFixed(2) : '-';
+  const streakEl=document.getElementById('perf-streak'); if(streakEl) streakEl.textContent = stats.maxLossStreak;
+  const countEl=document.getElementById('perf-count'); if(countEl) countEl.textContent = stats.count;
+  const execEl=document.getElementById('perf-exec'); if(execEl) execEl.textContent = stats.avgExecution!==null ? stats.avgExecution : '-';
+}
+function renderScoreCorrelation(list){
+  const container=document.getElementById('score-correlation');
+  if(!container) return;
+  const closed=list.filter(t=>t.result==='win'||t.result==='loss');
+  if(!closed.length){ container.innerHTML='<p style="color:var(--text-faint);font-size:.85rem;">داده کافی نیست.</p>'; return; }
+  const bands=[
+    {label:'زیر ۶۰',min:0,max:59,color:'var(--red)'},
+    {label:'۶۰ تا ۷۹',min:60,max:79,color:'var(--amber)'},
+    {label:'۸۰ به بالا',min:80,max:100,color:'var(--green)'}
+  ];
+  let html='<div class="grid-3">';
+  bands.forEach(b=>{
+    const inBand=closed.filter(t=>{
+      const sc=(parseFloat(t.scoreTech)+parseFloat(t.scoreRisk)+parseFloat(t.scoreMental)+(parseFloat(t.scoreLearning)||0))/4;
+      return sc>=b.min && sc<=b.max;
+    });
+    const w=inBand.filter(t=>t.result==='win').length;
+    const wr = inBand.length? Math.round((w/inBand.length)*100) : null;
+    const pnl = inBand.reduce((s,t)=>s+(parseFloat(t.pnlUsd)||0),0);
+    html+=`<div class="card" style="padding:14px;border-color:${b.color};">
+      <div style="font-size:.7rem;color:var(--text-faint);">امتیاز آمادگی پیش‌ورود ${b.label}</div>
+      <div style="font-size:1.05rem;font-weight:700;color:${b.color};margin-top:4px;">${inBand.length} معامله${wr!==null?' · '+wr+'٪ وین‌ریت':''}</div>
+      <div style="font-size:.76rem;color:var(--text-dim);margin-top:2px;">PnL: ${pnl>=0?'+$':'$'}${pnl.toFixed(2)}</div>
+    </div>`;
+  });
+  html+='</div>';
+  container.innerHTML=html;
+}
+function onPerfRangeChange(){
+  const key=document.getElementById('perf-range').value;
+  const showCustom = key==='custom';
+  document.getElementById('perf-from').style.display = showCustom?'inline-block':'none';
+  document.getElementById('perf-to').style.display = showCustom?'inline-block':'none';
+  drawPerformancePage();
+}
+function drawPerformancePage(){
+  const list=getFilteredTrades();
+  renderPerfStatCards(calcPerfStats(list));
+  drawRadar();
+  drawPnL();
+  drawWinLoss();
+  renderScoreCorrelation(list);
+  drawRMultiple();
+  drawDayOfWeek();
+  drawPairPerf();
+  drawSessionPerf();
+  drawSetupPerf();
+  renderBehavioralAnalysis(list);
+  drawDrawdown();
+  drawPie();
+}
+
+function drawRadar(){
+  const cvs=document.getElementById('chartRadar');
+  if(!cvs) return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height;
+  ctx.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2+10, r=Math.min(w,h)*0.35;
+  const labels=['تکنیکال','ریسک','روحی/جسمی','یادگیری'];
+  const angles=[-Math.PI/2, 0, Math.PI/2, Math.PI];
+
+  ctx.strokeStyle='#1e2630'; ctx.lineWidth=1;
+  for(let i=1;i<=4;i++){
+    ctx.beginPath();
+    angles.forEach((a,idx)=>{
+      const x=cx+Math.cos(a)*(r*i/4), y=cy+Math.sin(a)*(r*i/4);
+      idx===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.closePath(); ctx.stroke();
+  }
+  angles.forEach(a=>{ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.stroke();});
+  ctx.fillStyle='#8b949e'; ctx.font='12px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  angles.forEach((a,i)=>{
+    const x=cx+Math.cos(a)*(r+22), y=cy+Math.sin(a)*(r+22);
+    ctx.fillText(labels[i],x,y);
+  });
+
+  const cs=calcCombinedScore();
+  const todayData=[cs.tech,cs.risk,cs.mental,cs.learning];
+  ctx.beginPath();
+  todayData.forEach((v,i)=>{
+    const a=angles[i], d=(v/100)*r, x=cx+Math.cos(a)*d, y=cy+Math.sin(a)*d;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle='rgba(57,208,216,0.25)'; ctx.fill();
+  ctx.strokeStyle='#39d0d8'; ctx.lineWidth=2; ctx.stroke();
+
+  let avgTech=0,avgRisk=0,avgMental=0,avgLearning=0,cnt=0;
+  const days=[]; for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(localDateStr(d));}
+  days.forEach(date=>{
+    const dc=dailyChecks[date]||{};
+    const pc=preChecks[date]||{};
+    const items=settings.dailyItems;
+    const preItemsList=settings.preItems;
+    const catItems=(cat)=>items.filter(i=>i.cat===cat);
+    const preCatItems=(cat)=>preItemsList.filter(i=>i.cat===cat);
+    const scoreCat=(cat)=>{
+      const its=catItems(cat); if(!its.length)return 0;
+      let e=0,t=0; its.forEach(i=>{t+=i.pts; if(dc[i.id])e+=i.pts;});
+      return Math.round((e/t)*100);
+    };
+    const scorePreCat=(cat)=>{
+      const its=preCatItems(cat); if(!its.length)return 0;
+      let e=0,t=0; its.forEach(i=>{t+=i.pts; if(pc[i.id])e+=i.pts;});
+      return Math.round((e/t)*100);
+    };
+    const t=Math.round((scoreCat('tech')+scorePreCat('tech'))/2);
+    const r=Math.round((scoreCat('risk')+scorePreCat('risk'))/2);
+    const m=Math.round((scoreCat('mental')+scorePreCat('mental'))/2);
+    const l=Math.round((scoreCat('learning')+scorePreCat('learning'))/2);
+    if(t+r+m+l>0){avgTech+=t;avgRisk+=r;avgMental+=m;avgLearning+=l;cnt++;}
+  });
+  if(cnt>0){
+    avgTech=Math.round(avgTech/cnt); avgRisk=Math.round(avgRisk/cnt); avgMental=Math.round(avgMental/cnt); avgLearning=Math.round(avgLearning/cnt);
+    const avgData=[avgTech,avgRisk,avgMental,avgLearning];
+    ctx.beginPath();
+    avgData.forEach((v,i)=>{
+      const a=angles[i], d=(v/100)*r, x=cx+Math.cos(a)*d, y=cy+Math.sin(a)*d;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.closePath();
+    ctx.fillStyle='rgba(240,136,62,0.15)'; ctx.fill();
+    ctx.strokeStyle='#f0883e'; ctx.lineWidth=2; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  ctx.fillStyle='#39d0d8'; ctx.fillRect(20,16,10,10); ctx.fillStyle='#e8eaec'; ctx.font='11px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('امروز',34,25);
+  ctx.fillStyle='#f0883e'; ctx.fillRect(90,16,10,10); ctx.fillStyle='#e8eaec';
+  ctx.fillText('میانگین ۷ روز',104,25);
+}
+
+function drawPnL(){
+  const cvs=document.getElementById('chartPnL');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height, pad=40;
+  ctx.clearRect(0,0,w,h);
+  const {from,to}=getEffectiveRangeDates();
+  const days=enumerateDays(from,to);
+  let cum=0;
+  const data=days.map(date=>{
+    const dayPnl=trades.filter(t=>t.date===date).reduce((s,t)=>s+(parseFloat(t.pnlUsd)||0),0);
+    cum+=dayPnl;
+    return cum;
+  });
+  const maxVal=Math.max(...data.map(Math.abs),1);
+  const stepX=(w-pad*2)/(days.length-1||1);
+
+  ctx.strokeStyle='#1e2630'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=pad+(h-pad*2)*(i/4);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}
+
+  ctx.beginPath();
+  data.forEach((v,i)=>{
+    const x=pad+i*stepX;
+    const y=pad+(h-pad*2)*0.5 - (v/maxVal)*((h-pad*2)*0.4);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle='#3fb950'; ctx.lineWidth=2; ctx.stroke();
+
+  ctx.lineTo(pad+(days.length-1)*stepX, pad+(h-pad*2)*0.5);
+  ctx.lineTo(pad, pad+(h-pad*2)*0.5);
+  ctx.closePath();
+  ctx.fillStyle='rgba(63,185,80,0.1)'; ctx.fill();
+
+  ctx.beginPath(); ctx.moveTo(pad, pad+(h-pad*2)*0.5); ctx.lineTo(w-pad, pad+(h-pad*2)*0.5);
+  ctx.strokeStyle='#7a8492'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function drawWinLoss(){
+  const cvs=document.getElementById('chartWinLoss');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height, pad=40;
+  ctx.clearRect(0,0,w,h);
+  const {from,to}=getEffectiveRangeDates();
+  const days=enumerateDays(from,to);
+  const labels=days.map(d=>new Date(d).toLocaleDateString('fa-IR',{day:'numeric'}));
+  const wins=days.map(d=>trades.filter(t=>t.date===d&&t.result==='win').length);
+  const losses=days.map(d=>trades.filter(t=>t.date===d&&t.result==='loss').length);
+  const bes=days.map(d=>trades.filter(t=>t.date===d&&t.result==='be').length);
+  const maxVal=Math.max(...wins,...losses,...bes,1);
+  const barW=(w-pad*2)/days.length*0.5;
+  const stepX=(w-pad*2)/days.length;
+  const labelStep=days.length<=14?1:Math.ceil(days.length/10);
+
+  days.forEach((d,i)=>{
+    const x=pad+i*stepX+stepX*0.25;
+    const base=pad+(h-pad*2);
+    let h1=(wins[i]/maxVal)*(h-pad*2);
+    ctx.fillStyle='#3fb950'; ctx.fillRect(x, base-h1, barW/3, h1);
+    let h2=(losses[i]/maxVal)*(h-pad*2);
+    ctx.fillStyle='#f85149'; ctx.fillRect(x+barW/3, base-h2, barW/3, h2);
+    let h3=(bes[i]/maxVal)*(h-pad*2);
+    ctx.fillStyle='#f0883e'; ctx.fillRect(x+barW*2/3, base-h3, barW/3, h3);
+    if(i%labelStep===0){
+      ctx.fillStyle='#7a8492'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(labels[i], x+barW/2, base+14);
+    }
+  });
+}
+
+function drawPie(){
+  const cvs=document.getElementById('chartPie');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height;
+  ctx.clearRect(0,0,w,h);
+  const pieTrades=getFilteredTrades();
+  const wins=pieTrades.filter(t=>t.result==='win').length;
+  const losses=pieTrades.filter(t=>t.result==='loss').length;
+  const bes=pieTrades.filter(t=>t.result==='be').length;
+  const total=wins+losses+bes;
+  if(total===0){
+    ctx.fillStyle='#7a8492'; ctx.font='14px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('هنوز داده‌ای نیست',w/2,h/2);
+    return;
+  }
+  const data=[wins,losses,bes];
+  const colors=['#3fb950','#f85149','#f0883e'];
+  const labels=['سود','ضرر','سر به سر'];
+  let start=-Math.PI/2;
+  const cx=w/2-40, cy=h/2, r=Math.min(w,h)*0.32;
+  data.forEach((v,i)=>{
+    const slice=(v/total)*2*Math.PI;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,start+slice); ctx.closePath();
+    ctx.fillStyle=colors[i]; ctx.fill(); ctx.strokeStyle='#06080a'; ctx.lineWidth=2; ctx.stroke();
+    start+=slice;
+  });
+  let ly=30;
+  data.forEach((v,i)=>{
+    ctx.fillStyle=colors[i]; ctx.fillRect(w-90,ly,10,10);
+    ctx.fillStyle='#e8eaec'; ctx.font='12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(labels[i]+' ('+v+')', w-75, ly+9);
+    ly+=22;
+  });
+}
+
+// ===== HISTORY WITH FILTERS =====
+function clearFilters(){
+  document.getElementById('filter-pair').value='';
+  document.getElementById('filter-result').value='';
+  document.getElementById('filter-emotion').value='';
+  document.getElementById('filter-from').value='';
+  document.getElementById('filter-to').value='';
+  renderHistory();
+}
+function renderHistory(){
+  const fPair=document.getElementById('filter-pair').value.trim().toUpperCase();
+  const fResult=document.getElementById('filter-result').value;
+  const fEmotion=document.getElementById('filter-emotion').value;
+  const fFrom=document.getElementById('filter-from').value;
+  const fTo=document.getElementById('filter-to').value;
+
+  let filtered=trades.filter(t=>{
+    if(fPair && !t.pair.includes(fPair)) return false;
+    if(fResult && t.result!==fResult) return false;
+    if(fEmotion && t.emotion!==fEmotion) return false;
+    if(fFrom && t.date<fFrom) return false;
+    if(fTo && t.date>fTo) return false;
+    return true;
+  });
+
+  const tbody=document.getElementById('history-table-body');
+  const sorted=[...filtered].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
+  const hs=calcPerfStats(filtered);
+  document.getElementById('hist-total').textContent=filtered.length;
+  document.getElementById('hist-wins').textContent=hs.wins;
+  document.getElementById('hist-losses').textContent=hs.losses;
+  document.getElementById('hist-pnl').textContent=(hs.totalPnl>0?'+$':'$')+hs.totalPnl.toFixed(2);
+  document.getElementById('hist-pnl').style.color=hs.totalPnl>=0?'#3fb950':'#f85149';
+  document.getElementById('hist-wr').textContent=hs.wr+'%';
+  document.getElementById('hist-exp').textContent=(hs.expectancy>0?'+$':'$')+hs.expectancy.toFixed(2);
+  document.getElementById('hist-exp').style.color=hs.expectancy>=0?'#3fb950':'#f85149';
+  if(sorted.length===0){tbody.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--text-faint);padding:24px;">موردی یافت نشد</td></tr>';return;}
+  tbody.innerHTML=sorted.map(t=>{
+    const dirBadge=t.dir==='BUY'?'badge-buy':'badge-sell';
+    const resBadge=t.result==='win'?'badge-win':t.result==='loss'?'badge-loss':t.result==='be'?'badge-wait':'badge-open';
+    const resText=t.result==='win'?'سود':t.result==='loss'?'ضرر':t.result==='be'?'سر به سر':'باز';
+    const pnlNum=parseFloat(t.pnlUsd);
+    const pnlColor=!isNaN(pnlNum) && pnlNum>0?'#3fb950':!isNaN(pnlNum) && pnlNum<0?'#f85149':'#8b949e';
+    const tags=t.tags? t.tags.split(',').map(x=>`<span class="tag-pill">${escapeHTML(x.trim())}</span>`).join(''):'';
+    return `<tr>
+      <td class="mono">${t.date}</td>
+      <td class="mono">${t.pair}</td>
+      <td><span class="badge ${dirBadge}">${t.dir}</span></td>
+      <td><span class="badge ${resBadge}">${resText}</span></td>
+      <td class="mono" style="color:${pnlColor};font-weight:700;">${t.pnlUsd?((!isNaN(pnlNum) && pnlNum>0?'+$':'$')+t.pnlUsd):'-'}</td>
+      <td style="color:var(--cyan)">${t.scoreTech}</td>
+      <td style="color:var(--amber)">${t.scoreRisk}</td>
+      <td style="color:var(--purple)">${t.scoreMental}</td>
+      <td style="color:var(--green)">${t.scoreLearning!==undefined?t.scoreLearning:'-'}</td>
+      <td>${tags}</td>
+      <td style="display:flex;gap:4px;">
+        <button class="btn btn-sm btn-ghost" onclick="openResultModal('${t.id}')">✏️</button>
+        <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteTrade('${t.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== ANALYTICS (range-aware) =====
+function drawDayOfWeek(){
+  const cvs=document.getElementById('chartDayOfWeek');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height, pad=40;
+  ctx.clearRect(0,0,w,h);
+  const list=getFilteredTrades();
+  const days=['Sat','Sun','Mon','Tue','Wed','Thu','Fri'];
+  const dayPnL=days.map((_,idx)=>{
+    const dIdx=(idx+1)%7;
+    return list.reduce((s,t)=>{
+      const d=new Date(t.date); if(d.getDay()===dIdx) return s+(parseFloat(t.pnlUsd)||0); return s;
+    },0);
+  });
+  const maxVal=Math.max(...dayPnL.map(Math.abs),1);
+  const stepX=(w-pad*2)/days.length;
+  const base=pad+(h-pad*2);
+
+  days.forEach((label,i)=>{
+    const x=pad+i*stepX+stepX*0.2;
+    const barW=stepX*0.6;
+    const v=dayPnL[i];
+    const barH=(v/maxVal)*((h-pad*2)*0.8);
+    ctx.fillStyle=v>=0?'#3fb950':'#f85149';
+    ctx.fillRect(x, base-Math.max(0,barH), barW, Math.abs(barH));
+    ctx.fillStyle='#7a8492'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(label, x+barW/2, base+14);
+  });
+  ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(w-pad,base); ctx.strokeStyle='#7a8492'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function drawPairPerf(){
+  const cvs=document.getElementById('chartPair');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height, pad=40;
+  ctx.clearRect(0,0,w,h);
+  const pairMap={};
+  getFilteredTrades().forEach(t=>{
+    if(!pairMap[t.pair]) pairMap[t.pair]=0;
+    pairMap[t.pair]+=(parseFloat(t.pnlUsd)||0);
+  });
+  const pairs=Object.keys(pairMap).slice(0,6);
+  const vals=pairs.map(p=>pairMap[p]);
+  const maxVal=Math.max(...vals.map(Math.abs),1);
+  const stepX=(w-pad*2)/(pairs.length||1);
+  const base=pad+(h-pad*2);
+
+  pairs.forEach((p,i)=>{
+    const x=pad+i*stepX+stepX*0.2;
+    const barW=stepX*0.6;
+    const v=vals[i];
+    const barH=(v/maxVal)*((h-pad*2)*0.8);
+    ctx.fillStyle=v>=0?'#3fb950':'#f85149';
+    ctx.fillRect(x, base-Math.max(0,barH), barW, Math.abs(barH));
+    ctx.fillStyle='#7a8492'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(p, x+barW/2, base+14);
+  });
+  ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(w-pad,base); ctx.strokeStyle='#7a8492'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function drawSessionPerf(){
+  const cvs=document.getElementById('chartSession');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height, pad=40;
+  ctx.clearRect(0,0,w,h);
+  const zones=['آسیا','قبل از لندن','لندن','قبل از نیویورک','نیویورک'];
+  const sessions={}; zones.forEach(z=>sessions[z]=0);
+  getFilteredTrades().forEach(t=>{
+    const zone = t.timeZone || getTimeOfDayZone(new Date(t.createdAt));
+    if(sessions[zone]===undefined) sessions[zone]=0;
+    sessions[zone]+=(parseFloat(t.pnlUsd)||0);
+  });
+  const labels=zones;
+  const vals=labels.map(l=>sessions[l]);
+  const maxVal=Math.max(...vals.map(Math.abs),1);
+  const stepX=(w-pad*2)/labels.length;
+  const base=pad+(h-pad*2);
+
+  labels.forEach((l,i)=>{
+    const x=pad+i*stepX+stepX*0.15;
+    const barW=stepX*0.7;
+    const v=vals[i];
+    const barH=(v/maxVal)*((h-pad*2)*0.8);
+    ctx.fillStyle=v>=0?'#39d0d8':'#f85149';
+    ctx.fillRect(x, base-Math.max(0,barH), barW, Math.abs(barH));
+    ctx.fillStyle='#8b949e'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(l, x+barW/2, base+14);
+  });
+  ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(w-pad,base); ctx.strokeStyle='#7a8492'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function drawSetupPerf(){
+  const cvs=document.getElementById('chartSetup');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height, pad=40;
+  ctx.clearRect(0,0,w,h);
+  const list=getFilteredTrades().filter(t=>t.setup);
+  const setups={};
+  list.forEach(t=>{ setups[t.setup]=(setups[t.setup]||0)+(parseFloat(t.pnlUsd)||0); });
+  const labels=Object.keys(setups);
+  if(!labels.length){
+    ctx.fillStyle='#7a8492'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('هنوز داده‌ای با نوع ستاپ ثبت نشده', w/2, h/2);
+    return;
+  }
+  const vals=labels.map(l=>setups[l]);
+  const maxVal=Math.max(...vals.map(Math.abs),1);
+  const stepX=(w-pad*2)/labels.length;
+  const base=pad+(h-pad*2);
+  labels.forEach((l,i)=>{
+    const x=pad+i*stepX+stepX*0.1;
+    const barW=stepX*0.8;
+    const v=vals[i];
+    const barH=(v/maxVal)*((h-pad*2)*0.75);
+    ctx.fillStyle=v>=0?'#3fb950':'#f85149';
+    ctx.fillRect(x, base-Math.max(0,barH), barW, Math.abs(barH));
+    ctx.fillStyle='#8b949e'; ctx.font='8px sans-serif'; ctx.textAlign='center';
+    const shortLabel=l.length>10?l.slice(0,9)+'…':l;
+    ctx.fillText(shortLabel, x+barW/2, base+13);
+  });
+  ctx.beginPath(); ctx.moveTo(pad,base); ctx.lineTo(w-pad,base); ctx.strokeStyle='#7a8492'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function drawRMultiple(){
+  const cvs=document.getElementById('chartRMultiple');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height, pad=40;
+  ctx.clearRect(0,0,w,h);
+  const rmList=getFilteredTrades().map(t=>{
+    const entry=parseFloat(t.entry), sl=parseFloat(t.sl), pnl=parseFloat(t.pnlUsd)||0;
+    if(!entry||!sl||entry===sl) return null;
+    const risk=Math.abs(entry-sl);
+    const r=(pnl/Math.abs(risk));
+    return isFinite(r)?r:null;
+  }).filter(x=>x!==null);
+  if(!rmList.length){
+    ctx.fillStyle='#7a8492'; ctx.font='14px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('داده کافی نیست',w/2,h/2); return;
+  }
+  const bins=[-3,-2,-1,0,1,2,3,4];
+  const counts=bins.map(()=>0);
+  rmList.forEach(r=>{
+    for(let i=0;i<bins.length;i++){if(r<bins[i]+1){counts[i]++;return;}}
+    counts[bins.length-1]++;
+  });
+  const maxC=Math.max(...counts,1);
+  const stepX=(w-pad*2)/bins.length;
+  const base=pad+(h-pad*2);
+  bins.forEach((b,i)=>{
+    const x=pad+i*stepX+stepX*0.15;
+    const barW=stepX*0.7;
+    const barH=(counts[i]/maxC)*((h-pad*2)*0.9);
+    ctx.fillStyle=b<0?'#f85149':'#3fb950';
+    ctx.fillRect(x, base-barH, barW, barH);
+    ctx.fillStyle='#7a8492'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('R'+b, x+barW/2, base+14);
+  });
+}
+
+function drawDrawdown(){
+  const cvs=document.getElementById('chartDrawdown');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width, h=cvs.height, pad=40;
+  ctx.clearRect(0,0,w,h);
+  let equity=parseFloat(settings.startingBalance)||10000, peak=equity;
+  const data=trades.slice().reverse().map(t=>{
+    equity+=(parseFloat(t.pnlUsd)||0);
+    peak=Math.max(peak,equity);
+    return {eq:equity,dd:(peak-equity)/peak*100};
+  });
+  if(!data.length){
+    ctx.fillStyle='#7a8492'; ctx.font='14px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('داده کافی نیست',w/2,h/2); return;
+  }
+  const maxDD=Math.max(...data.map(d=>d.dd),1);
+  const stepX=(w-pad*2)/(data.length-1||1);
+
+  ctx.beginPath();
+  data.forEach((d,i)=>{
+    const x=pad+i*stepX;
+    const y=pad+(h-pad*2)*(d.dd/maxDD);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle='#f85149'; ctx.lineWidth=2; ctx.stroke();
+
+  ctx.beginPath(); ctx.moveTo(pad,pad); ctx.lineTo(w-pad,pad);
+  ctx.strokeStyle='#7a8492'; ctx.lineWidth=1; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#7a8492'; ctx.font='11px sans-serif';
+  ctx.fillText('Peak', w-pad+4, pad+4);
+}
+
+function renderBehavioralAnalysis(list){
+  const container=document.getElementById('behavioral-analysis');
+  if(!container) return;
+  list = list || getFilteredTrades();
+  const closed=list.filter(t=>t.result==='win'||t.result==='loss');
+  if(!closed.length){container.innerHTML='<p style="color:var(--text-faint);font-size:.85rem;">هنوز دادهٔ کافی برای تحلیل رفتاری در این بازه وجود ندارد.</p>';return;}
+
+  // tags normalized (lowercase+trim) so "FOMO" and "fomo" count together
+  const tagStats={};
+  closed.forEach(t=>{
+    (t.tags||'').split(',').forEach(tag=>{
+      const k=tag.trim().toLowerCase();
+      if(!k) return;
+      if(!tagStats[k]) tagStats[k]={total:0,loss:0};
+      tagStats[k].total++;
+      if(t.result==='loss') tagStats[k].loss++;
+    });
+  });
+  const riskyTags=Object.entries(tagStats)
+    .filter(([,v])=>v.total>=2)
+    .map(([k,v])=>({tag:k,total:v.total,loss:v.loss,rate:Math.round((v.loss/v.total)*100)}))
+    .sort((a,b)=>b.rate-a.rate || b.total-a.total)
+    .slice(0,4);
+
+  const pairMap={};
+  closed.filter(t=>t.result==='loss').forEach(t=>{ pairMap[t.pair]=(pairMap[t.pair]||0)+1; });
+  const topPair=Object.entries(pairMap).sort((a,b)=>b[1]-a[1])[0];
+
+  const emoLoss={}, emoWin={};
+  closed.forEach(t=>{ (t.result==='loss'?emoLoss:emoWin)[t.emotion]=((t.result==='loss'?emoLoss:emoWin)[t.emotion]||0)+1; });
+  const topEmoLoss=Object.entries(emoLoss).sort((a,b)=>b[1]-a[1])[0];
+  const topEmoWin=Object.entries(emoWin).sort((a,b)=>b[1]-a[1])[0];
+  const emoLabel=k=>k==='fomo'?'FOMO':k==='rushed'?'عجول':'آرام';
+
+  let html=`<div class="grid-3" style="margin-bottom:10px;">`;
+  html+=topPair?`<div class="card" style="padding:14px;border-color:var(--amber);"><div style="font-size:.7rem;color:var(--text-faint);">بیشترین ضرر در جفت‌ارز</div><div style="font-size:1.05rem;font-weight:700;color:var(--amber);margin-top:4px;">${topPair[0]} (${topPair[1]} بار)</div></div>`:'';
+  html+=topEmoLoss?`<div class="card" style="padding:14px;border-color:var(--red);"><div style="font-size:.7rem;color:var(--text-faint);">احساس غالب در ضررها</div><div style="font-size:1.05rem;font-weight:700;color:var(--red);margin-top:4px;">${emoLabel(topEmoLoss[0])} (${topEmoLoss[1]} بار)</div></div>`:'';
+  html+=topEmoWin?`<div class="card" style="padding:14px;border-color:var(--green);"><div style="font-size:.7rem;color:var(--text-faint);">احساس غالب در بردها</div><div style="font-size:1.05rem;font-weight:700;color:var(--green);margin-top:4px;">${emoLabel(topEmoWin[0])} (${topEmoWin[1]} بار)</div></div>`:'';
+  html+=`</div>`;
+
+  if(riskyTags.length){
+    html+='<div style="font-size:.8rem;color:var(--text-dim);margin-bottom:6px;">پرریسک‌ترین تگ‌ها (حداقل ۲ بار رخ‌داده، مرتب بر اساس درصد ضرر):</div><div class="grid-2">';
+    riskyTags.forEach(rt=>{
+      const color=rt.rate>=60?'var(--red)':rt.rate>=40?'var(--amber)':'var(--green)';
+      html+=`<div class="card" style="padding:12px;border-color:${color};"><div style="font-size:.85rem;font-weight:700;color:${color};">#${rt.tag}</div><div style="font-size:.76rem;color:var(--text-dim);margin-top:3px;">${rt.total} بار رخ داده · ${rt.rate}٪ آن‌ها ضرر بوده</div></div>`;
+    });
+    html+='</div>';
+  }
+  container.innerHTML=html;
+}
+
+// ===== WEEKLY REVIEW =====
+function computeWeekStats(fromStr,toStr){
+  const list=trades.filter(t=>t.date>=fromStr && t.date<=toStr);
+  const stats=calcPerfStats(list);
+  const closedLoss=list.filter(t=>t.result==='loss');
+  const tagMap={}, emoMap={};
+  closedLoss.forEach(t=>{
+    (t.tags||'').split(',').forEach(tag=>{const k=tag.trim().toLowerCase(); if(k) tagMap[k]=(tagMap[k]||0)+1;});
+    emoMap[t.emotion]=(emoMap[t.emotion]||0)+1;
+  });
+  const topTag=Object.entries(tagMap).sort((a,b)=>b[1]-a[1])[0]||null;
+  const topEmo=Object.entries(emoMap).sort((a,b)=>b[1]-a[1])[0]||null;
+
+  const fomoCount=list.filter(t=>t.emotion==='fomo'||t.emotion==='rushed').length;
+  const stopMoveCount=list.filter(t=>t.postTrade&&t.postTrade.q1==='yes').length;
+  const deviateCount=list.filter(t=>t.postTrade&&t.postTrade.q2==='yes').length;
+  const rrVals=list.map(t=>parseFloat((t.rr||'').split(':')[0])).filter(v=>!isNaN(v));
+  const avgRR=rrVals.length?(rrVals.reduce((a,b)=>a+b,0)/rrVals.length):0;
+
+  return Object.assign({from:fromStr, to:toStr, topTag, topEmo, fomoCount, stopMoveCount, deviateCount, avgRR}, stats);
+}
+function generateWeeklySuggestions(s){
+  const msgs=[];
+  if(s.count===0){
+    msgs.push({icon:'📭',color:'var(--text-faint)',text:'در این بازه معامله‌ای ثبت نشده — داده‌ای برای تحلیل نیست.'});
+    return msgs;
+  }
+  if(s.fomoCount>=2) msgs.push({icon:'😵',color:'var(--red)',text:`${s.fomoCount} معامله با احساس FOMO/عجول ثبت شده. قانون فیزیکی «۳۰ دقیقه صبر بعد از حس FOMO» را جدی بگیر.`});
+  if(s.stopMoveCount>0) msgs.push({icon:'🛑',color:'var(--red)',text:`${s.stopMoveCount} بار استاپ جابجا شده — این دقیقاً همان الگویی است که سرمایه را از بین می‌برد.`});
+  if(s.deviateCount>0) msgs.push({icon:'⚠️',color:'var(--amber)',text:`${s.deviateCount} بار خارج از پلن خارج شده‌ای.`});
+  if(s.adherence!==null && s.adherence<70) msgs.push({icon:'☀️',color:'var(--amber)',text:`میانگین امتیاز پایبندی این هفته فقط ${s.adherence}٪ بوده — معمولاً پیش‌بینی‌کننده‌ی نتیجه‌ی ضعیف‌تر است.`});
+  if(s.avgRR>0 && s.avgRR<2) msgs.push({icon:'📏',color:'var(--amber)',text:`میانگین R:R برنامه‌ریزی‌شده این هفته ${s.avgRR.toFixed(1)} است — زیر حداقل استاندارد ۲:۱.`});
+  if(s.maxLossStreak>=3) msgs.push({icon:'🔥',color:'var(--red)',text:`رکورد ${s.maxLossStreak} ضرر متوالی در همین هفته ثبت شده — مراقب رفتار انتقامی (Revenge Trading) باش.`});
+  if(s.wr>=50 && s.totalPnl>0 && s.fomoCount===0 && s.stopMoveCount===0) msgs.push({icon:'✅',color:'var(--green)',text:'این هفته سیستم داشت درست کار می‌کرد — همین روال را در هفته بعد تکرار کن.'});
+  if(s.consecutiveProfitableWeeks>=4) msgs.push({icon:'🏆',color:'var(--green)',text:`${s.consecutiveProfitableWeeks} هفته‌ی سبز متوالی (ثبت‌شده) پشت سر گذاشتی. طبق نقشه راه، این نقطه‌ی معقولی برای بررسی افزایش تدریجی ریسک است — نه زودتر از آن.`});
+  if(!msgs.length) msgs.push({icon:'📊',color:'var(--text-dim)',text:'الگوی هشداردهنده مشخصی دیده نشد. به ثبت دقیق ادامه بده.'});
+  return msgs;
+}
+function renderWeeklySuggestions(s){
+  const box=document.getElementById('weekly-suggestions');
+  if(!box) return;
+  box.innerHTML=generateWeeklySuggestions(s).map(m=>
+    `<div class="coach-alert" style="border-color:${m.color};margin-bottom:8px;"><span class="coach-alert-icon">${m.icon}</span><div class="coach-alert-text"><div class="coach-alert-body">${m.text}</div></div></div>`
+  ).join('');
+}
+function getConsecutiveProfitableWeeks(){
+  const sorted=weeklyReviews.filter(w=>w.pnl!==undefined).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  let count=0;
+  for(const w of sorted){ if(w.pnl>0) count++; else break; }
+  return count;
+}
+function renderWeeklyAutoSummary(){
+  let dateVal=document.getElementById('wr-date').value;
+  if(!dateVal){ dateVal=localDateStr(); document.getElementById('wr-date').value=dateVal; }
+  const to=dateVal;
+  const fromD=new Date(to); fromD.setDate(fromD.getDate()-6);
+  const from=localDateStr(fromD);
+  document.getElementById('wr-summary-date').textContent=to;
+
+  const cur=computeWeekStats(from,to);
+  cur.consecutiveProfitableWeeks=getConsecutiveProfitableWeeks();
+  const prevToD=new Date(from); prevToD.setDate(prevToD.getDate()-1);
+  const prevTo=localDateStr(prevToD);
+  const prevFromD=new Date(prevTo); prevFromD.setDate(prevFromD.getDate()-6);
+  const prevFrom=localDateStr(prevFromD);
+  const prev=computeWeekStats(prevFrom,prevTo);
+  window._curWeekStats=cur;
+  renderWeeklySuggestions(cur);
+
+  const arrow=(curV,prevV)=>{
+    if(curV===null||curV===undefined||prevV===null||prevV===undefined) return '';
+    if(curV>prevV) return ' <span style="color:var(--green)">▲</span>';
+    if(curV<prevV) return ' <span style="color:var(--red)">▼</span>';
+    return ' <span style="color:var(--text-faint)">–</span>';
+  };
+  const emoLabel=k=>k==='fomo'?'FOMO':k==='rushed'?'عجول':k==='calm'?'آرام':'-';
+
+  let html='<div class="grid-4" style="margin-bottom:10px;">';
+  html+=`<div class="card" style="padding:12px;"><div style="font-size:.65rem;color:var(--text-faint);">تعداد معامله</div><div style="font-size:1.1rem;font-weight:800;margin-top:3px;">${cur.count}</div></div>`;
+  html+=`<div class="card" style="padding:12px;"><div style="font-size:.65rem;color:var(--text-faint);">وین‌ریت</div><div style="font-size:1.1rem;font-weight:800;margin-top:3px;color:var(--cyan);">${cur.wr}%${arrow(cur.wr,prev.wr)}</div></div>`;
+  html+=`<div class="card" style="padding:12px;"><div style="font-size:.65rem;color:var(--text-faint);">PnL هفته</div><div style="font-size:1.1rem;font-weight:800;margin-top:3px;color:${cur.totalPnl>=0?'var(--green)':'var(--red)'};">${cur.totalPnl>=0?'+$':'$'}${cur.totalPnl.toFixed(2)}${arrow(cur.totalPnl,prev.totalPnl)}</div></div>`;
+  html+=`<div class="card" style="padding:12px;"><div style="font-size:.65rem;color:var(--text-faint);">پایبندی (میانگین امتیاز)</div><div style="font-size:1.1rem;font-weight:800;margin-top:3px;">${cur.adherence!==null?cur.adherence+'%':'-'}${arrow(cur.adherence,prev.adherence)}</div></div>`;
+  html+='</div>';
+
+  if(cur.bestTrade || cur.worstTrade){
+    html+='<div class="grid-2" style="margin-bottom:10px;">';
+    if(cur.bestTrade) html+=`<div class="card" style="padding:12px;border-color:var(--green);"><div style="font-size:.65rem;color:var(--text-faint);">بهترین معامله</div><div style="font-size:.92rem;font-weight:700;color:var(--green);margin-top:3px;">${cur.bestTrade.pair} · ${(parseFloat(cur.bestTrade.pnlUsd)||0)>=0?'+$':'$'}${cur.bestTrade.pnlUsd}</div></div>`;
+    if(cur.worstTrade) html+=`<div class="card" style="padding:12px;border-color:var(--red);"><div style="font-size:.65rem;color:var(--text-faint);">بدترین معامله</div><div style="font-size:.92rem;font-weight:700;color:var(--red);margin-top:3px;">${cur.worstTrade.pair} · $${cur.worstTrade.pnlUsd}</div></div>`;
+    html+='</div>';
+  }
+  if(cur.count===0) html+='<p style="color:var(--text-faint);font-size:.85rem;">در این بازه معامله‌ای ثبت نشده.</p>';
+  document.getElementById('weekly-auto-summary').innerHTML=html;
+
+  let hint='';
+  if(cur.topTag) hint+=`💡 پرتکرارترین تگ در ضررهای این هفته: <strong>${cur.topTag[0]}</strong> (${cur.topTag[1]} بار). `;
+  if(cur.topEmo) hint+=`احساس غالب در ضررها: <strong>${emoLabel(cur.topEmo[0])}</strong>.`;
+  document.getElementById('wr-hint').innerHTML = hint || 'هنوز معامله‌ی بسته‌شده‌ای در این هفته ثبت نشده — سوال‌ها را بر اساس حس کلی هفته پاسخ بده.';
+}
+function saveWeeklyReview(){
+  const date=document.getElementById('wr-date').value||localDateStr();
+  let cur=window._curWeekStats;
+  if(!cur || cur.to!==date){
+    const fromD=new Date(date); fromD.setDate(fromD.getDate()-6);
+    cur=computeWeekStats(localDateStr(fromD),date);
+  }
+  weeklyReviews.unshift({
+    id:Date.now().toString(),
+    date,
+    tradesCount:cur.count,
+    winRate:cur.wr,
+    pnl:cur.totalPnl,
+    adherence:cur.adherence,
+    topLossTag: cur.topTag ? cur.topTag[0] : null,
+    mistake:document.getElementById('wr-mistake').value,
+    best:document.getElementById('wr-best').value,
+    goal:document.getElementById('wr-goal').value,
+    lesson:document.getElementById('wr-lesson').value
+  });
+  saveWeekly();
+  renderWeeklyList();
+  drawWeeklyTrend();
+  toast('✅ بازبینی هفتگی ذخیره شد');
+  ['wr-mistake','wr-best','wr-goal','wr-lesson'].forEach(id=>document.getElementById(id).value='');
+}
+function renderWeeklyList(){
+  const container=document.getElementById('weekly-list');
+  if(!weeklyReviews.length){container.innerHTML='';return;}
+  container.innerHTML=weeklyReviews.map(w=>{
+    const hasAuto=w.tradesCount!==undefined;
+    return `
+    <div class="card" style="padding:14px;border-right:3px solid var(--cyan);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span class="mono" style="font-weight:700;">هفته منتهی به ${w.date}</span>
+        <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteWeekly('${w.id}')">حذف</button>
+      </div>
+      ${hasAuto?`<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--text-dim);margin-bottom:8px;">
+        <span>معاملات: <strong>${w.tradesCount}</strong></span>
+        <span>وین‌ریت: <strong style="color:var(--cyan)">${w.winRate}%</strong></span>
+        <span>PnL: <strong style="color:${w.pnl>=0?'var(--green)':'var(--red)'}">${w.pnl>=0?'+$':'$'}${(w.pnl||0).toFixed(2)}</strong></span>
+        <span>پایبندی: <strong>${w.adherence!==null&&w.adherence!==undefined?w.adherence+'%':'-'}</strong></span>
+        ${w.topLossTag?`<span>پرتکرارترین تگ ضرر: <strong>${w.topLossTag}</strong></span>`:''}
+      </div>`:''}
+      <div style="font-size:.82rem;color:var(--text-dim);line-height:1.8;">
+        ${w.mistake?`<div><strong>بزرگترین اشتباه:</strong> ${escapeHTML(w.mistake)}</div>`:(w.adherence===undefined&&w.pattern?`<div><strong>الگوی تکراری:</strong> ${escapeHTML(w.pattern)}</div>`:'')}
+        ${w.best?`<div><strong>بهترین تصمیم:</strong> ${escapeHTML(w.best)}</div>`:''}
+        ${w.goal?`<div><strong>هدف آینده:</strong> ${escapeHTML(w.goal)}</div>`:''}
+        ${w.lesson?`<div><strong>درس:</strong> ${escapeHTML(w.lesson)}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function deleteWeekly(id){if(!confirm('آیا مطمئنید؟'))return;weeklyReviews=weeklyReviews.filter(w=>w.id!==id);saveWeekly();renderWeeklyList();drawWeeklyTrend();}
+function drawWeeklyTrend(){
+  const cvs=document.getElementById('chartWeeklyTrend');
+  if(!cvs) return;
+  const ctx=cvs.getContext('2d');
+  const w=cvs.width,h=cvs.height,pad=40;
+  ctx.clearRect(0,0,w,h);
+  const withAuto=weeklyReviews.filter(x=>x.winRate!==undefined).slice().reverse();
+  if(withAuto.length<2){
+    ctx.fillStyle='#7a8492'; ctx.font='13px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('برای نمایش روند، حداقل ۲ بازبینی خودکار لازم است',w/2,h/2);
+    return;
+  }
+  const stepX=(w-pad*2)/(withAuto.length-1);
+  ctx.strokeStyle='#1e2630'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=pad+(h-pad*2)*(i/4);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}
+
+  ctx.beginPath();
+  withAuto.forEach((wk,i)=>{
+    const x=pad+i*stepX, y=pad+(h-pad*2)*(1-(wk.winRate/100));
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle='#39d0d8'; ctx.lineWidth=2; ctx.stroke();
+
+  const hasAdh=withAuto.some(x=>x.adherence!==null && x.adherence!==undefined);
+  if(hasAdh){
+    ctx.beginPath();
+    withAuto.forEach((wk,i)=>{
+      const a=(wk.adherence!==null&&wk.adherence!==undefined)?wk.adherence:0;
+      const x=pad+i*stepX, y=pad+(h-pad*2)*(1-(a/100));
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle='#f0883e'; ctx.lineWidth=2; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.fillStyle='#39d0d8'; ctx.fillRect(pad,16,10,10); ctx.fillStyle='#e8eaec'; ctx.font='11px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('وین‌ریت',pad+14,25);
+  if(hasAdh){
+    ctx.fillStyle='#f0883e'; ctx.fillRect(pad+80,16,10,10); ctx.fillStyle='#e8eaec';
+    ctx.fillText('پایبندی',pad+94,25);
+  }
+}
+function initWeeklyPage(){
+  renderWeeklyAutoSummary();
+  renderWeeklyList();
+  drawWeeklyTrend();
+}
+
+// ===== SETTINGS / CUSTOM CHECKLIST =====
+function renderSettings(){
+  document.getElementById('contract-input').value=settings.contract||'';
+  document.getElementById('account-balance-input').value=settings.startingBalance||10000;
+  document.getElementById('consistency-cap-input').value=settings.consistencyCapPercent||30;
+  renderWatchlistSettings();
+
+  const dList=document.getElementById('settings-daily-list');
+  dList.innerHTML=settings.dailyItems.map((it,idx)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--panel-2);border-radius:6px;margin-bottom:6px;font-size:.82rem;">
+      <span style="flex:1;">${it.critical?'★':''} ${escapeHTML(it.text)} <span class="badge badge-${it.cat}">+${it.pts}</span></span>
+      <button class="btn btn-sm btn-ghost" onclick="openEditItemModal('daily',${idx})">✏️</button>
+      <button class="btn btn-sm btn-ghost" onclick="removeDailyItem(${idx})">🗑️</button>
+    </div>
+  `).join('');
+  const pList=document.getElementById('settings-pre-list');
+  pList.innerHTML=settings.preItems.map((it,idx)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--panel-2);border-radius:6px;margin-bottom:6px;font-size:.82rem;">
+      <span style="flex:1;">${it.critical?'★':''} ${escapeHTML(it.text)} <span class="badge badge-${it.cat}">+${it.pts}</span></span>
+      <button class="btn btn-sm btn-ghost" onclick="openEditItemModal('pre',${idx})">✏️</button>
+      <button class="btn btn-sm btn-ghost" onclick="removePreItem(${idx})">🗑️</button>
+    </div>
+  `).join('');
+  renderTrash();
+}
+
+// ===== EDIT checklist item =====
+function openEditItemModal(listType, idx){
+  const list = listType==='daily' ? settings.dailyItems : settings.preItems;
+  const it = list[idx];
+  if(!it) return;
+  document.getElementById('ei-list-type').value=listType;
+  document.getElementById('ei-idx').value=idx;
+  document.getElementById('ei-text').value=it.text;
+  document.getElementById('ei-cat').value=it.cat;
+  document.getElementById('ei-pts').value=it.pts;
+  document.getElementById('ei-critical').checked=!!it.critical;
+  document.getElementById('editItemModal').classList.add('active');
+}
+function closeEditItemModal(){document.getElementById('editItemModal').classList.remove('active');}
+function saveEditedItem(){
+  const listType=document.getElementById('ei-list-type').value;
+  const idx=parseInt(document.getElementById('ei-idx').value);
+  const text=document.getElementById('ei-text').value.trim();
+  if(!text){toast('متن آیتم را وارد کنید','error');return;}
+  const updated={
+    text,
+    cat:document.getElementById('ei-cat').value,
+    pts:parseInt(document.getElementById('ei-pts').value)||3,
+    critical:document.getElementById('ei-critical').checked
+  };
+  const list = listType==='daily' ? settings.dailyItems : settings.preItems;
+  if(!list[idx]) return;
+  list[idx] = Object.assign({}, list[idx], updated); // keep original id
+  saveSettings();
+  closeEditItemModal();
+  renderSettings();
+  toast('✅ آیتم ویرایش شد');
+}
+
+// ===== TRASH / RECOVERY for deleted checklist items =====
+function renderTrash(){
+  const container=document.getElementById('settings-trash-list');
+  if(!container) return;
+  if(!settings.trash || !settings.trash.length){
+    container.innerHTML='<p style="font-size:.8rem;color:var(--text-faint)">چیزی حذف نشده.</p>';
+    return;
+  }
+  container.innerHTML=settings.trash.map((tr,idx)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--panel-2);border-radius:6px;margin-bottom:6px;font-size:.8rem;">
+      <span style="flex:1;color:var(--text-faint);">
+        <span class="badge badge-${tr.item.cat}">${tr.listType==='daily'?'صبحگاهی':'پیش‌ورود'}</span>
+        ${tr.item.critical?'★':''} ${escapeHTML(tr.item.text)}
+      </span>
+      <button class="btn btn-sm btn-success" onclick="restoreTrashItem(${idx})">↩️ بازیابی</button>
+      <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="purgeTrashItem(${idx})">حذف کامل</button>
+    </div>
+  `).join('');
+}
+function restoreTrashItem(idx){
+  const tr=settings.trash[idx];
+  if(!tr) return;
+  if(tr.listType==='daily') settings.dailyItems.push(tr.item);
+  else settings.preItems.push(tr.item);
+  settings.trash.splice(idx,1);
+  saveSettings();
+  renderSettings();
+  toast('✅ آیتم بازیابی شد');
+}
+function purgeTrashItem(idx){
+  if(!confirm('این آیتم برای همیشه پاک می‌شود. مطمئنید؟'))return;
+  settings.trash.splice(idx,1);
+  saveSettings();
+  renderTrash();
+}
+function clearTrash(){
+  if(!settings.trash || !settings.trash.length) return;
+  if(!confirm('همه آیتم‌های سطل بازیافت برای همیشه پاک می‌شوند. مطمئنید؟'))return;
+  settings.trash=[];
+  saveSettings();
+  renderTrash();
+  toast('سطل بازیافت خالی شد');
+}
+function moveToTrash(item, listType){
+  if(!settings.trash) settings.trash=[];
+  settings.trash.unshift({item, listType, deletedAt:Date.now()});
+  if(settings.trash.length>20) settings.trash=settings.trash.slice(0,20); // keep only last 20
+}
+
+function addDailyItem(){
+  const text=document.getElementById('new-daily-text').value.trim();
+  const cat=document.getElementById('new-daily-cat').value;
+  const pts=parseInt(document.getElementById('new-daily-pts').value)||3;
+  const critical=document.getElementById('new-daily-critical').checked;
+  if(!text){toast('متن آیتم را وارد کنید','error');return;}
+  settings.dailyItems.push({id:'d_'+Date.now(),text,cat,pts,critical});
+  saveSettings();
+  renderSettings();
+  document.getElementById('new-daily-text').value='';
+}
+function removeDailyItem(idx){
+  const it=settings.dailyItems[idx];
+  if(!it) return;
+  if(!confirm('این آیتم حذف شود؟ (بعداً از سطل بازیافت قابل بازگردانی است)'))return;
+  moveToTrash(it,'daily');
+  settings.dailyItems.splice(idx,1);
+  saveSettings();
+  renderSettings();
+  toast('آیتم حذف شد — از سطل بازیافت قابل بازگردانی است');
+}
+function addPreItem(){
+  const text=document.getElementById('new-pre-text').value.trim();
+  const cat=document.getElementById('new-pre-cat').value;
+  const pts=parseInt(document.getElementById('new-pre-pts').value)||3;
+  const critical=document.getElementById('new-pre-critical').checked;
+  if(!text){toast('متن آیتم را وارد کنید','error');return;}
+  settings.preItems.push({id:'p_'+Date.now(),text,cat,pts,critical});
+  saveSettings();
+  renderSettings();
+  document.getElementById('new-pre-text').value='';
+}
+function removePreItem(idx){
+  const it=settings.preItems[idx];
+  if(!it) return;
+  if(!confirm('این آیتم حذف شود؟ (بعداً از سطل بازیافت قابل بازگردانی است)'))return;
+  moveToTrash(it,'pre');
+  settings.preItems.splice(idx,1);
+  saveSettings();
+  renderSettings();
+  toast('آیتم حذف شد — از سطل بازیافت قابل بازگردانی است');
+}
+
+// ===== WATCHLIST (core, editable) =====
+function renderWatchlistSettings(){
+  const list=document.getElementById('settings-watchlist-list');
+  if(!list) return;
+  if(!settings.watchlist || !settings.watchlist.length){
+    list.innerHTML='<p style="font-size:.8rem;color:var(--text-faint)">هیچ ابزاری اضافه نشده.</p>';
+  } else {
+    list.innerHTML=settings.watchlist.map((sym,idx)=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--panel-2);border-radius:6px;margin-bottom:6px;font-size:.82rem;">
+        <span class="mono" style="flex:1;">${escapeHTML(sym)}</span>
+        <button class="btn btn-sm btn-ghost" onclick="removeWatchlistItem(${idx})">🗑️</button>
+      </div>
+    `).join('');
+  }
+  populatePairDropdown();
+}
+function addWatchlistItem(){
+  const input=document.getElementById('new-watchlist-item');
+  const sym=input.value.trim().toUpperCase().replace('/','');
+  if(!sym){toast('نام ابزار را وارد کنید','error');return;}
+  if(!settings.watchlist) settings.watchlist=[];
+  if(settings.watchlist.includes(sym)){toast('این ابزار قبلاً اضافه شده','error');return;}
+  settings.watchlist.push(sym);
+  saveSettings();
+  renderWatchlistSettings();
+  input.value='';
+  toast('✅ به واچ‌لیست اضافه شد');
+}
+function removeWatchlistItem(idx){
+  settings.watchlist.splice(idx,1);
+  saveSettings();
+  renderWatchlistSettings();
+}
+function populatePairDropdown(){
+  const sel=document.getElementById('nt-pair');
+  if(!sel) return;
+  const prev=sel.value;
+  const list=(settings.watchlist && settings.watchlist.length) ? settings.watchlist : DEFAULT_WATCHLIST;
+  sel.innerHTML='<option value="">— انتخاب کنید —</option>'+list.map(sym=>`<option value="${escapeHTML(sym)}">${escapeHTML(sym)}</option>`).join('');
+  if(list.includes(prev)) sel.value=prev;
+  renderWatchlistPage();
+}
+
+const WATCHLIST_DESCRIPTIONS={
+  'GBPUSD':'نوسان روزانه بالا، ساختار سشن (Asia → London Judas → NY) را تمیز رعایت می‌کند.',
+  'EURUSD':'نقدشونده‌ترین جفت‌ارز دنیا، کمترین اسپرد، نویز کمتر نسبت به سایرین.',
+  'USDJPY':'همبستگی با بازده اوراق و ریسک‌پذیری بازار. ⚠️ اگر هم‌زمان با XAU/BTC روی «دلار ضعیف» باز شود، یک شرط تکراری است نه تنوع واقعی.',
+  'XAUUSD':'یکی از تمیزترین ابزارها برای مفاهیم نقدینگی — Sweep و Reversal‌های واضح.',
+  'BTCUSD':'نقدینگی بالا، ساختار OB/FVG تمیز. توجه: سشن‌های Asia/London/NY روی کریپتو تقریبی‌اند، نه ساختار نهادی واقعی مثل فارکس.'
+};
+function renderWatchlistPage(){
+  const container=document.getElementById('watchlist-core-display');
+  if(!container) return;
+  const list=(settings.watchlist && settings.watchlist.length) ? settings.watchlist : DEFAULT_WATCHLIST;
+  if(!list.length){ container.innerHTML='<p style="color:var(--text-faint);font-size:.85rem;">هنوز ابزاری اضافه نشده — از بخش تنظیمات اضافه کن.</p>'; return; }
+  container.innerHTML=list.map(sym=>{
+    const desc=WATCHLIST_DESCRIPTIONS[sym] || 'در تنظیمات به هسته اصلی اضافه شده — دلیل و منطق این ابزار را خودت مستند کن.';
+    return `<div style="padding:14px 16px;background:var(--panel-2);border-radius:var(--radius-sm);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span class="mono" style="font-weight:700;">${escapeHTML(sym)}</span></div>
+      <p style="margin:0;color:var(--text-dim);font-size:.85rem;">${desc}</p>
+    </div>`;
+  }).join('');
+}
+function openChecklistSettings(){
+  document.querySelector('[data-page="settings"]').click();
+}
+
+// ===== BACKUP / EXPORT =====
+function downloadBackup(){
+  const backup={exportedAt:new Date().toISOString(), trades, journals, dailyChecks, preChecks, scoresCache, settings, weeklyReviews};
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='trade-bible-v4.1-'+localDateStr()+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  localStorage.setItem(STORAGE.backup, localDateStr());
+  toast('✅ پشتیبان دانلود شد');
+}
+function restoreBackup(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!confirm('بازیابی این فایل تمام داده‌های فعلی را جایگزین می‌کند. ادامه می‌دهید؟')) return;
+      trades=data.trades||[];
+      journals=data.journals||[];
+      dailyChecks=data.dailyChecks||{};
+      preChecks=data.preChecks||{};
+      scoresCache=data.scoresCache||{};
+      settings=data.settings||{};
+      if(settings.startingBalance===undefined) settings.startingBalance=10000;
+      if(settings.consistencyCapPercent===undefined) settings.consistencyCapPercent=30;
+      if(!settings.watchlist) settings.watchlist=JSON.parse(JSON.stringify(DEFAULT_WATCHLIST));
+      if(!settings.trash) settings.trash=[];
+      weeklyReviews=data.weeklyReviews||[];
+      saveTrades(); saveJournals(); saveDailyChecks(); savePreChecks(); saveScores(); saveSettings(); saveWeekly();
+      applyTheme();
+      updateDashboard(); renderTodayTrades(); renderJournalHistory(); renderHistory(); drawPerformancePage();
+      toast('✅ بازیابی با موفقیت انجام شد');
+    }catch(err){ toast('❌ فایل معتبر نیست','error'); }
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+function exportCSV(){
+  if(!trades.length){toast('معامله‌ای برای خروجی وجود ندارد','error');return;}
+  const headers=['Date','Time','Pair','Dir','Entry','SL','TP','RR','Emotion','Setup','Liquidity','POI','TimeZone','Result','PnL','ScoreTech','ScoreRisk','ScoreMental','ScoreLearning','ScoreExecution','Tags','Note'];
+  const rows=trades.map(t=>[
+    t.date,t.time||'',t.pair,t.dir,t.entry,t.sl,t.tp,t.rr,t.emotion,`"${t.setup||''}"`,`"${t.liquidity||''}"`,`"${t.poi||''}"`,`"${t.timeZone||''}"`,t.result,t.pnlUsd,
+    t.scoreTech,t.scoreRisk,t.scoreMental,t.scoreLearning!==undefined?t.scoreLearning:'',t.scoreExecution!==undefined&&t.scoreExecution!==null?t.scoreExecution:'',`"${t.tags||''}"`,`"${(t.note||'').replace(/"/g,'""')}"`
+  ]);
+  const csv=[headers.join(','),...rows.map(r=>r.join(','))].join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='trades-'+localDateStr()+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('✅ CSV دانلود شد');
+}
+
+function autoBackupCheck(){
+  const last=localStorage.getItem(STORAGE.backup);
+  const today=localDateStr();
+  if(last!==today){
+    const lastDate=last?new Date(last):new Date(0);
+    const diff=Math.floor((new Date()-lastDate)/(1000*60*60*24));
+    if(diff>=7){
+      downloadBackup();
+    }
+  }
+}
+
+// ===== INIT =====
+loadAll();
+applyTheme();
+showContractIfNeeded();
+autoBackupCheck();
+populatePairDropdown();
+
+const todayChecks=dailyChecks[localDateStr()]||{};
+updateDashboard();
+renderTodayTrades();
+renderJournalHistory();
+drawPerformancePage();
+
+// Modal close on backdrop
+document.getElementById('resultModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeResultModal()});
+document.getElementById('contractModal').addEventListener('click',e=>{if(e.target===e.currentTarget)acceptContract()});
+</script>
+</body>
+</html>
