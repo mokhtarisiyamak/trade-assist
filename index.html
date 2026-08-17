@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0d1117">
-<title>Trade Bible Coach — Unified Dashboard v5.5</title>
+<title>Trade Assist Coach — Unified Dashboard v5.5</title>
 <style>
   /* ===== SYSTEM FONTS (Offline Ready) ===== */
   :root{
@@ -437,8 +437,7 @@
 <div class="app-layout">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="logo">Trade Bible Coach</div>
-      <div class="sub">UNIFIED DASHBOARD v5.5</div>
+      <div class="logo">Trade Assist Coach</div>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-item active" data-page="dashboard" style="--accent:var(--green)" aria-label="داشبورد روزانه">
@@ -461,6 +460,9 @@
       <button class="nav-item" data-page="weekly" style="--accent:var(--cyan)" aria-label="بازبینی هفتگی">
         <span class="nav-icon">🗓️</span><span>بازبینی هفتگی</span>
       </button>
+      <button class="nav-item" data-page="routine" style="--accent:var(--purple)" aria-label="روتین روزانه">
+        <span class="nav-icon">⏰</span><span>روتین روزانه</span>
+      </button>
       <button class="nav-item" data-page="settings" style="--accent:var(--text-dim)" aria-label="تنظیمات">
         <span class="nav-icon">⚙️</span><span>تنظیمات</span>
       </button>
@@ -479,11 +481,7 @@
       <div class="model-status-bar" id="modelStatusBar">
         <div class="model-progress"><div class="model-progress-fill" id="modelProgressFill" style="width:0%"></div></div>
         <div class="model-steps-mini" id="modelStepsMini"></div>
-        <div style="margin-top:6px;font-size:.65rem;color:var(--gold-400);font-family:var(--mono);text-align:center;">The Model Engine v5.5</div>
       </div>
-
-      COACH AI v5.5 · 2026.07<br>
-      Dynamic Checklist · Auto Lockout · Behavioral Analytics · The Model
     </div>
   </aside>
 
@@ -836,9 +834,8 @@
         <button class="guide-tab" data-gtab="g-liq" style="--accent:var(--amber)">۰۲ نقدینگی</button>
         <button class="guide-tab" data-gtab="g-poi" style="--accent:var(--green)">۰۳ POI</button>
         <button class="guide-tab" data-gtab="g-entry" style="--accent:var(--red)">۰۴ ورود و مدیریت سرمایه</button>
-        <button class="guide-tab" data-gtab="g-routine" style="--accent:var(--purple)">۰۵ روتین</button>
-        <button class="guide-tab" data-gtab="g-barriers" style="--accent:var(--red)">۰۶ موانع فیزیکی</button>
-        <button class="guide-tab" data-gtab="g-glossary" style="--accent:var(--cyan)">۰۷ واژه‌نامه</button>
+        <button class="guide-tab" data-gtab="g-barriers" style="--accent:var(--red)">۰۵ موانع فیزیکی</button>
+        <button class="guide-tab" data-gtab="g-glossary" style="--accent:var(--cyan)">۰۶ واژه‌نامه</button>
       </div>
       <!-- ==================== THE MODEL PANEL (g-model) ==================== -->
       <div class="guide-panel active" id="g-model">
@@ -1008,12 +1005,6 @@
           <div class="callout callout-note" style="margin-top:10px;"><strong class="head">فرمول محاسبه‌ی حجم</strong><p>حجم پوزیشن = (موجودی حساب × ریسک مجاز٪) ÷ (فاصله‌ی استاپ به پیپ × ارزش هر پیپ). مثال: موجودی $۱۰٬۰۰۰، ریسک پله ۱٪ = $۱۰۰؛ اگر استاپ ۲۰ پیپ و ارزش هر پیپ $۱۰ باشد → حجم = $۱۰۰ ÷ (۲۰×$۱۰) = ۰.۵ لات.</p></div>
         </div>
         <div class="card">
-          <h3 style="color:var(--cyan)">پیش‌نیاز · قبل از اجرای این جدول با پول واقعی</h3>
-          <div class="callout callout-wait"><strong class="head">حداقل بک‌تست/دمو</strong><p>حداقل <strong>۳۰ نمونه‌ی</strong> کامل (بک‌تست یا دمو) از کل این نُه گام ثبت شود، پیش از اولین معامله‌ی واقعی. اگر Win Rate و Profit Factor آن ۳۰ نمونه با انتظار همخوانی نداشت، برگرد به گام اول و خودِ قوانین را بازبینی کن — نه اینکه با سرمایه‌ی واقعی امتحان کنی.</p></div>
-          <div class="callout callout-note"><strong class="head">بازبینی دوره‌ای خودِ سیستم</strong><p>هر ۳ ماه، مستقل از عملکردت، بپرس: «آیا این قوانین هنوز روی بازار واقعی جواب می‌دهند؟» نمودار «همبستگی امتیاز چک‌لیست با نتیجه» در تب عملکرد دقیقاً برای همین ساخته شده — نه فقط پایش خودت، پایش خودِ سیستم.</p></div>
-          <div class="callout callout-buy"><strong class="head">معیار افزایش ریسک</strong><p>ریسک پایه (۳٪/۱.۵٪ از جدول بالا) را افزایش نده مگر بعد از حداقل <strong>۴ هفته‌ی سبز متوالی</strong> ثبت‌شده در بازبینی هفتگی. اپ خودش این عدد را می‌شمارد و در «پیشنهاد این هفته» گزارش می‌دهد.</p></div>
-        </div>
-        <div class="card">
           <h3 style="color:var(--green)">گام هشتم · اجرای پله‌ای ورود</h3>
           <div class="table-wrap">
             <table>
@@ -1025,6 +1016,7 @@
             </table>
           </div>
           <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">قانون کلیدی</strong><p>Inducement = سیگنال ورود پله اول، نه سیگنال خروج پوزیشن باز. بیش از ۲ پله روی یک ابزار بدون توجیه روشن ممنوع است.</p></div>
+          <div class="callout callout-buy" style="margin-top:10px;"><strong class="head">معیار افزایش ریسک</strong><p>ریسک پایه (۳٪/۱.۵٪ از جدول گام هفتم) را افزایش نده مگر بعد از حداقل <strong>۴ هفته‌ی سبز متوالی</strong> ثبت‌شده در بازبینی هفتگی. اپ خودش این عدد را می‌شمارد و در «پیشنهاد این هفته» گزارش می‌دهد.</p></div>
         </div>
         <div class="card">
           <h3 style="color:var(--cyan)">گام نهم · خروج پله‌ای — سیستم Tranche</h3>
@@ -1050,61 +1042,10 @@
         <div class="card">
           <h3 style="color:var(--red)">🛡️ ریسک همبسته (Correlated Risk)</h3>
           <div class="callout callout-sell"><strong class="head">قبل از چند پوزیشن هم‌زمان روی ابزارهای مختلف</strong><p>بپرس: آیا همه این معاملات در واقع یک شرط تکراری هستند؟ (مثلاً «دلار ضعیف می‌شود» هم‌زمان روی طلا، ین و بیت‌کوین). اگر بله، ریسک را جمع بزن، نه هر کدام را جداگانه. سقف ریسک تجمعی برای معاملات هم‌جهت: <strong>۳٪</strong> — همان سقف مطلق یک معامله‌ی تکی (گام هفتم)، نه کمتر از آن؛ وگرنه حتی یک معامله‌ی تکی هم این سقف را نقض می‌کرد.</p></div>
+          <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">حداقل بک‌تست/دمو</strong><p>حداقل <strong>۳۰ نمونه‌ی</strong> کامل (بک‌تست یا دمو) از کل این نُه گام ثبت شود، پیش از اولین معامله‌ی واقعی. اگر Win Rate و Profit Factor آن ۳۰ نمونه با انتظار همخوانی نداشت، برگرد به گام اول و خودِ قوانین را بازبینی کن — نه اینکه با سرمایه‌ی واقعی امتحان کنی.</p></div>
+          <div class="callout callout-note" style="margin-top:10px;"><strong class="head">بازبینی دوره‌ای خودِ سیستم</strong><p>هر ۳ ماه، مستقل از عملکردت، بپرس: «آیا این قوانین هنوز روی بازار واقعی جواب می‌دهند؟» نمودار «همبستگی امتیاز چک‌لیست با نتیجه» در تب عملکرد دقیقاً برای همین ساخته شده — نه فقط پایش خودت، پایش خودِ سیستم.</p></div>
         </div>
       </div>
-      <div class="guide-panel" id="g-routine">
-        <div class="card" style="margin-bottom:12px;">
-          <h3 style="color:var(--amber)">⏰ نکته‌ی مهم درباره‌ی ساعت‌ها</h3>
-          <p style="color:var(--text-dim);font-size:.85rem;margin-bottom:10px;">ایران از سال ۲۰۲۲ ساعت تابستانی ندارد (همیشه UTC+۳:۳۰ ثابت)، ولی بریتانیا و آمریکا هنوز دارند. یعنی فاصله‌ی ساعت تهران با کیل‌زون‌های واقعی هرسال دو بار، هرکدام یک ساعت، جابه‌جا می‌شود. زمان‌بندی فازهای زیر میانگین دو حالت است؛ بر اساس جدول، حدود یک ساعت با فصل تنظیم کنید:</p>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>فاز</th><th>زمستان بریتانیا/آمریکا (~آبان تا اسفند)</th><th>تابستان بریتانیا/آمریکا (~فروردین تا مهر)</th></tr></thead>
-              <tbody>
-                <tr><td>Kill Zone لندن</td><td class="mono">۱۰:۳۰–۱۳:۳۰</td><td class="mono">۰۹:۳۰–۱۲:۳۰</td></tr>
-                <tr><td>Overlap + نیویورک</td><td class="mono">۱۵:۳۰–۱۸:۳۰</td><td class="mono">۱۴:۳۰–۱۷:۳۰</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="phase"><div class="phase-head" style="--accent:var(--purple)"><h3>فاز اول · زمینه‌سازی عصبی</h3><span class="phase-window">06:30 – 08:30</span></div>
-          <div class="phase-body">
-            <div class="phase-item"><span class="t">06:30</span><strong class="title">بیداری</strong><ul><li>۵۰۰ml آب ولرم</li><li>۲۰ دقیقه اول گوشی نباشد</li></ul></div>
-            <div class="phase-item"><span class="t">06:50</span><strong class="title">مدیتیشن</strong><ul><li>تنفس مربعی ۴-۴-۴-۴ به مدت ۱۰ دقیقه</li><li>۵-۱۰ دقیقه نور طبیعی</li></ul></div>
-            <div class="phase-item"><span class="t">07:10</span><strong class="title">صبحانه</strong><ul><li>پروتئین + چربی سالم + کربوهیدرات پیچیده</li><li>قند ساده ممنوع</li></ul></div>
-            <div class="phase-item"><span class="t">07:40</span><strong class="title">تحلیل ماکرو</strong><ul><li>Daily و H4 / IDM / AH-AL</li></ul></div>
-          </div>
-        </div>
-        <div class="phase"><div class="phase-head" style="--accent:var(--amber)"><h3>فاز دوم · Kill Zone لندن</h3><span class="phase-window">08:30 – 12:30</span></div>
-
-          <div class="phase-body">
-            <div class="phase-item"><span class="t">08:30</span><strong class="title">فیلتر اخبار</strong><p>High Impact → ۱۰ دقیقه قبل و بعد <strong style="color:var(--red)">هیچ اوردری</strong>. برای پوزیشن‌های از قبل باز: استاپ را جابجا نکن؛ اگر SL داخل بازه‌ی احتمالی اسپایک خبر است، حجم را نصف کن یا کامل ببند — تصمیم را قبل از خبر بگیر، نه وسط آن.</p></div>
-            <div class="phase-item"><span class="t">08:30–12:30</span><strong class="title">Kill Zone لندن</strong><ul><li>M15 / Sweep آسیا / POI / CHoCH حداقل M15</li><li>هیدراتاسیون هر ۳۰ دقیقه</li></ul></div>
-          </div>
-        </div>
-        <div class="phase"><div class="phase-head" style="--accent:var(--cyan)"><h3>فاز سوم · ریست</h3><span class="phase-window">12:30 – 15:30</span></div>
-          <div class="phase-body">
-            <div class="phase-item"><span class="t">12:30</span><strong class="title">خروج مطلق</strong><p>مانیتورها خاموش</p></div>
-            <div class="phase-item"><span class="t">12:45</span><strong class="title">ناهار سبک</strong></div>
-            <div class="phase-item"><span class="t">13:30</span><strong class="title">Power Nap</strong><p>۲۰ دقیقه در اتاق تاریک</p></div>
-          </div>
-        </div>
-        <div class="phase"><div class="phase-head" style="--accent:var(--amber)"><h3>فاز چهارم · Overlap + سشن نیویورک</h3><span class="phase-window">15:30 – 19:30</span></div>
-          <div class="phase-body">
-            <div class="phase-item"><span class="t">15:30</span><strong class="title">به‌روزرسانی</strong></div>
-            <div class="phase-item"><span class="t">15:30–17:30</span><strong class="title">Overlap لندن-نیویورک</strong><p>بالاترین نقدینگی روز — اگر ۱٪ در لندن خورده → <strong style="color:var(--red)">نیویورک تعطیل</strong></p></div>
-            <div class="phase-item"><span class="t">17:30–19:30</span><strong class="title">نیویورک خالص</strong><ul><li>نقدینگی کمتر از Overlap — احتیاط در حجم</li></ul></div>
-          </div>
-        </div>
-        <div class="phase"><div class="phase-head" style="--accent:var(--purple)"><h3>فاز پنجم · تخلیه</h3><span class="phase-window">19:30 →</span></div>
-          <div class="phase-body">
-            <div class="phase-item"><span class="t">19:30</span><strong class="title">ژورنال</strong><p>عکس چارت / دلیل ورود / «۱۰۰٪ مکانیکی بودم؟»</p></div>
-            <div class="phase-item"><span class="t">20:00</span><strong class="title">خاموشی</strong></div>
-            <div class="phase-item"><span class="t">20:30</span><strong class="title">ورزش</strong></div>
-            <div class="phase-item"><span class="t">22:00</span><strong class="title">خواب ۸ ساعته</strong></div>
-          </div>
-        </div>
-      </div>
-
       <!-- Physical Barriers -->
       <div class="guide-panel" id="g-barriers">
         <div class="card">
@@ -1264,7 +1205,30 @@
         <div class="form-group"><label>۴. یک درس کلیدی (یک جمله)</label><input type="text" id="wr-lesson"></div>
         <button class="btn btn-primary btn-block" onclick="saveWeeklyReview()" aria-label="ذخیره بازبینی هفتگی">💾 ذخیره بازبینی هفتگی</button>
       </div>
-      <div id="weekly-list" style="margin-top:14px;"></div>
+      <div class="card" style="margin-top:14px;">
+        <h3 style="color:var(--purple);margin-bottom:4px;">🗂️ تاریخچه‌ی بازبینی‌های قبلی</h3>
+        <p class="chart-caption" style="margin-bottom:10px;">هر بار که فرم بالا را ذخیره می‌کنی، همین‌جا زیر هم اضافه می‌شود.</p>
+        <div id="weekly-list"></div>
+      </div>
+    </div>
+
+    <!-- ==================== ROUTINE ==================== -->
+    <div class="page" id="page-routine">
+      <div class="page-header"><h1>روتین روزانه</h1><p>برنامه‌ی فاز‌به‌فاز روز — قابل‌ویرایش و شخصی‌سازی</p></div>
+      <div class="card" style="margin-bottom:12px;">
+        <h3 style="color:var(--amber)">⏰ نکته‌ی مهم درباره‌ی ساعت‌ها</h3>
+        <p style="color:var(--text-dim);font-size:.85rem;margin-bottom:10px;">ایران از سال ۲۰۲۲ ساعت تابستانی ندارد (همیشه UTC+۳:۳۰ ثابت)، ولی بریتانیا و آمریکا هنوز دارند. یعنی فاصله‌ی ساعت تهران با کیل‌زون‌های واقعی هرسال دو بار، هرکدام یک ساعت، جابه‌جا می‌شود. زمان‌بندی فازهای زیر میانگین دو حالت است؛ بر اساس جدول، حدود یک ساعت با فصل تنظیم کنید (ساعت زنده‌ی بالای فرم ثبت معامله همیشه دقیق است، نیازی به تنظیم دستی ندارد):</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>فاز</th><th>زمستان بریتانیا/آمریکا (~آبان تا اسفند)</th><th>تابستان بریتانیا/آمریکا (~فروردین تا مهر)</th></tr></thead>
+            <tbody>
+              <tr><td>Kill Zone لندن</td><td class="mono">۱۰:۳۰–۱۳:۳۰</td><td class="mono">۰۹:۳۰–۱۲:۳۰</td></tr>
+              <tr><td>Overlap + نیویورک</td><td class="mono">۱۵:۳۰–۱۸:۳۰</td><td class="mono">۱۴:۳۰–۱۷:۳۰</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="routine-phases"></div>
     </div>
 
     <!-- ==================== SETTINGS ==================== -->
@@ -1276,13 +1240,6 @@
         <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:10px;">برای محاسبه‌ی درست درصد Drawdown در تب «عملکرد» استفاده می‌شود.</p>
         <div class="form-group"><input type="number" step="0.01" id="account-balance-input" placeholder="10000"></div>
         <button class="btn btn-primary" onclick="saveAccountBalance()" aria-label="ذخیره موجودی">ذخیره موجودی</button>
-      </div>
-
-      <div class="card">
-        <h3>📐 سقف Consistency Rule پراپ‌فرم (٪)</h3>
-        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:10px;">حداکثر درصدی که سود یک روز می‌تواند از کل سود انباشته باشد (طبق قوانین پراپ‌فرم شما — رقم رایج ۲۰ تا ۴۰٪). برای محاسبه‌ی زنده در گام مدیریت سرمایه استفاده می‌شود.</p>
-        <div class="form-group"><input type="number" step="1" id="consistency-cap-input" placeholder="30"></div>
-        <button class="btn btn-primary" onclick="saveConsistencyCap()" aria-label="ذخیره سقف">ذخیره سقف</button>
       </div>
 
       <div class="card">
@@ -1391,6 +1348,35 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="routineEditModal">
+  <div class="modal">
+    <div class="modal-header"><h3>✏️ ویرایش فاز روتین</h3></div>
+    <div class="modal-body">
+      <input type="hidden" id="re-idx">
+      <div class="form-group"><label>عنوان فاز</label><input type="text" id="re-title" placeholder="مثلاً: فاز اول · زمینه‌سازی عصبی"></div>
+      <div class="grid-2">
+        <div class="form-group"><label>بازه‌ی زمانی (نمایشی)</label><input type="text" id="re-window" placeholder="06:30 – 08:30"></div>
+        <div class="form-group"><label>رنگ</label>
+          <select id="re-accent">
+            <option value="purple">بنفش</option>
+            <option value="amber">کهربایی</option>
+            <option value="cyan">فیروزه‌ای</option>
+            <option value="green">سبز</option>
+            <option value="red">قرمز</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>آیتم‌های این فاز — هر خط: «ساعت|عنوان|توضیح» (چند نکته را با ~ جدا کن)</label>
+        <textarea id="re-items" rows="8" style="font-family:var(--mono);direction:ltr;text-align:left;font-size:.78rem;" placeholder="06:30|بیداری|۵۰۰ml آب~۲۰ دقیقه اول گوشی نباشد"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeRoutineEdit()" aria-label="انصراف">انصراف</button>
+      <button class="btn btn-primary" onclick="saveRoutineEdit()" aria-label="ذخیره فاز">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="resultModal">
   <div class="modal wide">
     <div class="modal-header"><h3>ثبت نتیجه معامله</h3><button class="modal-close" onclick="closeResultModal()" aria-label="بستن">×</button></div>
@@ -1482,10 +1468,36 @@ function emoLabel(val){
 // احساساتی که به‌عنوان «ورود ناپایدار/تکانشی» شمرده می‌شوند (برای امتیاز روحی و هشدار هفتگی)
 const IMPULSIVE_EMOTIONS=['fomo','revenge','bored','rushed'];
 
+// روتین روزانه — قابل‌ویرایش. هر فاز: عنوان/بازه‌ی زمانی/رنگ + چند آیتم.
+// فرمت هر خط آیتم برای ویرایش ساده در textarea: «زمان|عنوان|توضیح» — چند نکته داخل توضیح با ~ از هم جدا می‌شن.
+const DEFAULT_ROUTINE = [
+  {id:'ph1', title:'فاز اول · زمینه‌سازی عصبی', accent:'purple', window:'06:30 – 08:30', items:
+`06:30|بیداری|۵۰۰ml آب ولرم~۲۰ دقیقه اول گوشی نباشد
+06:50|مدیتیشن|تنفس مربعی ۴-۴-۴-۴ به مدت ۱۰ دقیقه~۵-۱۰ دقیقه نور طبیعی
+07:10|صبحانه|پروتئین + چربی سالم + کربوهیدرات پیچیده~قند ساده ممنوع
+07:40|تحلیل ماکرو|Daily و H4 / IDM / AH-AL`},
+  {id:'ph2', title:'فاز دوم · Kill Zone لندن', accent:'amber', window:'08:30 – 12:30', items:
+`08:30|فیلتر اخبار|High Impact → ۱۰ دقیقه قبل و بعد هیچ اوردری. برای پوزیشن‌های از قبل باز: استاپ را جابجا نکن؛ اگر SL داخل بازه‌ی احتمالی اسپایک خبر است، حجم را نصف کن یا کامل ببند.
+08:30–12:30|Kill Zone لندن|M15 / Sweep آسیا / POI / CHoCH حداقل M15~هیدراتاسیون هر ۳۰ دقیقه`},
+  {id:'ph3', title:'فاز سوم · ریست', accent:'cyan', window:'12:30 – 15:30', items:
+`12:30|خروج مطلق|مانیتورها خاموش
+12:45|ناهار سبک|
+13:30|Power Nap|۲۰ دقیقه در اتاق تاریک`},
+  {id:'ph4', title:'فاز چهارم · Overlap + سشن نیویورک', accent:'amber', window:'15:30 – 19:30', items:
+`15:30|به‌روزرسانی|
+15:30–17:30|Overlap لندن-نیویورک|بالاترین نقدینگی روز — اگر ۱٪ در لندن خورده → نیویورک تعطیل
+17:30–19:30|نیویورک خالص|نقدینگی کمتر از Overlap — احتیاط در حجم`},
+  {id:'ph5', title:'فاز پنجم · تخلیه', accent:'purple', window:'19:30 →', items:
+`19:30|ژورنال|عکس چارت / دلیل ورود / «۱۰۰٪ مکانیکی بودم؟»
+20:00|خاموشی|
+20:30|ورزش|
+22:00|خواب ۸ ساعته|`}
+];
+
 const DEFAULT_DAILY = [
   {id:'dt2',text:'هم‌راستایی H4 تایید شد',cat:'tech',pts:3,critical:false},
   {id:'dt4',text:'تقویم اقتصادی چک شد',cat:'tech',pts:3,critical:false},
-  {id:'dr1',text:'سقف ریسک روزانه (Consistency) تعیین شد',cat:'risk',pts:4,critical:true},
+  {id:'dr1',text:'سقف سود روزانه (Consistency) در نظر گرفته شد',cat:'risk',pts:4,critical:true},
   {id:'dr2',text:'هیچ معامله باز شبانه/استرس‌زا نیست',cat:'risk',pts:4,critical:false},
   {id:'dm1',text:'خواب ۸ ساعته کامل',cat:'mental',pts:2,critical:false},
   {id:'dm2',text:'۵۰۰ml آب + ۱۰ دقیقه مدیتیشن',cat:'mental',pts:2,critical:false},
@@ -1518,7 +1530,7 @@ const PRE_STAGES = [
   {key:'bias',   icon:'📊', title:'بایاس / وضعیت بازار', guide:'g-bias',  selectKey:'_bias', selectLabel:'وضعیت بازار', selectOptions:[['','— انتخاب کنید —'],['trendUp','روند صعودی (HH/HL)'],['trendDown','روند نزولی (LH/LL)'],['ranging','رنج / بدون روند']]},
   {key:'levels', icon:'📍', title:'سطوح کلیدی',          guide:'g-liq'},
   {key:'sweep',  icon:'🎯', title:'Sweep نقدینگی',       guide:'g-liq'},
-  {key:'confirm',icon:'✅', title:'تأیید LTF',            guide:'g-entry'},
+  {key:'confirm',icon:'🔎', title:'تأیید LTF',            guide:'g-entry'},
   // «خروج و ریسک» به‌جای یک select جدا، از همون فیلد «استراتژی خروج» در فرم ثبت معامله (nt-exit-type) استفاده می‌کنه — بدون تکرار.
   {key:'risk',   icon:'🚪', title:'خروج و ریسک',          guide:'g-entry', formFieldCheck:'nt-exit-type'},
   {key:'final',  icon:'📝', title:'یادداشت نهایی',        guide:'g-entry'}
@@ -1555,10 +1567,24 @@ function escapeHTML(str){
     .replace(/'/g,'&#39;');
 }
 
-// Trade DNA — auto time-of-day zone (Tehran time boundaries)
-function getTimeOfDayZone(d){
+// ساعت واقعی تهران — با Intl.DateTimeFormat و IANA timezone، نه محاسبه‌ی دستی آفست.
+// این روش همیشه درسته چون به دیتابیس تایم‌زون مرورگر تکیه می‌کنه، نه یک عدد ثابت که ممکنه اشتباه/قدیمی باشه.
+function getTehranHour(d){
   d = d || new Date();
-  const h = d.getHours() + d.getMinutes()/60;
+  const parts = new Intl.DateTimeFormat('en-GB', {timeZone:'Asia/Tehran', hour:'2-digit', minute:'2-digit', hour12:false}).formatToParts(d);
+  const h = parseInt(parts.find(p=>p.type==='hour').value, 10);
+  const m = parseInt(parts.find(p=>p.type==='minute').value, 10);
+  return h + m/60;
+}
+function formatHourMin(t){
+  const h = Math.floor(t % 24);
+  const m = Math.floor((t % 1) * 60);
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
+// Trade DNA — auto time-of-day zone (بر اساس ساعت واقعی تهران)
+function getTimeOfDayZone(d){
+  const h = getTehranHour(d);
   if(h>=0 && h<6.5) return 'آسیا';
   if(h>=6.5 && h<8.5) return 'قبل از لندن';
   if(h>=8.5 && h<12.5) return 'لندن';
@@ -1611,6 +1637,7 @@ function initSettings(){
     contractAccepted:false,
     dailyItems:JSON.parse(JSON.stringify(DEFAULT_DAILY)),
     preItems:JSON.parse(JSON.stringify(DEFAULT_PRE)),
+    routinePhases:JSON.parse(JSON.stringify(DEFAULT_ROUTINE)),
     theme:'dark',
     startingBalance:10000,
     consistencyCapPercent:30,
@@ -1653,6 +1680,7 @@ navItems.forEach(btn=>{
     if(page==='history') renderHistory();
     if(page==='performance') drawPerformancePage();
     if(page==='weekly') initWeeklyPage();
+    if(page==='routine') renderRoutinePage();
     if(page==='watchlist') renderWatchlistPage();
     if(page==='settings') renderSettings();
   });
@@ -1969,13 +1997,6 @@ function saveAccountBalance(){
   saveSettings();
   toast('✅ موجودی حساب ذخیره شد');
   drawPerformancePage();
-}
-function saveConsistencyCap(){
-  const v=parseFloat(document.getElementById('consistency-cap-input').value);
-  settings.consistencyCapPercent = (!isNaN(v) && v>0 && v<=100) ? v : 30;
-  saveSettings();
-  toast('✅ سقف Consistency ذخیره شد');
-  renderConsistencyCheck();
 }
 function renderConsistencyCheck(){
   const box=document.getElementById('consistency-live');
@@ -3274,10 +3295,73 @@ function initWeeklyPage(){
 }
 
 // ===== SETTINGS / CUSTOM CHECKLIST =====
+// ===== روتین روزانه (تب مستقل، قابل‌ویرایش) =====
+function parseRoutineItems(raw){
+  return (raw||'').split('\n').map(l=>l.trim()).filter(Boolean).map(line=>{
+    const [time='', title='', body=''] = line.split('|');
+    return {time, title, body};
+  });
+}
+function renderRoutinePage(){
+  const container=document.getElementById('routine-phases');
+  if(!container) return;
+  const phases = settings.routinePhases || DEFAULT_ROUTINE;
+  container.innerHTML = phases.map((ph,idx)=>{
+    const items = parseRoutineItems(ph.items);
+    return `<div class="phase" data-idx="${idx}"><div class="phase-head" style="--accent:var(--${ph.accent})">
+        <h3>${escapeHTML(ph.title)}</h3>
+        <span class="phase-window">${escapeHTML(ph.window)}</span>
+        <button type="button" class="btn btn-sm btn-ghost" onclick="openRoutineEdit(${idx})" style="margin-inline-start:auto;">✏️</button>
+        <button type="button" class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteRoutinePhase(${idx})">🗑️</button>
+      </div>
+      <div class="phase-body">
+        ${items.map(it=>`<div class="phase-item"><span class="t">${escapeHTML(it.time)}</span><strong class="title">${escapeHTML(it.title)}</strong>
+          ${it.body?(it.body.includes('~')?`<ul>${it.body.split('~').map(b=>`<li>${escapeHTML(b)}</li>`).join('')}</ul>`:`<p>${escapeHTML(it.body)}</p>`):''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('') + `<button class="btn btn-sm btn-ghost btn-block" onclick="openRoutineEdit(-1)" style="margin-top:8px;">➕ افزودن فاز جدید</button>`;
+}
+function openRoutineEdit(idx){
+  const phases = settings.routinePhases || DEFAULT_ROUTINE;
+  const isNew = idx<0;
+  const ph = isNew ? {title:'',accent:'cyan',window:'',items:''} : phases[idx];
+  document.getElementById('re-idx').value = idx;
+  document.getElementById('re-title').value = ph.title;
+  document.getElementById('re-window').value = ph.window;
+  document.getElementById('re-accent').value = ph.accent;
+  document.getElementById('re-items').value = ph.items;
+  document.getElementById('routineEditModal').classList.add('active');
+}
+function closeRoutineEdit(){document.getElementById('routineEditModal').classList.remove('active');}
+function saveRoutineEdit(){
+  const idx = parseInt(document.getElementById('re-idx').value);
+  const updated = {
+    id: idx>=0 ? (settings.routinePhases||DEFAULT_ROUTINE)[idx].id : 'ph_'+Date.now(),
+    title: document.getElementById('re-title').value.trim(),
+    window: document.getElementById('re-window').value.trim(),
+    accent: document.getElementById('re-accent').value,
+    items: document.getElementById('re-items').value
+  };
+  if(!updated.title){toast('عنوان فاز را وارد کن','error');return;}
+  if(!settings.routinePhases) settings.routinePhases = JSON.parse(JSON.stringify(DEFAULT_ROUTINE));
+  if(idx>=0) settings.routinePhases[idx]=updated; else settings.routinePhases.push(updated);
+  saveSettings();
+  closeRoutineEdit();
+  renderRoutinePage();
+  toast('✅ روتین ذخیره شد');
+}
+function deleteRoutinePhase(idx){
+  if(!confirm('این فاز حذف شود؟')) return;
+  if(!settings.routinePhases) settings.routinePhases = JSON.parse(JSON.stringify(DEFAULT_ROUTINE));
+  settings.routinePhases.splice(idx,1);
+  saveSettings();
+  renderRoutinePage();
+}
+
 function renderSettings(){
   document.getElementById('contract-input').value=settings.contract||'';
   document.getElementById('account-balance-input').value=settings.startingBalance||10000;
-  document.getElementById('consistency-cap-input').value=settings.consistencyCapPercent||30;
   renderWatchlistSettings();
 
   const stageSel=document.getElementById('new-pre-stage');
@@ -3517,7 +3601,7 @@ function downloadBackup(){
   const backup={exportedAt:new Date().toISOString(), trades, journals, dailyChecks, preChecks, scoresCache, settings, weeklyReviews};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='trade-bible-v4.1-'+localDateStr()+'.json';
+  const a=document.createElement('a'); a.href=url; a.download='trade-assist-v4.1-'+localDateStr()+'.json';
   document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   localStorage.setItem(STORAGE.backup, localDateStr());
   toast('✅ پشتیبان دانلود شد');
@@ -3717,21 +3801,8 @@ function renderKillZoneBanner() {
   if (!banner) return;
   
   const now = new Date();
-  const gmtHours = now.getUTCHours();
-  const gmtMins  = now.getUTCMinutes();
-  const gmtTime  = gmtHours + gmtMins / 60;
-  
-  // Summer time approx: UK/US DST (March-October)
-  const month = now.getMonth() + 1;
-  const isDST = (month >= 3 && month <= 10);
-  const tehranOffset = isDST ? 4.5 : 4.5; // Iran always UTC+4:30 (no DST since 2022)
-  
-  const tehranTime = gmtTime + tehranOffset;
-  const formatTime = (t) => {
-    const h = Math.floor(t % 24);
-    const m = Math.floor((t % 1) * 60);
-    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-  };
+  const gmtTime = now.getUTCHours() + now.getUTCMinutes() / 60;
+  const tehranTime = getTehranHour(now);
   
   let active = null;
   let statusColor = '';
@@ -3740,17 +3811,17 @@ function renderKillZoneBanner() {
   if (gmtTime >= 8 && gmtTime <= 11) {
     active = THE_MODEL.killZones.london;
     statusColor = 'var(--amber)';
-    statusText = `🔥 LONDON KILL ZONE فعال (${formatTime(tehranTime)} تهران)`;
+    statusText = `🔥 LONDON KILL ZONE فعال (${formatHourMin(tehranTime)} تهران)`;
   } else if (gmtTime >= 13 && gmtTime <= 15) {
     active = THE_MODEL.killZones.overlap;
     statusColor = 'var(--red)';
-    statusText = `⚡ OVERLAP / NY فعال (${formatTime(tehranTime)} تهران)`;
+    statusText = `⚡ OVERLAP / NY فعال (${formatHourMin(tehranTime)} تهران)`;
   } else if (gmtTime >= 11 && gmtTime <= 13) {
     statusColor = 'var(--cyan)';
-    statusText = `⏸️ پنجره بین لندن و نیویورک (${formatTime(tehranTime)} تهران)`;
+    statusText = `⏸️ پنجره بین لندن و نیویورک (${formatHourMin(tehranTime)} تهران)`;
   } else {
     statusColor = 'var(--text-faint)';
-    statusText = `😴 خارج از Kill Zone (${formatTime(tehranTime)} تهران)`;
+    statusText = `😴 خارج از Kill Zone (${formatHourMin(tehranTime)} تهران)`;
   }
   
   if (active) {
