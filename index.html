@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- v5.7 UI: Vazirmatn فارسی + JetBrains Mono اعداد — fallback کامل آفلاین -->
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<title>Trade Assist Coach — Unified Dashboard v5.8</title>
+<title>Trade Assist Coach — Unified Dashboard v5.9 (Practical Model)</title>
 <style>
   /* ===== SYSTEM FONTS (Offline Ready) ===== */
   :root{
@@ -368,6 +368,16 @@
   .term{padding:10px 12px;border-radius:var(--radius-sm);background:var(--panel-2);margin-bottom:6px}
   .term-name{font-family:var(--mono);direction:ltr;display:inline-block;font-weight:700;color:var(--accent,var(--amber));font-size:.8rem;background:transparent;background:color-mix(in srgb,var(--accent,var(--amber))12%,transparent);padding:2px 8px;border-radius:6px;margin-bottom:5px}
   .term-def{color:var(--text-dim);font-size:.82rem;line-height:1.7;margin:0}
+  .glossary-link{
+    color:var(--gold-400);cursor:pointer;border-bottom:1px dashed rgba(212,175,55,.45);
+    font-weight:600;transition:color .15s,border-color .15s;text-decoration:none;
+  }
+  .glossary-link:hover{color:var(--gold-300);border-bottom-color:var(--gold-300)}
+  .term.highlight-term{
+    animation:termFlash 2.2s ease;outline:2px solid var(--gold-400);outline-offset:4px;
+    border-radius:8px;background:rgba(212,175,55,.08);
+  }
+  @keyframes termFlash{0%{background:rgba(212,175,55,.25)}100%{background:transparent}}
   canvas{width:100%!important;height:auto!important}
 
   /* Alerts */
@@ -395,10 +405,14 @@
   .guide-panel h3{font-family:var(--guide-serif);font-size:1.15rem;font-weight:600;letter-spacing:.2px}
   .guide-eyebrow{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;color:var(--amber);text-transform:uppercase;margin-bottom:8px;opacity:.85}
   .guide-panel .card{border-top:2px solid var(--amber)}
-  .step{display:flex;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--panel-2);margin-bottom:6px}
-  .step-idx{font-family:var(--mono);direction:ltr;font-size:.68rem;color:var(--accent,var(--amber));background:transparent;background:color-mix(in srgb,var(--accent,var(--amber))12%,transparent);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-  .step p{margin:0;color:var(--text);font-size:.86rem}
-  .step ul{margin:6px 0 0;padding-inline-start:16px;color:var(--text-dim);font-size:.8rem}
+  .step{display:flex;gap:12px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--panel-2);margin-bottom:8px;line-height:1.75}
+  .step-idx{font-family:var(--mono);direction:ltr;font-size:.68rem;color:var(--accent,var(--amber));background:transparent;background:color-mix(in srgb,var(--accent,var(--amber))12%,transparent);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .step p{margin:0;color:var(--text);font-size:.88rem;line-height:1.75}
+  .step ul{margin:8px 0 0;padding-inline-start:18px;color:var(--text-dim);font-size:.82rem;line-height:1.7}
+  .step li{margin-bottom:4px}
+  .guide-panel .card p{line-height:1.8}
+  .guide-panel .callout p{line-height:1.75;margin-top:4px}
+  .guide-panel .chart-caption{line-height:1.75;margin-bottom:12px}
   .callout{border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;font-size:.84rem;border:1px solid var(--line-soft)}
   .callout strong.head{display:block;margin-bottom:4px;font-size:.82rem}
   .callout p{margin:0;color:var(--text-dim)}
@@ -830,7 +844,7 @@
           <div id="killzone-banner" style="margin-bottom:12px;padding:10px 14px;border-radius:var(--radius-sm);display:none;font-size:.82rem;"></div>
             <div id="nt-bias-warn"></div>
 
-          <div class="form-group" style="margin-top:10px;"><label>یادداشت / دلیل ورود</label><textarea id="nt-note" placeholder="AH Sweep + OB H1 + CHoCH M15..."></textarea></div>
+          <div class="form-group" style="margin-top:10px;"><label>یادداشت / دلیل ورود</label><textarea id="nt-note" placeholder="AH Sweep + OB H1 + CHoCH M5..."></textarea></div>
           <button class="btn btn-primary btn-block" id="btn-save-trade" onclick="saveNewTrade()" aria-label="ثبت معامله">💾 ثبت معامله</button>
         </div>
       </div>
@@ -1035,12 +1049,12 @@
 
     <!-- ==================== GUIDE ==================== -->
     <div class="page" id="page-guide">
-      <div class="page-header"><h1>راهنمای مکانیکی ترید</h1><p>مرجع جامع مدل نقدینگی (The Model) + نُه گام تصمیم‌گیری بدون احساسات 🛡️</p></div>
+      <div class="page-header"><h1>راهنمای مکانیکی ترید</h1><p>مرجع جامع مدل نقدینگی (The Model) + نُه گام تصمیم‌گیری بدون احساسات 🛡️ <span style="font-size:.72rem;color:var(--gold-400);">v5.9</span></p></div>
       <div class="guide-tabs">
         <button class="guide-tab active" data-gtab="g-model" style="--accent:var(--gold-400)">۰۰ The Model ★</button>
         <button class="guide-tab" data-gtab="g-bias" style="--accent:var(--cyan)">۰۱ بایاس</button>
         <button class="guide-tab" data-gtab="g-liq" style="--accent:var(--amber)">۰۲ نقدینگی</button>
-        <button class="guide-tab" data-gtab="g-poi" style="--accent:var(--green)">۰۳ POI</button>
+        <button class="guide-tab no-glossary" data-gtab="g-poi" style="--accent:var(--green)">۰۳ POI</button>
         <button class="guide-tab" data-gtab="g-entry" style="--accent:var(--red)">۰۴ ورود و مدیریت سرمایه</button>
         <button class="guide-tab" data-gtab="g-barriers" style="--accent:var(--red)">۰۵ موانع فیزیکی</button>
         <button class="guide-tab" data-gtab="g-glossary" style="--accent:var(--cyan)">۰۶ واژه‌نامه</button>
@@ -1121,15 +1135,15 @@
         <div class="card">
           <span class="guide-eyebrow">STEP ZERO · MARKET CONDITION</span>
           <h3 style="color:var(--cyan)">وضعیت بازار — قبل از هر الگو</h3>
-          <p class="chart-caption" style="margin-bottom:10px;">قبل از دنبال‌کردن هر ستاپی، این سؤال را جواب بده: در حال Trend هستیم یا Range؟ این تعیین می‌کند فقط اجازه داری کدام سمت را نگاه کنی.</p>
+          <p class="chart-caption" style="margin-bottom:10px;">قبل از دنبال‌کردن هر ستاپی، این سؤال را جواب بده: در حال Trend هستیم یا Range؟ این تعیین می‌کند فقط اجازه داری کدام سمت را نگاه کنی. اگر وضعیت روشن نیست → امروز معامله نکن.</p>
           <div id="render-market"></div>
         </div>
         <div class="card">
-          <h3 style="color:var(--cyan)">گام اول · تعیین بایاس روزانه</h3>
-          <div class="step"><span class="step-idx">1</span><p>چارت Daily را باز کرده و از آخرین سقف/کف تشکیل‌شده شروع کنید.</p></div>
-          <div class="step"><span class="step-idx">2</span><p>نزدیک‌ترین پولبک معتبر را به عنوان <strong>IDM</strong> علامت بزنید.</p></div>
-          <div class="step"><span class="step-idx">3</span><p>قیمت باید IDM را با شدو پاکسازی کند تا سوینگ ماژور تایید شود.</p></div>
-          <div class="step"><span class="step-idx">4</span><div><p><strong>تشخیص جهت:</strong></p><ul><li>Body Close بالای سقف → <strong style="color:var(--green)">بایاس صعودی</strong></li><li>Body Close پایین کف → <strong style="color:var(--red)">بایاس نزولی</strong></li></ul></div></div>
+          <h3 style="color:var(--cyan)">گام اول · تعیین بایاس روزانه (با تعریف کمی)</h3>
+          <div class="step"><span class="step-idx">1</span><p>چارت Daily را باز کن. آخرین سقف یا کف واضح را پیدا کن (حداقل ۳ کندل از دو طرف).</p></div>
+          <div class="step"><span class="step-idx">2</span><p>نزدیک‌ترین پولبک معتبر = <strong>IDM</strong> (باید حداقل ۳۸٪ از حرکت قبلی را اصلاح کرده باشد و حداقل ۲ کندل کامل باشد).</p></div>
+          <div class="step"><span class="step-idx">3</span><p>قیمت باید IDM را با سایه پاکسازی کند (نه لزوماً با بدنه) تا سوینگ ماژور تایید شود.</p></div>
+          <div class="step"><span class="step-idx">4</span><div><p><strong>تشخیص جهت:</strong></p><ul><li>Body Close بالای آخرین سقف سوینگ → <strong style="color:var(--green)">بایاس صعودی</strong></li><li>Body Close پایین آخرین کف سوینگ → <strong style="color:var(--red)">بایاس نزولی</strong></li></ul></div></div>
         </div>
         <div class="card">
           <h3 style="color:var(--cyan)">گام دوم · هم‌راستایی H4</h3>
@@ -1143,13 +1157,14 @@
               </tbody>
             </table>
           </div>
+          <p style="font-size:.8rem;color:var(--text-dim);margin-top:8px;">اگر هم‌راستایی نیست → صبر کن. عجله نکن.</p>
         </div>
         <div class="card">
-          <h3 style="color:var(--red)">🛡️ قوانین ابطال بایاس</h3>
-          <p class="chart-caption" style="margin-bottom:10px;">بایاس تعیین‌شده ثابت نیست؛ در هرکدام از این موارد باطل می‌شود و باید به گام اول برگردید، نه اینکه با همان بایاس قدیمی ادامه دهید:</p>
-          <div class="callout callout-sell"><strong class="head">رد بدون Sweep تمیز</strong><p>قیمت بدون یک Sweep تمیز، IDM را با بدنه‌ی کندل رد کند.</p></div>
+          <h3 style="color:var(--red)">🛡️ قوانین ابطال بایاس (سریع و واضح)</h3>
+          <p class="chart-caption" style="margin-bottom:10px;">بایاس ثابت نیست. در این موارد باطل می‌شود و باید به گام اول برگردی:</p>
+          <div class="callout callout-sell"><strong class="head">رد بدون Sweep تمیز</strong><p>قیمت IDM را با بدنه کامل رد کند بدون Sweep تمیز.</p></div>
           <div class="callout callout-sell"><strong class="head">CHoCH خلاف در H4</strong><p>بعد از تعیین بایاس، ساختار H4 با یک CHoCH در جهت مخالف تغییر کند.</p></div>
-          <div class="callout callout-wait"><strong class="head">POI مصرف‌شده</strong><p>POI که یک‌بار Mitigate شده دیگر معتبر نیست. دنبال POI بعدی در همان جهت بگردید — نه اینکه کل بایاس را زیر سوال ببرید.</p></div>
+          <div class="callout callout-wait"><strong class="head">ساختار Daily بشکند</strong><p>BOS خلاف جهت در Daily رخ دهد. (POI مصرف‌شده به تنهایی بایاس را باطل نمی‌کند — فقط دنبال POI بعدی در همان جهت بگرد.)</p></div>
         </div>
       </div>
       <div class="guide-panel" id="g-liq">
@@ -1196,150 +1211,154 @@
         </div>
         <div class="card">
           <h3 style="color:var(--amber)">گام چهارم · هدف قیمتی</h3>
-          <div class="callout callout-note"><strong class="head">تارگت اول</strong><p>هدف اول = نقدینگی سمت مقابل رنج آسیا</p></div>
-          <div class="callout callout-wait"><strong class="head">حداقل R:R</strong><p>نسبت سود به زیان حداقل <span class="mono" style="color:var(--amber);font-weight:700;">2:1</span></p></div>
+          <div class="callout callout-note"><strong class="head">تارگت اول</strong><p>نزدیک‌ترین نقدینگی معتبر در جهت معامله (نه لزوماً فقط رنج آسیا). قبل از ورود تارگت را مشخص کن و دیگر تغییر نده.</p></div>
+          <div class="callout callout-wait"><strong class="head">حداقل R:R قابل قبول</strong><p>نسبت سود به زیان حداقل <span class="mono" style="color:var(--amber);font-weight:700;">۱.۵ : ۱</span>. اگر تارگت دوم (نقدینگی بعدی) حداقل ۳R فاصله داشت، اولویت بالاتر می‌گیرد.</p></div>
         </div>
       </div>
       <div class="guide-panel" id="g-poi">
         <div class="card">
-          <h3 style="color:var(--green)">گام پنجم · انواع POI (به ترتیب اولویت)</h3>
-          <p class="chart-caption" style="margin-bottom:10px;">POI یعنی ناحیه‌ای که انتظار واکنش نهادی در آن می‌رود. به این ترتیب اولویت بررسی می‌شوند:</p>
-          <div class="step"><span class="step-idx">1</span><div><p><strong>Order Block (OB):</strong> اولویت اول این سیستم — آخرین کندل مخالف قبل از حرکت قدرتمند. شروط اعتبار آن در کارت زیر آمده.</p></div></div>
-          <div class="step"><span class="step-idx">2</span><div><p><strong>FVG (Fair Value Gap):</strong> شکاف سه‌کندلی که سایه‌ی کندل اول و سوم هم‌پوشانی ندارد؛ می‌تواند مستقل از OB هم POI باشد، نه فقط شرط چهارمِ اعتبار OB.</p></div></div>
+          <h3 style="color:var(--green)">گام پنجم · انواع <span class="no-glossary">POI</span> + سیستم امتیازدهی</h3>
+          <p class="chart-caption" style="margin-bottom:10px;">POI یعنی ناحیه‌ای که انتظار واکنش نهادی در آن می‌رود. به‌جای ۴ شرط اجباری سخت، از سیستم امتیاز استفاده کن:</p>
+          <div class="table-wrap" style="margin-bottom:12px;">
+            <table>
+              <thead><tr><th>شرط</th><th>امتیاز</th></tr></thead>
+              <tbody>
+                <tr><td>Sweep واضح قبل از تشکیل</td><td class="mono">+۲</td></tr>
+                <tr><td>Mitigated نباشد (لمس‌نشده / مصرف‌نشده)</td><td class="mono">+۲</td></tr>
+                <tr><td>FVG بلافاصله بعد</td><td class="mono">+۱</td></tr>
+                <tr><td>Inside Bar نباشد</td><td class="mono">+۱</td></tr>
+                <tr><td>در مسیر نقدینگی اصلی</td><td class="mono">+۱</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-buy"><strong class="head">حداقل امتیاز لازم برای ورود: ۴ از ۷</strong><p>Order Block با امتیاز ۶–۷ اولویت اول، FVG یا Breaker با امتیاز ۴–۵ قابل قبول است. این انعطاف باعث می‌شود تعداد ستاپ‌های قابل معامله منطقی بماند.</p></div>
+          <div class="step"><span class="step-idx">1</span><div><p><strong>Order Block (OB):</strong> اولویت اول این سیستم — آخرین کندل مخالف قبل از حرکت قدرتمند.</p></div></div>
+          <div class="step"><span class="step-idx">2</span><div><p><strong>FVG (Fair Value Gap):</strong> شکاف سه‌کندلی که سایه‌ی کندل اول و سوم هم‌پوشانی ندارد؛ می‌تواند مستقل از OB هم POI باشد.</p></div></div>
           <div class="step"><span class="step-idx">3</span><div><p><strong>Breaker Block:</strong> یک OB شکست‌خورده — قیمت با بدنه از آن عبور کرد و ساختار خلاف جهت شکل گرفت. همان ناحیه حالا قطبیت برعکس دارد (مقاومت شده حمایت، یا برعکس).</p></div></div>
           <div class="step"><span class="step-idx">4</span><div><p><strong>Mitigation Block:</strong> شبیه Breaker، ولی امضای شکست متفاوت دارد (بدون تشکیل سقف/کف جدید در همان جهت پیش از بازگشت)؛ در بازگشت‌های نرم‌تر رایج‌تر است.</p></div></div>
           <div class="step"><span class="step-idx">5</span><div><p><strong>Rejection Block:</strong> کندلی با سایه‌ی بلند که به‌وضوح رد شده. ضعیف‌ترین ولی در دسترس‌ترین POI کمکی، وقتی هیچ‌کدام از موارد بالا حاضر نیست.</p></div></div>
         </div>
-        <div class="card">
-          <h3 style="color:var(--green)">شروط اعتبار OB</h3>
-          <p style="color:var(--text-dim);font-size:.85rem;margin:-6px 0 12px;">POI معتبر باید هر چهار شرط را داشته باشد:</p>
-          <div class="step"><span class="step-idx">1</span><p><strong>Sweep:</strong> کندل OB سقف/کف مجاور را با شدو پاکسازی کند.</p></div>
-          <div class="step"><span class="step-idx">2</span><p><strong>Inside Bar:</strong> کندل داخلی نباشد. کندل مادر ملاک است.</p></div>
-          <div class="step"><span class="step-idx">3</span><p><strong>Unmitigated:</strong> کاملاً بکر و لمس‌نشده.</p></div>
-          <div class="step"><span class="step-idx">4</span><p><strong>FVG:</strong> شکاف ارزش بلافاصله بعد از بلاک.</p></div>
-        </div>
       </div>
       <div class="guide-panel" id="g-entry">
         <div class="card">
-          <h3 style="color:var(--red)">گام ششم · تایید ورود (حداقل M15)</h3>
-          <div class="step"><span class="step-idx">1</span><p>برخورد قیمت در M15 به POI معتبر.</p></div>
-          <div class="step"><span class="step-idx">2</span><p>منتظر <strong>CHoCH</strong> حداقل روی M15 (تغییر ماهیت با بدنه) — M1 نویز بالایی دارد و مجاز نیست.</p></div>
-          <div class="step"><span class="step-idx">3</span><p><strong>ورود دو پله‌ای:</strong> پله اول روی بلاک تاییدکننده | پله دوم روی Extreme OB</p></div>
-          <div class="callout callout-sell" style="margin-top:6px;"><strong class="head">حد ضرر — دو‌لایه (جزئیات کامل در گام هشتم)</strong><p>پله ۱ (Probe): <strong>زیر/بالای کل Order Block روی H4</strong> — پله ۲ (Confirmation): <strong>زیر/بالای OB کوچک M5</strong>. این دو حد ضرر جدا از هم محاسبه می‌شوند؛ فاصله‌ی ثابت «۱ پیپ فراتر از HTF» در این سیستم استفاده نمی‌شود چون فاصله ریسک را بیش‌ازحد بزرگ می‌کند.</p></div>
+          <h3 style="color:var(--red)">گام ششم · تایید ورود (حداقل M5)</h3>
+          <div class="step"><span class="step-idx">1</span><p>برخورد قیمت در M5 به POI معتبر (امتیاز ≥۴).</p></div>
+          <div class="step"><span class="step-idx">2</span><p>منتظر <strong>CHoCH با بدنه</strong> حداقل روی M5 بمان (سایه کافی نیست). M1 مجاز نیست.</p></div>
+          <div class="step"><span class="step-idx">3</span><p><strong>ورود دو پله‌ای:</strong><br>• پله ۱ (Probe – ۴۰٪ حجم): روی اولین نشانه برگشت یا لمس POI (Inducement)<br>• پله ۲ (Confirmation – ۶۰٪ حجم): بعد از CHoCH M5 + تشکیل OB کوچک روی M5</p></div>
+          <div class="callout callout-sell" style="margin-top:6px;"><strong class="head">حد ضرر — واقعی و دولایه</strong><p>پله ۱: زیر/بالای کل ناحیه POI (H4 یا ناحیه اصلی)<br>پله ۲: زیر/بالای OB کوچک M5<br>فاصله استاپ را واقعی حساب کن (اسپرد + بافر کوچک). هیچ فاصله‌ی ثابت «۱ پیپ» استفاده نکن.</p></div>
         </div>
         <div class="card">
-          <h3 style="color:var(--red)">گام هفتم · مدیریت سرمایه</h3>
-          <p class="chart-caption" style="margin-bottom:10px;">ریسک مجاز ثابت نیست — به امتیاز چک‌لیست همان روز وابسته است و در فیلد «ریسک مجاز امروز» بالای فرم معامله محاسبه می‌شود:</p>
+          <h3 style="color:var(--red)">گام هفتم · مدیریت سرمایه (محافظه‌کارانه‌تر و واقعی‌تر)</h3>
+          <p class="chart-caption" style="margin-bottom:10px;">ریسک به کیفیت شرایط روز وابسته است:</p>
           <div class="table-wrap">
             <table>
               <thead><tr><th>امتیاز چک‌لیست</th><th>ریسک کل مجاز</th><th>پله ۱ — Probe</th><th>پله ۲ — Confirmation</th></tr></thead>
               <tbody>
-                <tr><td>۸۰ به بالا</td><td class="mono" style="color:var(--green);font-weight:700;">۳٪</td><td class="mono">۱٪</td><td class="mono">۲٪</td></tr>
-                <tr><td>۵۰ تا ۷۹</td><td class="mono" style="color:var(--amber);font-weight:700;">۱.۵٪</td><td class="mono">۰.۵٪</td><td class="mono">۱٪</td></tr>
-                <tr><td>زیر ۵۰ یا آیتم بحرانی جاافتاده</td><td class="mono" style="color:var(--red);font-weight:700;">۰٪ — ورود ممنوع</td><td class="mono">—</td><td class="mono">—</td></tr>
+                <tr><td>عالی (۸۰+)</td><td class="mono" style="color:var(--green);font-weight:700;">۲٪</td><td class="mono">۰.۸٪</td><td class="mono">۱.۲٪</td></tr>
+                <tr><td>خوب (۶۰–۷۹)</td><td class="mono" style="color:var(--amber);font-weight:700;">۱.۲٪</td><td class="mono">۰.۵٪</td><td class="mono">۰.۷٪</td></tr>
+                <tr><td>متوسط یا آیتم بحرانی جاافتاده</td><td class="mono" style="color:var(--red);font-weight:700;">۰٪ — ورود ممنوع</td><td class="mono">—</td><td class="mono">—</td></tr>
               </tbody>
             </table>
           </div>
-          <div class="callout callout-sell" style="margin-top:10px;"><strong class="head">قفل ریسک</strong><p>در بهترین حالت (امتیاز ≥۸۰)، مجموع دو پله (Probe + Confirmation) هرگز از <strong>۳٪ کل سرمایه</strong> عبور نمی‌کند — این سقف مطلق است، نه هدف.</p></div>
-          <div class="callout callout-note" style="margin-top:10px;"><strong class="head">فرمول محاسبه‌ی حجم</strong><p>حجم پوزیشن = (موجودی حساب × ریسک مجاز٪) ÷ (فاصله‌ی استاپ به پیپ × ارزش هر پیپ). مثال: موجودی $۱۰٬۰۰۰، ریسک پله ۱٪ = $۱۰۰؛ اگر استاپ ۲۰ پیپ و ارزش هر پیپ $۱۰ باشد → حجم = $۱۰۰ ÷ (۲۰×$۱۰) = ۰.۵ لات.</p></div>
+          <div class="callout callout-sell" style="margin-top:10px;"><strong class="head">قفل ریسک مطلق</strong><p>سقف مطلق روزانه برای تمام معاملات هم‌جهت: <strong>۲٪</strong>. هرگز بیش از این ریسک تجمعی در یک روز نگیر.</p></div>
+          <div class="callout callout-note" style="margin-top:10px;"><strong class="head">فرمول محاسبه‌ی حجم</strong><p>حجم پوزیشن = (موجودی حساب × ریسک مجاز٪) ÷ (فاصله‌ی استاپ به پیپ × ارزش هر پیپ). همیشه اسپرد و اسلیپیج احتمالی را در محاسبه لحاظ کن.</p></div>
         </div>
         <div class="card">
           <h3 style="color:var(--green)">گام هشتم · اجرای پله‌ای ورود</h3>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>پله</th><th>حجم</th><th>ورود</th><th>SL</th><th>ریسک</th></tr></thead>
+              <thead><tr><th>پله</th><th>حجم</th><th>ورود</th><th>SL</th></tr></thead>
               <tbody>
-                <tr><td>۱ — Probe</td><td>۴۰٪</td><td>لمس اول POI (Inducement دیده شد)</td><td>زیر/بالای کل OB روی H4</td><td>۱٪</td></tr>
-                <tr><td>۲ — Confirmation</td><td>۶۰٪</td><td>بعد از CHoCH M15 + OB کوچک M5</td><td>زیر/بالای OB کوچک</td><td>۲٪</td></tr>
+                <tr><td>۱ — Probe</td><td>۴۰٪</td><td>لمس اول POI / Inducement</td><td>زیر/بالای کل ناحیه POI</td></tr>
+                <tr><td>۲ — Confirmation</td><td>۶۰٪</td><td>بعد از CHoCH M5 + OB کوچک M5</td><td>زیر/بالای OB کوچک</td></tr>
               </tbody>
             </table>
           </div>
-          <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">قانون کلیدی</strong><p>Inducement = سیگنال ورود پله اول، نه سیگنال خروج پوزیشن باز. بیش از ۲ پله روی یک ابزار بدون توجیه روشن ممنوع است.</p></div>
-          <div class="callout callout-buy" style="margin-top:10px;"><strong class="head">معیار افزایش ریسک</strong><p>ریسک پایه (۳٪/۱.۵٪ از جدول گام هفتم) را افزایش نده مگر بعد از حداقل <strong>۴ هفته‌ی سبز متوالی</strong> ثبت‌شده در بازبینی هفتگی. اپ خودش این عدد را می‌شمارد و در «پیشنهاد این هفته» گزارش می‌دهد.</p></div>
+          <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">قانون کلیدی</strong><p>Inducement = سیگنال ورود پله اول، نه سیگنال خروج. بیش از ۲ پله روی یک ابزار بدون توجیه ساختاری جدید ممنوع است.</p></div>
+          <div class="callout callout-buy" style="margin-top:10px;"><strong class="head">معیار افزایش ریسک</strong><p>ریسک پایه را افزایش نده مگر بعد از حداقل <strong>۴ هفته‌ی سبز متوالی</strong> ثبت‌شده در بازبینی هفتگی.</p></div>
         </div>
         <div class="card">
           <h3 style="color:var(--cyan)">گام نهم · خروج پله‌ای — سیستم Tranche</h3>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>لایه</th><th>حجم</th><th>TP بر اساس</th><th>خروج اجباری</th></tr></thead>
+              <thead><tr><th>لایه</th><th>حجم</th><th>تارگت</th><th>خروج اجباری</th></tr></thead>
               <tbody>
-                <tr><td>A — اسکلپ</td><td>۴۰٪</td><td>نقدینگی M15/H1 (۱:۱ تا ۱.۵:۱)</td><td>TP یا CHoCH خلاف M15</td></tr>
-                <tr><td>B — سوئینگ</td><td>۳۵٪</td><td>نقدینگی بعدی H4</td><td>CHoCH خلاف H4</td></tr>
-                <tr><td>C — پوزیشن</td><td>۲۵٪</td><td>هدف Daily</td><td>فقط CHoCH خلاف Daily</td></tr>
+                <tr><td>A — سریع</td><td>۴۰٪</td><td>۱R تا ۱.۵R</td><td>رسیدن به تارگت یا CHoCH خلاف M5</td></tr>
+                <tr><td>B — اصلی</td><td>۳۵٪</td><td>نقدینگی بعدی (حداقل ۲R)</td><td>CHoCH خلاف H1/H4</td></tr>
+                <tr><td>C — باقیمانده</td><td>۲۵٪</td><td>هدف Daily یا نقدینگی دورتر</td><td>فقط CHoCH خلاف Daily یا رسیدن به تارگت</td></tr>
               </tbody>
             </table>
           </div>
-          <p style="color:var(--text-dim);font-size:.85rem;margin-top:10px;">این ساختار مشکل «نگه‌داشتن کامل پوزیشن تا سود شناور صفر شود» را حل می‌کند و سود را طبیعتاً بین چند روز پخش می‌کند.</p>
+          <div class="callout callout-note" style="margin-top:10px;"><strong class="head">قوانین اضافی مدیریت</strong><p>بعد از رسیدن لایه A به تارگت → استاپ کل پوزیشن را به BE منتقل کن.</p><p style="font-size:1.05rem;font-weight:800;color:var(--red);margin-top:10px;padding:8px 12px;background:var(--red-dim);border-radius:8px;border-right:3px solid var(--red);">⛔ هرگز استاپ را عقب‌تر نبر.</p></div>
         </div>
         <div class="card">
           <h3 style="color:var(--amber)">🛡️ Consistency Rule پراپ‌فرم</h3>
           <p style="color:var(--text-dim);font-size:.85rem;">سود Realize‌شده هر روز نباید بیش از سقف تعیین‌شده باشد، وگرنه هدف فاز به‌طور خودکار افزایش می‌یابد.</p>
           <div class="callout callout-note" style="margin-top:8px;"><strong class="head">فرمول</strong><p>هدف جدید (در صورت نقض) = سود بزرگ‌ترین‌روز ÷ درصد سقف Consistency</p></div>
-          <p style="color:var(--text-dim);font-size:.82rem;">این نسبت به کل سود انباشته‌شده تا آن لحظه حساب می‌شود، نه فقط هدف نهایی — اوایل دوره روزهای کوچیک‌تر لازم است.</p>
           <div id="consistency-live" style="margin-top:10px;"></div>
         </div>
         <div class="card">
-          <h3 style="color:var(--red)">🛡️ ریسک همبسته (Correlated Risk)</h3>
-          <div class="callout callout-sell"><strong class="head">قبل از چند پوزیشن هم‌زمان روی ابزارهای مختلف</strong><p>بپرس: آیا همه این معاملات در واقع یک شرط تکراری هستند؟ (مثلاً «دلار ضعیف می‌شود» هم‌زمان روی طلا، ین و بیت‌کوین). اگر بله، ریسک را جمع بزن، نه هر کدام را جداگانه. سقف ریسک تجمعی برای معاملات هم‌جهت: <strong>۳٪</strong> — همان سقف مطلق یک معامله‌ی تکی (گام هفتم)، نه کمتر از آن؛ وگرنه حتی یک معامله‌ی تکی هم این سقف را نقض می‌کرد.</p></div>
-          <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">حداقل بک‌تست/دمو</strong><p>حداقل <strong>۳۰ نمونه‌ی</strong> کامل (بک‌تست یا دمو) از کل این نُه گام ثبت شود، پیش از اولین معامله‌ی واقعی. اگر Win Rate و Profit Factor آن ۳۰ نمونه با انتظار همخوانی نداشت، برگرد به گام اول و خودِ قوانین را بازبینی کن — نه اینکه با سرمایه‌ی واقعی امتحان کنی.</p></div>
-          <div class="callout callout-note" style="margin-top:10px;"><strong class="head">بازبینی دوره‌ای خودِ سیستم</strong><p>هر ۳ ماه، مستقل از عملکردت، بپرس: «آیا این قوانین هنوز روی بازار واقعی جواب می‌دهند؟» نمودار «همبستگی امتیاز چک‌لیست با نتیجه» در تب عملکرد دقیقاً برای همین ساخته شده — نه فقط پایش خودت، پایش خودِ سیستم.</p></div>
+          <h3 style="color:var(--red)">🛡️ ریسک همبسته + معیارهای آماری</h3>
+          <div class="callout callout-sell"><strong class="head">قبل از چند پوزیشن هم‌زمان</strong><p>اگر همه معاملات در واقع یک شرط تکراری هستند (مثلاً دلار ضعیف)، ریسک را جمع بزن. سقف ریسک تجمعی هم‌جهت: <strong>۲٪</strong>.</p></div>
+          <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">حداقل بک‌تست/دمو قبل از واقعی</strong><p>حداقل <strong>۳۰ نمونه‌ی کامل</strong> با Profit Factor ≥ ۱.۴ و Max Drawdown < ۱۵٪. اگر معیارها برآورده نشد، قوانین را بازبینی کن — نه اینکه با سرمایه واقعی امتحان کنی.</p></div>
+          <div class="callout callout-note" style="margin-top:10px;"><strong class="head">بازبینی دوره‌ای سیستم</strong><p>هر ۳ ماه بپرس: «آیا این قوانین هنوز روی بازار واقعی جواب می‌دهند؟» از نمودار همبستگی امتیاز چک‌لیست با نتیجه در تب عملکرد استفاده کن.</p></div>
         </div>
       </div>
       <!-- Physical Barriers -->
       <div class="guide-panel" id="g-barriers">
         <div class="card">
-          <h3 style="color:var(--red)">🛡️ ۱۱ مانع فیزیکی — غیرقابل‌مذاکره</h3>
-          <p style="color:var(--text-dim);font-size:.85rem;margin-bottom:10px;">این‌ها قانون ذهنی نیستند؛ باید فیزیکی اجرا شوند. تصمیم لحظه‌ای زیر فشار همیشه قانون ذهنی را دور می‌زند، نه مانع واقعی را.</p>
-          <div class="step"><span class="step-idx">1</span><p>بعد از هر BE یا ضرر → پلتفرم <strong>۲ ساعت</strong> بسته می‌شود.</p></div>
-          <div class="step"><span class="step-idx">2</span><p>قبل از هر ورود → هر دو چک‌لیست (صبحگاهی + قبل از ورود) باید <strong>۱۰۰٪</strong> و بدون مورد الزامیِ ناقص تکمیل شوند.</p></div>
-          <div class="step"><span class="step-idx">3</span><p>حداکثر ریسک تجمعی روزانه برای معاملات هم‌جهت/همبسته: <strong>۳٪</strong> (همان سقف تک‌معامله در گام هفتم).</p></div>
-          <div class="step"><span class="step-idx">4</span><p>گرسنه یا خسته‌ای؟ چارت بسته می‌ماند.</p></div>
-          <div class="step"><span class="step-idx">5</span><p>ضرر یک معامله بیش از <strong>۳٪ موجودی حساب</strong> (سقف مطلق گام هفتم) شد → توقف کامل و بازبینی سیستم؛ یعنی چیزی فراتر از پلن رخ داده (استاپ رعایت نشده یا اسلیپیج شدید). این آستانه از موجودی واقعی حساب در تنظیمات محاسبه می‌شود، نه یک عدد ثابت.</p></div>
-          <div class="step"><span class="step-idx">6</span><p>حس FOMO کردی؟ چارت را ببند، ۳۰ دقیقه قدم بزن.</p></div>
+          <h3 style="color:var(--red)">🛡️ موانع فیزیکی — نسخه عملی و غیرقابل‌مذاکره</h3>
+          <p style="color:var(--text-dim);font-size:.85rem;margin-bottom:10px;">این‌ها قانون ذهنی نیستند؛ باید فیزیکی اجرا شوند. تصمیم لحظه‌ای زیر فشار همیشه قانون ذهنی را دور می‌زند.</p>
+          <div class="step"><span class="step-idx">1</span><p>بعد از هر BE یا ضرر → حداقل <strong>۹۰ دقیقه</strong> استراحت اجباری (ترجیحاً پلتفرم بسته).</p></div>
+          <div class="step"><span class="step-idx">2</span><p>قبل از هر ورود → هر دو چک‌لیست (صبحگاهی + قبل از ورود) باید تکمیل شوند و آیتم‌های بحرانی جا نیفتاده باشند.</p></div>
+          <div class="step"><span class="step-idx">3</span><p>حداکثر ریسک تجمعی روزانه برای معاملات هم‌جهت/همبسته: <strong>۲٪</strong>.</p></div>
+          <div class="step"><span class="step-idx">4</span><p>گرسنه، خسته یا حواس‌پرتی شدید داری؟ چارت بسته می‌ماند.</p></div>
+          <div class="step"><span class="step-idx">5</span><p>ضرر یک معامله بیش از <strong>۲٪ موجودی حساب</strong> شد → توقف کامل و بازبینی سیستم (استاپ رعایت نشده یا اسلیپیج شدید).</p></div>
+          <div class="step"><span class="step-idx">6</span><p>حس FOMO کردی؟ چارت را ببند، حداقل ۳۰ دقیقه قدم بزن یا کار دیگری انجام بده.</p></div>
           <div class="step"><span class="step-idx">7</span><p>معامله‌ای بدون تو حرکت کرد؟ دنبالش نرو — نه هم‌جهت، نه خلاف آن.</p></div>
-          <div class="step"><span class="step-idx">8</span><p>حداقل تایم‌فریم تأیید ورود: <strong>M15</strong>. هرگز M1 یا پایین‌تر.</p></div>
-          <div class="step"><span class="step-idx">9</span><p>قبل از پله سوم روی یک ابزار → توقف اجباری: «این تصمیم تازه است یا اضافه‌کردن روی ضرر/FOMO؟»</p></div>
-          <div class="step"><span class="step-idx">10</span><p>ضرر انباشته‌ی ۷ روز اخیر بیش از <strong>۶٪</strong> سرمایه → معامله تا هفته‌ی بعد متوقف. ضرر انباشته‌ی ۳۰ روز اخیر بیش از <strong>۱۰٪</strong> → توقف کامل و بازبینی سیستم. این دو، خودکار از موجودی حساب محاسبه و در بالای داشبورد نشان داده می‌شوند.</p></div>
-          <div class="step"><span class="step-idx">11</span><p>حداکثر <strong>۲ ایده‌ی معاملاتی جدید</strong> در هر Kill Zone (پله‌های تکمیلی همان ایده حساب نمی‌شوند). عدد کنار «آرشیو معاملات» در نوار کناری، تعداد معاملات امروز را نشان می‌دهد — قبل از هر ورود آن را چک کن.</p></div>
+          <div class="step"><span class="step-idx">8</span><p>حداقل تایم‌فریم تأیید ورود: <strong>M5</strong>. هرگز M1 یا پایین‌تر.</p></div>
+          <div class="step"><span class="step-idx">9</span><p>قبل از پله سوم روی یک ابزار → توقف اجباری و سؤال: «این تصمیم تازه است یا اضافه‌کردن روی ضرر/FOMO؟»</p></div>
+          <div class="step"><span class="step-idx">10</span><p>ضرر انباشته‌ی ۷ روز اخیر بیش از <strong>۴٪</strong> سرمایه → معامله تا هفته‌ی بعد متوقف. ضرر انباشته‌ی ۳۰ روز اخیر بیش از <strong>۸٪</strong> → توقف کامل و بازبینی سیستم.</p></div>
+          <div class="step"><span class="step-idx">11</span><p>حداکثر <strong>۲ ایده‌ی معاملاتی جدید</strong> در هر Kill Zone (پله‌های تکمیلی همان ایده حساب نمی‌شوند).</p></div>
         </div>
-      </div>
+        </div>
       <div class="guide-panel" id="g-glossary">
         <div class="card">
           <h3 style="color:var(--cyan)">ساختار و بایاس</h3>
-          <div class="term"><span class="term-name" style="--accent:var(--cyan)">IDM</span><p class="term-def"><strong>Inducement</strong> — یک استخر نقدینگی کوچک‌تر و واضح‌تر که قبل از POI اصلی قرار دارد و طعمه‌ی ورودکنندگان زودهنگام است. مثال: در گام اول، «نزدیک‌ترین پولبک معتبر» همین است.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--cyan)">CHoCH</span><p class="term-def"><strong>Change of Character</strong> — اولین شکست ساختار خلاف روند غالب؛ نشانه‌ی احتمال برگشت. مثال: در روند صعودی، بسته‌شدن با بدنه زیر آخرین کف بالاتر.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--cyan)">BOS</span><p class="term-def"><strong>Break of Structure</strong> — شکست ساختار هم‌جهت با روند؛ تاییدِ ادامه (نه برگشت).</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--cyan)">Sweep</span><p class="term-def">عبور کوتاه قیمت (معمولاً فقط با سایه) از یک سقف/کف شناخته‌شده برای فعال‌کردن استاپ‌های آنجا، قبل از برگشت واقعی.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--cyan)">Inside Bar</span><p class="term-def">کندلی که کاملاً داخل محدوده‌ی (سقف/کف) کندل قبلی‌ست — یعنی نه سقف جدید می‌زند نه کف جدید. نشانه‌ی بلاتکلیفی/فشردگی؛ ملاک تحلیل، کندل «مادر» (کندل قبلی بزرگ‌تر) است، نه خودِ این کندل.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--cyan)">Outside Bar</span><p class="term-def">کندلی که هم سقف بالاتر و هم کف پایین‌تر از کندل قبلی می‌زند — یعنی کاملاً محدوده‌ی آن را در بر می‌گیرد. نشانه‌ی تأیید/نوسان قوی، برخلاف بلاتکلیفیِ Inside Bar.</p></div>
+          <div class="term" id="term-idm"><span class="term-name" style="--accent:var(--cyan)">IDM</span><p class="term-def"><strong>Inducement</strong> — یک استخر نقدینگی کوچک‌تر و واضح‌تر که قبل از POI اصلی قرار دارد و طعمه‌ی ورودکنندگان زودهنگام است. مثال: در گام اول، «نزدیک‌ترین پولبک معتبر» همین است.</p></div>
+          <div class="term" id="term-choch"><span class="term-name" style="--accent:var(--cyan)">CHoCH</span><p class="term-def"><strong>Change of Character</strong> — اولین شکست ساختار خلاف روند غالب؛ نشانه‌ی احتمال برگشت. مثال: در روند صعودی، بسته‌شدن با بدنه زیر آخرین کف بالاتر.</p></div>
+          <div class="term" id="term-bos"><span class="term-name" style="--accent:var(--cyan)">BOS</span><p class="term-def"><strong>Break of Structure</strong> — شکست ساختار هم‌جهت با روند؛ تاییدِ ادامه (نه برگشت).</p></div>
+          <div class="term" id="term-sweep"><span class="term-name" style="--accent:var(--cyan)">Sweep</span><p class="term-def">عبور کوتاه قیمت (معمولاً فقط با سایه) از یک سقف/کف شناخته‌شده برای فعال‌کردن استاپ‌های آنجا، قبل از برگشت واقعی.</p></div>
+          <div class="term" id="term-insidebar"><span class="term-name" style="--accent:var(--cyan)">Inside Bar</span><p class="term-def">کندلی که کاملاً داخل محدوده‌ی (سقف/کف) کندل قبلی‌ست — یعنی نه سقف جدید می‌زند نه کف جدید. نشانه‌ی بلاتکلیفی/فشردگی؛ ملاک تحلیل، کندل «مادر» (کندل قبلی بزرگ‌تر) است، نه خودِ این کندل.</p></div>
+          <div class="term" id="term-outsidebar"><span class="term-name" style="--accent:var(--cyan)">Outside Bar</span><p class="term-def">کندلی که هم سقف بالاتر و هم کف پایین‌تر از کندل قبلی می‌زند — یعنی کاملاً محدوده‌ی آن را در بر می‌گیرد. نشانه‌ی تأیید/نوسان قوی، برخلاف بلاتکلیفیِ Inside Bar.</p></div>
         </div>
         <div class="card">
           <h3 style="color:var(--amber)">نقدینگی</h3>
-          <div class="term"><span class="term-name" style="--accent:var(--amber)">BSL / SSL</span><p class="term-def">نقدینگی خرید/فروش — خوشه‌ی استاپ‌های فروشندگان بالای سقف‌ها (BSL) یا خریداران زیر کف‌ها (SSL).</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--amber)">External / Internal</span><p class="term-def">نقدینگی بیرونی = سقف/کف اصلیِ رنج (هدف نهایی)؛ درونی = نقدینگی داخل رنج مثل IDM/OB/FVG.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--amber)">EQH / EQL</span><p class="term-def">سقف‌ها یا کف‌های برابر — دو یا چند سطح نزدیک به هم که استاپ‌های زیادی زیرشان/بالایشان جمع شده.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--amber)">PDH / PDL</span><p class="term-def">سقف/کف روز قبل (Previous Day High/Low)؛ به همین شکل PWH/PWL برای هفته‌ی قبل.</p></div>
+          <div class="term" id="term-bslssl"><span class="term-name" style="--accent:var(--amber)">BSL / SSL</span><p class="term-def">نقدینگی خرید/فروش — خوشه‌ی استاپ‌های فروشندگان بالای سقف‌ها (BSL) یا خریداران زیر کف‌ها (SSL).</p></div>
+          <div class="term" id="term-external"><span class="term-name" style="--accent:var(--amber)">External / Internal</span><p class="term-def">نقدینگی بیرونی = سقف/کف اصلیِ رنج (هدف نهایی)؛ درونی = نقدینگی داخل رنج مثل IDM/OB/FVG.</p></div>
+          <div class="term" id="term-eqh"><span class="term-name" style="--accent:var(--amber)">EQH / EQL</span><p class="term-def">سقف‌ها یا کف‌های برابر — دو یا چند سطح نزدیک به هم که استاپ‌های زیادی زیرشان/بالایشان جمع شده.</p></div>
+          <div class="term" id="term-pdh"><span class="term-name" style="--accent:var(--amber)">PDH / PDL</span><p class="term-def">سقف/کف روز قبل (Previous Day High/Low)؛ به همین شکل PWH/PWL برای هفته‌ی قبل.</p></div>
         </div>
         <div class="card">
           <h3 style="color:var(--green)">POI و ورود</h3>
-          <div class="term"><span class="term-name" style="--accent:var(--green)">POI</span><p class="term-def"><strong>Point of Interest</strong> — ناحیه‌ای که انتظار واکنش نهادی قیمت در آن می‌رود.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--green)">OB</span><p class="term-def"><strong>Order Block</strong> — آخرین کندل مخالف قبل از یک حرکت قدرتمند.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--green)">FVG</span><p class="term-def"><strong>Fair Value Gap</strong> — شکاف سه‌کندلی که سایه‌ی کندل اول و سوم هم‌پوشانی ندارند.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--green)">Breaker Block</span><p class="term-def">یک OB شکست‌خورده که قطبیتش برعکس شده (مقاومت شده حمایت، یا برعکس).</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--green)">Mitigation Block</span><p class="term-def">شبیه Breaker، ولی امضای شکست متفاوت دارد؛ در بازگشت‌های نرم‌تر رایج‌تر است.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--green)">Rejection Block</span><p class="term-def">کندلی با سایه‌ی بلند که به‌وضوح رد شده؛ ضعیف‌ترین ولی رایج‌ترین POI کمکی.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--green)">Mitigated</span><p class="term-def">ناحیه‌ای که قبلاً یک‌بار لمس شده. Unmitigated یعنی دست‌نخورده و «تازه».</p></div>
+          <div class="term" id="term-poi"><span class="term-name" style="--accent:var(--green)">POI</span><p class="term-def"><strong>Point of Interest</strong> — ناحیه‌ای که انتظار واکنش نهادی قیمت در آن می‌رود.</p></div>
+          <div class="term" id="term-ob"><span class="term-name" style="--accent:var(--green)">OB</span><p class="term-def"><strong>Order Block</strong> — آخرین کندل مخالف قبل از یک حرکت قدرتمند.</p></div>
+          <div class="term" id="term-fvg"><span class="term-name" style="--accent:var(--green)">FVG</span><p class="term-def"><strong>Fair Value Gap</strong> — شکاف سه‌کندلی که سایه‌ی کندل اول و سوم هم‌پوشانی ندارند.</p></div>
+          <div class="term" id="term-breaker"><span class="term-name" style="--accent:var(--green)">Breaker Block</span><p class="term-def">یک OB شکست‌خورده که قطبیتش برعکس شده (مقاومت شده حمایت، یا برعکس).</p></div>
+          <div class="term" id="term-mitigation"><span class="term-name" style="--accent:var(--green)">Mitigation Block</span><p class="term-def">شبیه Breaker، ولی امضای شکست متفاوت دارد؛ در بازگشت‌های نرم‌تر رایج‌تر است.</p></div>
+          <div class="term" id="term-rejection"><span class="term-name" style="--accent:var(--green)">Rejection Block</span><p class="term-def">کندلی با سایه‌ی بلند که به‌وضوح رد شده؛ ضعیف‌ترین ولی رایج‌ترین POI کمکی.</p></div>
+          <div class="term" id="term-mitigated"><span class="term-name" style="--accent:var(--green)">Mitigated</span><p class="term-def">ناحیه‌ای که قبلاً یک‌بار لمس شده. Unmitigated یعنی دست‌نخورده و «تازه».</p></div>
         </div>
         <div class="card">
           <h3 style="color:var(--purple)">مدیریت و روتین</h3>
-          <div class="term"><span class="term-name" style="--accent:var(--purple)">Kill Zone</span><p class="term-def">در تعریف کلاسیک ICT، بازه‌ی کوتاه و پرحجم نزدیک به باز شدن یک سشن است (معمولاً ۱-۲ ساعت)، نه کل سشن. در این اپلیکیشن، بازه‌های «Kill Zone لندن» (۰۸:۳۰–۱۲:۳۰) و «Kill Zone نیویورک» (۱۵:۳۰–۱۹:۳۰) عمداً پهن‌تر تعریف شده‌اند تا کل پنجره‌ی معامله‌پذیر روزانه را پوشش دهند؛ بالاترین احتمال ستاپ معمولاً در ۶۰-۹۰ دقیقه‌ی ابتدایی هر بازه است، نه کل بازه.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--purple)">Tranche</span><p class="term-def">تقسیم ورود یا خروج یک معامله به چند لایه‌ی حجمی جدا، به‌جای یک اجرای یک‌باره.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--purple)">Consistency Rule</span><p class="term-def">قانون پراپ‌فرم که سود Realize‌شده‌ی هر روز را به سقفی نسبت به کل سود انباشته محدود می‌کند.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--purple)">Correlated Risk</span><p class="term-def">ریسک چند پوزیشن هم‌زمان که در واقع یک شرط تکراری‌اند (مثلاً همه روی «دلار ضعیف»)؛ باید جمع زده شوند، نه جدا.</p></div>
+          <div class="term" id="term-killzone"><span class="term-name" style="--accent:var(--purple)">Kill Zone</span><p class="term-def">در تعریف کلاسیک ICT، بازه‌ی کوتاه و پرحجم نزدیک به باز شدن یک سشن است (معمولاً ۱-۲ ساعت)، نه کل سشن. در این اپلیکیشن، بازه‌های «Kill Zone لندن» (۰۸:۳۰–۱۲:۳۰) و «Kill Zone نیویورک» (۱۵:۳۰–۱۹:۳۰) عمداً پهن‌تر تعریف شده‌اند تا کل پنجره‌ی معامله‌پذیر روزانه را پوشش دهند؛ بالاترین احتمال ستاپ معمولاً در ۶۰-۹۰ دقیقه‌ی ابتدایی هر بازه است، نه کل بازه.</p></div>
+          <div class="term" id="term-tranche"><span class="term-name" style="--accent:var(--purple)">Tranche</span><p class="term-def">تقسیم ورود یا خروج یک معامله به چند لایه‌ی حجمی جدا، به‌جای یک اجرای یک‌باره.</p></div>
+          <div class="term" id="term-consistency"><span class="term-name" style="--accent:var(--purple)">Consistency Rule</span><p class="term-def">قانون پراپ‌فرم که سود Realize‌شده‌ی هر روز را به سقفی نسبت به کل سود انباشته محدود می‌کند.</p></div>
+          <div class="term" id="term-correlated"><span class="term-name" style="--accent:var(--purple)">Correlated Risk</span><p class="term-def">ریسک چند پوزیشن هم‌زمان که در واقع یک شرط تکراری‌اند (مثلاً همه روی «دلار ضعیف»)؛ باید جمع زده شوند، نه جدا.</p></div>
 
           <h3 style="color:var(--amber);margin-top:14px;">🎯 ترجمه‌ی عملیاتی — قواعد یک‌خطی اجرا</h3>
           <div class="term"><span class="term-name" style="--accent:var(--amber)">Sweep ✓</span><p class="term-def">قاعده: «سطح شکسته شد، ولی Close برگشت داخل رنج» → معتبر. اگر بدنه‌ی کندل بیرون ماند و برگشت = Breakout است، نه Sweep. عمل: فقط بعد از Close چک کن، نه با فتیله.</p></div>
-          <div class="term"><span class="term-name" style="--accent:var(--amber)">CHoCH ✓</span><p class="term-def">قاعده: «اولین Close خلاف جهت آخرین حرکت». فتیله کافی نیست. عمل: حداقل M15؛ CHoCH بدون Sweep قبلش = ورود نصفه.</p></div>
+          <div class="term"><span class="term-name" style="--accent:var(--amber)">CHoCH ✓</span><p class="term-def">قاعده: «اولین Close خلاف جهت آخرین حرکت». فتیله کافی نیست. عمل: حداقل M5؛ CHoCH بدون Sweep قبلش = ورود نصفه.</p></div>
           <div class="term"><span class="term-name" style="--accent:var(--amber)">POI معتبر ✓</span><p class="term-def">قاعده: POI باید «تازه» باشد (از آخرین حرکت ایمپالسیو) و در مسیر Sweep+CHoCH. عمل: اگر قیمت به POI رسید و تو هنوز CHoCH ندیدی، صبر کن — نچسب به سفارش.</p></div>
           <div class="term"><span class="term-name" style="--accent:var(--amber)">Judas Swing ✓</span><p class="term-def">قاعده: «حرکت قلابی اول سشن» — شکست کاذب High/Low آسیا در ۳۰–۹۰ دقیقه اول لندن/نیویورک. عمل: جهت اصلی = خلاف جهت Judas؛ ورود بعد از برگشت داخل رنج.</p></div>
         </div>
@@ -1740,7 +1759,7 @@ const DEFAULT_ROUTINE = [
 07:40|تحلیل ماکرو|Daily و H4 / IDM / AH-AL`},
   {id:'ph2', title:'فاز دوم · Kill Zone لندن', accent:'amber', window:'08:30 – 12:30', items:
 `08:30|فیلتر اخبار|High Impact → ۱۰ دقیقه قبل و بعد هیچ اوردری. برای پوزیشن‌های از قبل باز: استاپ را جابجا نکن؛ اگر SL داخل بازه‌ی احتمالی اسپایک خبر است، حجم را نصف کن یا کامل ببند.
-08:30–12:30|Kill Zone لندن|M15 / Sweep آسیا / POI / CHoCH حداقل M15~هیدراتاسیون هر ۳۰ دقیقه`},
+08:30–12:30|Kill Zone لندن|M5 / Sweep آسیا / POI / CHoCH حداقل M5~هیدراتاسیون هر ۳۰ دقیقه`},
   {id:'ph3', title:'فاز سوم · ریست', accent:'cyan', window:'12:30 – 15:30', items:
 `12:30|خروج مطلق|مانیتورها خاموش
 12:45|ناهار سبک|
@@ -1774,9 +1793,9 @@ const DEFAULT_PRE = [
   {id:'pt4',text:'سطوح کلیدی (متناسب با سبک معامله) از قبل رسم شدن',cat:'tech',pts:3,critical:true,stage:'levels'},
   {id:'pt1',text:'POI معتبر شناسایی شد',cat:'tech',pts:3,critical:true,stage:'sweep'},
   {id:'pt2',text:'Sweep واقعی رخ داد — raid از سطح + Close برگشت به داخل رنج (نه فقط فتیله)',cat:'tech',pts:3,critical:true,stage:'sweep'},
-  {id:'pt5',text:'CHoCH تایید شد (حداقل M15)',cat:'tech',pts:3,critical:true,stage:'confirm'},
+  {id:'pt5',text:'CHoCH تایید شد (حداقل M5)',cat:'tech',pts:3,critical:true,stage:'confirm'},
   {id:'pt3',text:'FVG بلافاصله بعد از OB دیده شد',cat:'tech',pts:3,critical:false,stage:'confirm'},
-  {id:'pr1',text:'R:R حداقل ۲:۱',cat:'risk',pts:4,critical:true,stage:'risk'},
+  {id:'pr1',text:'R:R حداقل ۱.۵:۱',cat:'risk',pts:4,critical:true,stage:'risk'},
   {id:'pr2',text:'استاپ مکانیکی (پله ۱: زیر/بالای OB کامل H4 | پله ۲: زیر/بالای OB کوچک M5)',cat:'risk',pts:4,critical:false,stage:'risk'},
   {id:'pr3',text:'حجم بر اساس ریسک مجاز محاسبه شد',cat:'risk',pts:4,critical:false,stage:'risk'},
   {id:'pr4',text:'ورود دو پله‌ای در نظر گرفته شد',cat:'risk',pts:4,critical:false,stage:'risk'},
@@ -2096,7 +2115,7 @@ function renderConditionScore(cs){
         <div style="font-weight:700;margin-bottom:6px;">📊 امتیاز شرایط</div>
         <div style="font-size:.8rem;color:var(--text-dim);line-height:1.9;">
           ترکیب چک‌لیست صبحگاهی + قبل از ورود.<br>
-          ${cs.criticalMissed?'<span style=\"color:var(--red);font-weight:700\">⚠️ آیتم بحرانی جاافتاده — ورود قفل است.</span>':(cs.total>=80?'✅ مجاز به ریسک کامل ۳٪':cs.total>=50?'⚠️ فقط ریسک کاهش‌یافته ۱.۵٪':'🔴 ورود ممنوع — زیر ۵۰')}
+          ${cs.criticalMissed?'<span style=\"color:var(--red);font-weight:700\">⚠️ آیتم بحرانی جاافتاده — ورود قفل است.</span>':(cs.total>=80?'✅ مجاز به ریسک کامل ۲٪':cs.total>=60?'⚠️ فقط ریسک کاهش‌یافته ۱.۲٪':'🔴 ورود ممنوع — زیر ۶۰')}
         </div>
       </div>
     </div>`;
@@ -2258,14 +2277,14 @@ function calcExecutionScore(trade){
 
 function getRiskPercent(combinedTotal, criticalMissed){
   if(criticalMissed) return 0;
-  if(combinedTotal>=80) return 3;
-  if(combinedTotal>=50) return 1.5;
+  if(combinedTotal>=80) return 2;
+  if(combinedTotal>=60) return 1.2;
   return 0;
 }
 
 function getScoreColor(val){
   if(val>=80) return '#3fb950';
-  if(val>=50) return '#f0883e';
+  if(val>=60) return '#f0883e';
   return '#f85149';
 }
 
@@ -2405,12 +2424,12 @@ const QUIZ_BANK=[
  {q:'کدام یک Sweep معتبر است؟',opts:['فتیله زیر Low و Close برگشت داخل رنج','بدنه‌ی کندل کاملاً زیر Low بسته شد','قیمت به Low نزدیک شد ولی نگشت'],a:0,
   why:'Sweep = راندن استاپ‌ها + برگشت Close داخل رنج. Close بیرون = Breakout.',lesson:'g-liq'},
  {q:'CHoCH کی تأیید می‌شود؟',opts:['با فتیله خلاف روند','با اولین Close بدنه‌دار خلاف جهت آخرین حرکت','با شکست عدد رند'],a:1,
-  why:'CHoCH نیازمند Close است، نه فتیله؛ حداقل M15 در این مدل.',lesson:'g-bias'},
+  why:'CHoCH نیازمند Close است، نه فتیله؛ حداقل M5 در این مدل.',lesson:'g-bias'},
  {q:'در روز رنج (Equal H/L) چه اجازه داری؟',opts:['فقط ادامه‌رونده','خرید در High رنج','Sweep لبه‌ها به سمت داخل — هر دو جهت'],a:2,
   why:'رنج = نقدینگی دو طرف لبه جمع می‌شود؛ هدف، برگشت از لبه است.',lesson:'g-bias'},
  {q:'Judas Swing یعنی؟',opts:['حرکت قلابی ابتدای سشن خلاف جهت روز','پولبک عمیق وسط روز','شکست دوم PDH'],a:0,
   why:'قلاب ۳۰–۹۰ دقیقه اول سشن؛ ورود واقعی خلاف جهت آن.',lesson:'g-model'},
- {q:'ریسک مجاز امروز با امتیاز ۶۵ چقدر است؟',opts:['۳٪','۱.۵٪','۰٪'],a:1,
+ {q:'ریسک مجاز امروز با امتیاز ۶۵ چقدر است؟',opts:['۲٪','۱.۲٪','۰٪'],a:1,
   why:'زیر ۸۰ = ریسک کاهش‌یافته ۱.۵٪؛ زیر ۵۰ یا جاافتادن آیتم بحرانی = ممنوع.',lesson:'g-model'},
  {q:'POI تازه کدام است؟',opts:['OB مربوط به حرکت هفته قبل','OB آخرین ایمپالس قبل از Sweep','هر FVG روی چارت H4'],a:1,
   why:'POI باید از آخرین حرکت ایمپالسیو باشد تا سفارشی در آن مانده باشد.',lesson:'g-poi'}
@@ -2706,7 +2725,7 @@ function updateTradePyramidWarn(){
         <span style="font-size:.82rem;">تایید می‌کنم این پله ${step}ام یک تصمیم تازه و توجیه‌شده است</span>
       </label>`;
   } else if(step===2){
-    box.innerHTML=`<div class="coach-alert coach-alert-warn" style="margin:0;"><span class="coach-alert-icon">⚠️</span><div class="coach-alert-text"><div class="coach-alert-title">پله دوم روی ${pair}</div><div class="coach-alert-body">ریسک تجمعی را چک کن — سقف ۳٪.</div></div></div>`;
+    box.innerHTML=`<div class="coach-alert coach-alert-warn" style="margin:0;"><span class="coach-alert-icon">⚠️</span><div class="coach-alert-text"><div class="coach-alert-title">پله دوم روی ${pair}</div><div class="coach-alert-body">ریسک تجمعی را چک کن — سقف ۲٪.</div></div></div>`;
   } else { box.innerHTML=''; }
 }
 
@@ -2956,7 +2975,7 @@ function saveResult(){
     const lossAmt=Math.abs(parseFloat(trades[idx].pnlUsd)||0);
     const bal=parseFloat(settings.startingBalance)||10000;
     if(lossAmt > bal*0.03){
-      toast('🚨 این ضرر از سقف مطلق ۳٪ سرمایه عبور کرده — طبق موانع فیزیکی #۵، سیستم را کامل بازبینی کن','error');
+      toast('🚨 این ضرر از سقف مطلق ۲٪ سرمایه عبور کرده — طبق موانع فیزیکی #۵، سیستم را کامل بازبینی کن','error');
     }
   } else if(result==='be'){
     toast('⏳ قفل ۲ ساعته فعال شد (طبق قانون: بعد از هر ضرر یا BE)','error');
@@ -3805,7 +3824,7 @@ function generateWeeklySuggestions(s){
   if(s.stopMoveCount>0) msgs.push({icon:'🛑',color:'var(--red)',text:`${s.stopMoveCount} بار استاپ جابجا شده — این دقیقاً همان الگویی است که سرمایه را از بین می‌برد.`});
   if(s.deviateCount>0) msgs.push({icon:'⚠️',color:'var(--amber)',text:`${s.deviateCount} بار خارج از پلن خارج شده‌ای.`});
   if(s.adherence!==null && s.adherence<70) msgs.push({icon:'☀️',color:'var(--amber)',text:`میانگین امتیاز پایبندی این هفته فقط ${s.adherence}٪ بوده — معمولاً پیش‌بینی‌کننده‌ی نتیجه‌ی ضعیف‌تر است.`});
-  if(s.avgRR>0 && s.avgRR<2) msgs.push({icon:'📏',color:'var(--amber)',text:`میانگین R:R برنامه‌ریزی‌شده این هفته ${s.avgRR.toFixed(1)} است — زیر حداقل استاندارد ۲:۱.`});
+  if(s.avgRR>0 && s.avgRR<1.5) msgs.push({icon:'📏',color:'var(--amber)',text:`میانگین R:R برنامه‌ریزی‌شده این هفته ${s.avgRR.toFixed(1)} است — زیر حداقل استاندارد ۱.۵:۱.`});
   if(s.maxLossStreak>=3) msgs.push({icon:'🔥',color:'var(--red)',text:`رکورد ${s.maxLossStreak} ضرر متوالی در همین هفته ثبت شده — مراقب رفتار انتقامی (Revenge Trading) باش.`});
   if(s.wr>=50 && s.totalPnl>0 && s.fomoCount===0 && s.stopMoveCount===0) msgs.push({icon:'✅',color:'var(--green)',text:'این هفته سیستم داشت درست کار می‌کرد — همین روال را در هفته بعد تکرار کن.'});
   if(s.consecutiveProfitableWeeks>=4) msgs.push({icon:'🏆',color:'var(--green)',text:`${s.consecutiveProfitableWeeks} هفته‌ی سبز متوالی (ثبت‌شده) پشت سر گذاشتی. طبق نقشه راه، این نقطه‌ی معقولی برای بررسی افزایش تدریجی ریسک است — نه زودتر از آن.`});
@@ -4414,6 +4433,109 @@ function registerChartHover(chartId){
 }
 
 
+// ===== GLOSSARY LINK ENGINE =====
+const GLOSSARY_TERMS = [
+  {re:/\bIDM\b/g, id:'term-idm'},
+  {re:/\bInducement\b/gi, id:'term-idm'},
+  {re:/\bCHoCH\b/g, id:'term-choch'},
+  {re:/\bBOS\b/g, id:'term-bos'},
+  {re:/\bSweep\b/g, id:'term-sweep'},
+  {re:/\bInside Bar\b/gi, id:'term-insidebar'},
+  {re:/\bOutside Bar\b/gi, id:'term-outsidebar'},
+  {re:/\bBSL\b/g, id:'term-bslssl'},
+  {re:/\bSSL\b/g, id:'term-bslssl'},
+  {re:/\bEQH\b/g, id:'term-eqh'},
+  {re:/\bEQL\b/g, id:'term-eqh'},
+  {re:/\bPDH\b/g, id:'term-pdh'},
+  {re:/\bPDL\b/g, id:'term-pdh'},
+  {re:/\bPWH\b/g, id:'term-pdh'},
+  {re:/\bPWL\b/g, id:'term-pdh'},
+  {re:/\bPOI\b/g, id:'term-poi'},
+  {re:/\bOrder Block\b/gi, id:'term-ob'},
+  {re:/\b\bOB\b/g, id:'term-ob'},
+  {re:/\bFVG\b/g, id:'term-fvg'},
+  {re:/\bFair Value Gap\b/gi, id:'term-fvg'},
+  {re:/\bBreaker Block\b/gi, id:'term-breaker'},
+  {re:/\bMitigation Block\b/gi, id:'term-mitigation'},
+  {re:/\bRejection Block\b/gi, id:'term-rejection'},
+  {re:/\bUnmitigated\b/gi, id:'term-mitigated'},
+  {re:/\bMitigated\b/gi, id:'term-mitigated'},
+  {re:/\bKill Zone\b/gi, id:'term-killzone'},
+  {re:/\bTranche\b/gi, id:'term-tranche'},
+  {re:/\bConsistency Rule\b/gi, id:'term-consistency'},
+  {re:/\bCorrelated Risk\b/gi, id:'term-correlated'}
+];
+
+function goToGlossaryTerm(termId){
+  // Navigate to guide page + glossary tab
+  const guideNav = document.querySelector('[data-page="guide"]');
+  if(guideNav) guideNav.click();
+  setTimeout(()=>{
+    const glossTab = document.querySelector('[data-gtab="g-glossary"]');
+    if(glossTab) glossTab.click();
+    setTimeout(()=>{
+      const el = document.getElementById(termId);
+      if(el){
+        el.scrollIntoView({behavior:'smooth', block:'center'});
+        el.classList.remove('highlight-term');
+        void el.offsetWidth;
+        el.classList.add('highlight-term');
+        setTimeout(()=>el.classList.remove('highlight-term'), 2200);
+      }
+    }, 80);
+  }, 60);
+}
+
+function linkGlossaryInNode(root){
+  if(!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      if(!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      const p = node.parentElement;
+      if(!p) return NodeFilter.FILTER_REJECT;
+      if(p.closest('.term, .term-name, .glossary-link, .no-glossary, .guide-tab, .nav-item, button, h1, h2, h3, h4, script, style, textarea, input, select, code, pre, .mono')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = [];
+  while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(textNode=>{
+    let html = textNode.nodeValue;
+    let changed = false;
+    // Longer phrases first to avoid partial matches
+    const sorted = GLOSSARY_TERMS.slice().sort((a,b)=> (b.re.source.length - a.re.source.length));
+    sorted.forEach(({re, id})=>{
+      const r = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags+'g');
+      if(r.test(html)){
+        html = html.replace(r, (m)=>`<span class="glossary-link" data-term="${id}" title="مشاهده در واژه‌نامه">${m}</span>`);
+        changed = true;
+      }
+    });
+    if(changed){
+      const span = document.createElement('span');
+      span.innerHTML = html;
+      textNode.parentNode.replaceChild(span, textNode);
+    }
+  });
+}
+
+function initGlossaryLinks(){
+  // Link terms inside the entire guide page
+  const guidePage = document.getElementById('page-guide');
+  if(guidePage) linkGlossaryInNode(guidePage);
+  // Also dashboard pre-trade area
+  const preBox = document.getElementById('body-pre');
+  if(preBox) linkGlossaryInNode(preBox);
+  // Click handler (event delegation)
+  document.body.addEventListener('click', e=>{
+    const link = e.target.closest('.glossary-link');
+    if(!link) return;
+    e.preventDefault();
+    const id = link.getAttribute('data-term');
+    if(id) goToGlossaryTerm(id);
+  });
+}
+
 // ===== INIT =====
 // ===== THE MODEL ENGINE (v5.5) =====
 const THE_MODEL = {
@@ -4517,6 +4639,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(renderKillZoneBanner, 60000); // refresh every min
   loadSessionPlan();          // v5.8
   document.querySelectorAll('input[name="nt-dir"]').forEach(r=>{ r.addEventListener('change', renderBiasConflictWarn); }); // v5.8
+  setTimeout(initGlossaryLinks, 120); // after templates render
 });
 
 function onTradeStyleChange(val) {
