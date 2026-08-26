@@ -94,21 +94,25 @@ function showSkeleton(containerId){
   c.innerHTML='<div class="skeleton skeleton-row"></div>'.repeat(4);
 }
 // ===== GUIDE TABS =====
+// v7.1: two language roots share same panel IDs (g-model etc.) — duplicate IDs are invalid
+// and getElementById would always return the EN panel first. Handle both languages together.
 document.querySelectorAll('.guide-tab').forEach(tab=>{
   tab.addEventListener('click',()=>{
-    document.querySelectorAll('.guide-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelectorAll('.guide-panel').forEach(p=>p.classList.remove('active'));
-    document.getElementById(tab.dataset.gtab).classList.add('active');
+    const gtab=tab.dataset.gtab;
+    document.querySelectorAll('.guide-tab').forEach(t=>t.classList.toggle('active', t.dataset.gtab===gtab));
+    document.querySelectorAll('.guide-panel').forEach(p=>p.classList.toggle('active', p.id===gtab));
   });
 });
 // لینک مستقیم از یک مرحله‌ی چک‌لیست به تب مرتبط در راهنما (برای دکمه‌ی «؟» هر مرحله)
 // v5.6: optional chaining حذف شد — روی Safari <13.1 کل اسکریپت را می‌کشد (صفحه سفید)
+// v7.1: language-aware — activate both language panels, scroll the visible one
 function goToGuide(gtab){
   const nav=document.querySelector('.nav-item[data-page="guide"]');
   if(nav) nav.click();
-  const tabBtn=document.querySelector(`.guide-tab[data-gtab="${gtab}"]`);
-  if(tabBtn){ tabBtn.click(); tabBtn.scrollIntoView({behavior:'smooth',inline:'center'}); }
+  document.querySelectorAll('.guide-tab').forEach(t=>t.classList.toggle('active', t.dataset.gtab===gtab));
+  document.querySelectorAll('.guide-panel').forEach(p=>p.classList.toggle('active', p.id===gtab));
+  const visibleTab = document.querySelector(`#guide${currentLang()==='en'?'En':'Fa'}Root .guide-tab[data-gtab="${gtab}"]`) || document.querySelector(`.guide-tab[data-gtab="${gtab}"]`);
+  if(visibleTab) visibleTab.scrollIntoView({behavior:'smooth',inline:'center'});
 }
 
 // ===== COLLAPSE =====
