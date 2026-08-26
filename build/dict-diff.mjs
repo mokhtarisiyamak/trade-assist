@@ -1,0 +1,10 @@
+import fs from 'fs';
+const html = fs.readFileSync('index.html', 'utf8');
+const js = fs.readFileSync('js/i18n.js', 'utf8');
+const used = [...html.matchAll(/data-i18n(?:-ph|-aria|-title)?="([^"]+)"/g)].map(m => m[1]);
+const usedSet = [...new Set(used)];
+const existing = [...js.matchAll(/'([a-zA-Z0-9_.]+)'\s*:/g)].map(m => m[1]);
+const exSet = new Set(existing);
+const missing = usedSet.filter(k => !exSet.has(k));
+console.log('used keys:', usedSet.length, '| missing from dict:', missing.length);
+console.log(missing.join('\n'));

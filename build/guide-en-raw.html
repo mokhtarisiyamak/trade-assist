@@ -1,0 +1,318 @@
+
+ <div class="guide-tabs">
+ <button class="guide-tab active" data-gtab="g-model" style="--accent:var(--gold-400)">00 The Model ★</button>
+ <button class="guide-tab" data-gtab="g-bias" style="--accent:var(--cyan)">01 Bias</button>
+ <button class="guide-tab" data-gtab="g-liq" style="--accent:var(--amber)">02 Liquidity</button>
+ <button class="guide-tab no-glossary" data-gtab="g-poi" style="--accent:var(--green)">03 POI</button>
+ <button class="guide-tab" data-gtab="g-entry" style="--accent:var(--red)">04 Entry & risk management</button>
+ <button class="guide-tab" data-gtab="g-barriers" style="--accent:var(--red)">05 Physical barriers</button>
+ <button class="guide-tab" data-gtab="g-glossary" style="--accent:var(--cyan)">06 Glossary</button>
+ </div>
+ <!-- ==================== THE MODEL PANEL (g-model) ==================== -->
+ <div class="guide-panel active" id="g-model">
+ <!-- Hero Card -->
+ <div class="card" style="background:#061a14;border:1px solid rgba(212,175,55,0.3);position:relative;overflow:hidden;">
+ <span class="guide-eyebrow">THE MODEL ★ Core of the system</span>
+ <div style="font-family:Georgia,serif;font-size:1.6rem;font-weight:700;color:#e8eaec;line-height:1.5;margin-bottom:12px;">It touches the level; if it does not hold, it returns.</div>
+ <p style="font-size:.85rem;color:#8b949e;line-height:1.8;margin-bottom:16px;">The most reliable liquidity sits right at<strong style="color:var(--gold-400);">previous day high/low</strong> — or<strong style="color:var(--gold-400);">prior session</strong> high/low. Bias comes from the higher timeframe; execution happens on the lower timeframe.</p>
+ <div style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;">
+ <span style="font-size:1.5rem;">🔒</span>
+ <div>
+ <strong style="color:var(--gold-400);font-family:Georgia,serif;display:block;">No Sweep, no trade.</strong>
+ <span style="font-size:.8rem;color:#e8eaec;">What makes this model repeatable is what it rejects: no level raid = no entry. Expect a few times per week, not every session.</span>
+ </div>
+ </div>
+ </div>
+
+ <!-- 01. Timeframe Matrix -->
+ <div class="card">
+ <span class="guide-eyebrow">01 · Charts for each trading style</span>
+ <h3 style="color:var(--gold-400);">Which charts do you work on?</h3>
+ <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:12px;">Holding time sets the chart suite. The work is always the same — only the charts change.</p>
+ <div id="render-tfmatrix"></div>
+ </div>
+
+ <!-- 02. High Timeframe Read -->
+ <div class="card">
+ <span class="guide-eyebrow">02 · Reading HTF: wide first, then narrow</span>
+ <h3 style="color:var(--gold-400);">Wide first, then narrow</h3>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;">
+ <div style="background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px;">
+ <div style="font-size:.68rem;color:var(--gold-400);font-family:var(--mono);">Step 1 · Big picture</div>
+ <div style="font-weight:700;margin:6px 0;color:var(--text);">Zoom out and read the sequence</div>
+ <ul style="font-size:.8rem;color:var(--text-dim);padding-inline-start:16px;line-height:1.8;">
+ <li>Higher Highs & Higher Lows ← <strong style="color:var(--green);">Bullish</strong></li>
+ <li>Lower Highs & Lower Lows ← <strong style="color:var(--red);">Bearish</strong></li>
+ <li>Neither ← <strong style="color:var(--amber);">Range</strong></li>
+ </ul>
+ </div>
+ <div style="background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px;">
+ <div style="font-size:.68rem;color:var(--gold-400);font-family:var(--mono);">Step 2 · Recent candles</div>
+ <div style="font-weight:700;margin:6px 0;color:var(--text);">Limit to the last few candles</div>
+ <ul style="font-size:.8rem;color:var(--text-dim);padding-inline-start:16px;line-height:1.8;">
+ <li>HH & HL ← <strong style="color:var(--green);">Bullish</strong></li>
+ <li>LH & LL ← <strong style="color:var(--red);">Bearish</strong></li>
+ <li>Outside bar ← <strong style="color:var(--cyan);">Strong confirmation</strong></li>
+ <li>Inside bar ← <strong style="color:var(--amber);">Indecision</strong></li>
+ </ul>
+ </div>
+ </div>
+ </div>
+
+ <!-- 03. Sweep Diagram -->
+ <div class="card">
+ <span class="guide-eyebrow">03 · Liquidity Raid diagram</span>
+ <h3 style="color:var(--gold-400);">Step 3: Raid the liquidity</h3>
+ <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:12px;">Price raids a swing high/low — then closes back inside the range.</p>
+ <div id="render-sweep"></div>
+ </div>
+
+ <!-- 04. Exit Strategies -->
+ <div class="card">
+ <span class="guide-eyebrow">04 · Exit strategy (Take Profit)</span>
+ <h3 style="color:var(--gold-400);">Step 4: Choose it before entry</h3>
+ <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:12px;">Choose one<strong>before</strong> entry — not when money is on the table.</p>
+ <div id="render-exits"></div>
+ </div>
+ </div>
+
+ <div class="guide-panel" id="g-bias">
+ <div class="card">
+ <span class="guide-eyebrow">STEP ZERO · MARKET CONDITION</span>
+ <h3 style="color:var(--cyan)">Market condition — before any pattern</h3>
+ <p class="chart-caption" style="margin-bottom:10px;">Before any setup, answer: Trend or Range? That decides which side you may look at. If unclear → do not trade today.</p>
+ <div id="render-market"></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--cyan)">Step 1 · Set daily bias (quantitative)</h3>
+ <div class="step"><span class="step-idx">1</span><p>Open the Daily chart. Find the last clear high or low (min 3 candles each side).</p></div>
+ <div class="step"><span class="step-idx">2</span><p>Nearest valid pullback = <strong>IDM</strong> (must retrace at least 38% of the prior move and span at least 2 full candles).</p></div>
+ <div class="step"><span class="step-idx">3</span><p>Price should clear the IDM with a wick (not necessarily the body) to confirm the major swing.</p></div>
+ <div class="step"><span class="step-idx">4</span><div><p><strong>Direction:</strong></p><ul><li>Body close above last swing high →<strong style="color:var(--green)">Bullish bias</strong></li><li>Body close below last swing low →<strong style="color:var(--red)">Bearish bias</strong></li></ul></div></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--cyan)">Step 2 · H4 alignment</h3>
+ <div class="table-wrap">
+ <table><thead><tr><th>Daily</th><th>H4</th><th>Action</th></tr></thead>
+ <tbody>
+ <tr><td><span class="badge badge-buy">Bullish</span></td><td><span class="badge badge-buy">Bullish</span></td><td style="color:var(--green)">Green light → BUY only</td></tr>
+ <tr><td><span class="badge badge-buy">Bullish</span></td><td><span class="badge badge-sell">Bearish</span></td><td style="color:var(--amber)">Wait → until bullish H4 CHoCH</td></tr>
+ <tr><td><span class="badge badge-sell">Bearish</span></td><td><span class="badge badge-sell">Bearish</span></td><td style="color:var(--red)">Green light → SELL only</td></tr>
+ <tr><td><span class="badge badge-sell">Bearish</span></td><td><span class="badge badge-buy">Bullish</span></td><td style="color:var(--amber)">Wait → until bearish H4 CHoCH</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:.8rem;color:var(--text-dim);margin-top:8px;">If not aligned → wait. Do not rush.</p>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--red)">🛡️ Bias invalidation rules (fast & clear)</h3>
+ <p class="chart-caption" style="margin-bottom:10px;">Bias is not fixed. In these cases it is invalidated and you return to step 1:</p>
+ <div class="callout callout-sell"><strong class="head">Reject without a clean Sweep</strong><p>Price fully closes through the IDM without a clean Sweep.</p></div>
+ <div class="callout callout-sell"><strong class="head">Opposite CHoCH on H4</strong><p>After bias is set, H4 structure changes with a CHoCH in the opposite direction.</p></div>
+ <div class="callout callout-wait"><strong class="head">Daily structure breaks</strong><p>Opposite BOS on Daily. (A mitigated POI alone does not invalidate bias — just look for the next POI in the same direction.)</p></div>
+ </div>
+ </div>
+ <div class="guide-panel" id="g-liq">
+ <div class="card">
+ <h3 style="color:var(--green)">🖼️ Illustrated lesson — valid Sweep vs Breakout</h3>
+ <div class="grid-2" style="margin-bottom:10px;">
+ <div>
+ <svg viewBox="0 0 260 150" style="width:100%;background:#021810;border-radius:8px;border:1px solid rgba(63,185,80,.3);">
+ <text x="130" y="14" fill="#3fb950" font-size="11" text-anchor="middle">✅ Valid SWEEP</text>
+ <line x1="20" y1="95" x2="240" y2="95" stroke="#f0883e" stroke-dasharray="4 3" stroke-width="1"/>
+ <text x="246" y="98" fill="#8b949e" font-size="8" text-anchor="start">Equal Lows</text>
+ <polyline points="30,60 55,80 75,70 95,88 115,78 135,90 155,82 175,92" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+ <polyline points="175,92 190,104 205,99" fill="none" stroke="#f85149" stroke-width="1.5"/>
+ <circle cx="196" cy="107" r="7" fill="none" stroke="#f85149" stroke-width="1.5"/>
+ <polyline points="205,99 220,75 235,55" fill="none" stroke="#3fb950" stroke-width="2"/>
+ <rect x="188" y="96" width="26" height="12" fill="#3fb95022" stroke="#3fb950" stroke-width=".8"/>
+ <text x="130" y="143" fill="#8b949e" font-size="8" text-anchor="middle">Wick beyond the level + close back inside the range = stop run</text>
+ </svg>
+ </div>
+ <div>
+ <svg viewBox="0 0 260 150" style="width:100%;background:#021810;border-radius:8px;border:1px solid rgba(248,81,73,.3);">
+ <text x="130" y="14" fill="#f85149" font-size="11" text-anchor="middle">❌ BREAKOUT (not a Sweep)</text>
+ <line x1="20" y1="95" x2="240" y2="95" stroke="#f0883e" stroke-dasharray="4 3" stroke-width="1"/>
+ <text x="246" y="98" fill="#8b949e" font-size="8" text-anchor="start">Low</text>
+ <polyline points="30,60 55,80 75,70 95,88 115,78 135,90 160,84 180,96" fill="none" stroke="#58a6ff" stroke-width="1.5"/>
+ <polyline points="180,96 200,112 225,122 240,128" fill="none" stroke="#f85149" stroke-width="2"/>
+ <text x="215" y="140" fill="#f85149" font-size="8" text-anchor="middle">Close outside!</text>
+ <text x="130" y="146" fill="#8b949e" font-size="8" text-anchor="middle">Body stays outside and does not return = continuation, not reversal</text>
+ </svg>
+ </div>
+ </div>
+ <p class="chart-caption">Execution rule: after probing beyond the level, only the candle close counts. A wick alone is never a Sweep.</p>
+ </div>
+
+ <div class="card">
+ <h3 style="color:var(--amber)">Step 3 · Liquidity types (by priority)</h3>
+ <p class="chart-caption" style="margin-bottom:10px;">Liquidity is a cluster of stop-loss/pending orders that price is naturally drawn toward (Draw on Liquidity). All POIs are ultimately analyzed against one of the cases below:</p>
+ <div class="step"><span class="step-idx">1</span><div><p><strong>BSL / SSL (buy-side / sell-side liquidity):</strong> Foundation of everything. BSL = sellers' stops above highs; SSL = buyers' stops below lows.</p></div></div>
+ <div class="step"><span class="step-idx">2</span><div><p><strong>External / Internal liquidity:</strong> External = main range high/low, final target; internal = liquidity inside the range such as IDM, OB, FVG — intermediate stops.</p></div></div>
+ <div class="step"><span class="step-idx">3</span><div><p><strong>Equal highs / equal lows (EQH / EQL):</strong> Two or more highs/lows near each other. Because amateurs always place stops exactly there, it is the densest and most reliable type.</p></div></div>
+ <div class="step"><span class="step-idx">4</span><div><p><strong>Prior day/week high/low (PDH/PDL, PWH/PWL):</strong> Especially on higher timeframes, among the most watched levels by all traders.</p></div></div>
+ <div class="step"><span class="step-idx">5</span><div><p><strong>Session highs/lows (Asia, London, prior New York):</strong> In our routine, Asia session high/low (AH/AL) is the most used example — sweeping it often reveals London's true direction.</p></div></div>
+ <div class="step"><span class="step-idx">6</span><div><p><strong>Trendline liquidity:</strong> Amateur stops along a visible trendline. Lower institutional weight, but common in busy markets.</p></div></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--amber)">Step 4 · Price target</h3>
+ <div class="callout callout-note"><strong class="head">First target</strong><p>Nearest valid liquidity in trade direction (not only Asia range). Set the target before entry and do not change it.</p></div>
+ <div class="callout callout-wait"><strong class="head">Minimum acceptable R:R</strong><p>Minimum reward-to-risk <span class="mono" style="color:var(--amber);font-weight:700;">1.5 : 1</span>. If the second target (next liquidity) is at least 3R away, it takes higher priority.</p></div>
+ </div>
+ </div>
+ <div class="guide-panel" id="g-poi">
+ <div class="card">
+ <h3 style="color:var(--green)">Step 5 · <span class="no-glossary">POI</span> types + scoring system</h3>
+ <p class="chart-caption" style="margin-bottom:10px;">POI is a zone where institutional reaction is expected. Instead of 4 hard rules, use a scoring system:</p>
+ <div class="table-wrap" style="margin-bottom:12px;">
+ <table>
+ <thead><tr><th>Condition</th><th>Score</th></tr></thead>
+ <tbody>
+ <tr><td>Clear Sweep before formation</td><td class="mono">+2</td></tr>
+ <tr><td>Not mitigated (untouched / unused)</td><td class="mono">+2</td></tr>
+ <tr><td>FVG immediately after</td><td class="mono">+1</td></tr>
+ <tr><td>Not an Inside Bar</td><td class="mono">+1</td></tr>
+ <tr><td>In path of main liquidity</td><td class="mono">+1</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <div class="callout callout-buy"><strong class="head">Minimum score required for entry: 4 of 7</strong><p>Order Block scoring 6–7 is first priority; FVG or Breaker scoring 4–5 is acceptable. This flexibility keeps the number of tradeable setups realistic.</p></div>
+ <div class="step"><span class="step-idx">1</span><div><p><strong>Order Block (OB):</strong> First priority of this system — last opposing candle before a strong move.</p></div></div>
+ <div class="step"><span class="step-idx">2</span><div><p><strong>FVG (Fair Value Gap):</strong> Three-candle gap where first and third wicks do not overlap; can be a POI independent of an OB.</p></div></div>
+ <div class="step"><span class="step-idx">3</span><div><p><strong>Breaker Block:</strong> A broken OB — price closed through it with the body and opposite structure formed. That zone now has reversed polarity (resistance becomes support, or vice versa).</p></div></div>
+ <div class="step"><span class="step-idx">4</span><div><p><strong>Mitigation Block:</strong> Similar to a Breaker, but with a different break signature (no new high/low in the same direction before the return); more common in softer reversals.</p></div></div>
+ <div class="step"><span class="step-idx">5</span><div><p><strong>Rejection Block:</strong> A candle with a long wick that was clearly rejected. Weakest but most available helper POI when none of the above are present.</p></div></div>
+ </div>
+ </div>
+ <div class="guide-panel" id="g-entry">
+ <div class="card">
+ <h3 style="color:var(--red)">Step 6 · Entry confirmation (min M5)</h3>
+ <div class="step"><span class="step-idx">1</span><p>Price touches a valid POI on M5 (score ≥4).</p></div>
+ <div class="step"><span class="step-idx">2</span><p>Wait for a<strong>CHoCH with body close</strong>, on at least M5 (a wick is not enough). M1 is not allowed.</p></div>
+ <div class="step"><span class="step-idx">3</span><p><strong>Two-tier entry:</strong><br>• Tier 1 (Probe – 40% size): on first sign of reversal or POI touch (Inducement)<br>• Tier 2 (Confirmation – 60% size): after M5 CHoCH + small M5 OB forms</p></div>
+ <div class="callout callout-sell" style="margin-top:6px;"><strong class="head">Stop loss — realistic and two-layered</strong><p>Tier 1: below/above the full POI zone (H4 or main zone)<br>Tier 2: below/above the small M5 OB<br>Calculate stop distance realistically (spread + small buffer). Never use a fixed “1 pip” distance.</p></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--red)">Step 7 · Risk management (more conservative & realistic)</h3>
+ <p class="chart-caption" style="margin-bottom:10px;">Risk depends on the quality of the day's conditions:</p>
+ <div class="table-wrap">
+ <table>
+ <thead><tr><th>Checklist score</th><th>Total allowed risk</th><th>Tier 1 — Probe</th><th>Tier 2 — Confirmation</th></tr></thead>
+ <tbody>
+ <tr><td>Excellent (80+)</td><td class="mono" style="color:var(--green);font-weight:700;">2%</td><td class="mono">0.8%</td><td class="mono">1.2%</td></tr>
+ <tr><td>Good (60–79)</td><td class="mono" style="color:var(--amber);font-weight:700;">1.2%</td><td class="mono">0.5%</td><td class="mono">0.7%</td></tr>
+ <tr><td>Average or critical item missing</td><td class="mono" style="color:var(--red);font-weight:700;">0% — entry blocked</td><td class="mono">—</td><td class="mono">—</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <div class="callout callout-sell" style="margin-top:10px;"><strong class="head">Absolute risk lock</strong><p>Absolute daily cap for all same-direction trades: <strong>2%</strong>. Never take more than this cumulative risk in one day.</p></div>
+ <div class="callout callout-note" style="margin-top:10px;"><strong class="head">Position size formula</strong><p>Position size = (account balance × allowed risk %) ÷ (stop distance in pips × pip value). Always include spread and possible slippage.</p></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--green)">Step 8 · Staged entry execution</h3>
+ <div class="table-wrap">
+ <table>
+ <thead><tr><th>Tier</th><th>Size</th><th>Entry</th><th>SL</th></tr></thead>
+ <tbody>
+ <tr><td>1 — Probe</td><td>40%</td><td>First POI touch / Inducement</td><td>Below/above full POI zone</td></tr>
+ <tr><td>2 — Confirmation</td><td>60%</td><td>After M5 CHoCH + small M5 OB</td><td>Below/above small OB</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">Key rule</strong><p>Inducement = signal for tier-1 entry, not for exit. More than 2 tiers on one instrument without new structural justification is forbidden.</p></div>
+ <div class="callout callout-buy" style="margin-top:10px;"><strong class="head">Risk increase criteria</strong><p>Do not raise base risk unless after at least <strong>4 consecutive green weeks</strong>recorded in the weekly review.</p></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--cyan)">Step 9 · Staged exit — Tranche system</h3>
+ <div class="table-wrap">
+ <table>
+ <thead><tr><th>Tranche</th><th>Size</th><th>Target</th><th>Forced exit</th></tr></thead>
+ <tbody>
+ <tr><td>A — Quick</td><td>40%</td><td>1R to 1.5R</td><td>Hit target or opposite M5 CHoCH</td></tr>
+ <tr><td>B — Main</td><td>35%</td><td>Next liquidity (min 2R)</td><td>Opposite H1/H4 CHoCH</td></tr>
+ <tr><td>C — Remainder</td><td>25%</td><td>Daily target or farther liquidity</td><td>Only opposite Daily CHoCH or target hit</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <div class="callout callout-note" style="margin-top:10px;"><strong class="head">Additional management rules</strong><p>After tranche A hits target → move the full position stop to BE.</p><p style="font-size:1.05rem;font-weight:800;color:var(--red);margin-top:10px;padding:8px 12px;background:var(--red-dim);border-radius:8px;border-inline-start:3px solid var(--red);">⛔ Never trail the stop farther away.</p></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--amber)">🛡️ Prop-firm Consistency Rule</h3>
+ <p style="color:var(--text-dim);font-size:.85rem;">Realized profit each day must not exceed the set cap, or the phase target increases automatically.</p>
+ <div class="callout callout-note" style="margin-top:8px;"><strong class="head">Formula</strong><p>New target (if violated) = largest day profit ÷ Consistency cap %</p></div>
+ <div id="consistency-live" style="margin-top:10px;"></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--red)">🛡️ Correlated risk + statistical criteria</h3>
+ <div class="callout callout-sell"><strong class="head">Before multiple simultaneous positions</strong><p>If all trades are really one repeated thesis (e.g. weak dollar), sum the risk. Same-direction cumulative risk cap:<strong>2%</strong>.</p></div>
+ <div class="callout callout-wait" style="margin-top:10px;"><strong class="head">Minimum backtest/demo before live</strong><p>Minimum <strong>30 complete samples</strong>with Profit Factor ≥ 1.4 and Max Drawdown < 15%. If the criteria are not met, revise the rules — do not test them with real money.</p></div>
+ <div class="callout callout-note" style="margin-top:10px;"><strong class="head">Periodic system review</strong><p>Every 3 months ask: "Do these rules still work on live markets?" Use the checklist-score vs outcome chart on the Performance tab.</p></div>
+ </div>
+ </div>
+ <!-- Physical Barriers -->
+ <div class="guide-panel" id="g-barriers">
+ <div class="card">
+ <h3 style="color:var(--red)">🛡️ Physical barriers — practical and non-negotiable</h3>
+ <p style="color:var(--text-dim);font-size:.85rem;margin-bottom:10px;">These are not mental rules; they must be enforced physically. Under pressure, mental rules are always bypassed.</p>
+ <div class="step"><span class="step-idx">1</span><p>After every BE or loss → at least <strong>90 minutes</strong>mandatory rest (preferably platform closed).</p></div>
+ <div class="step"><span class="step-idx">2</span><p>Before every entry → both checklists (morning + pre-entry) must be complete with no critical items missing.</p></div>
+ <div class="step"><span class="step-idx">3</span><p>Max daily cumulative risk for same-direction/correlated trades:<strong>2%</strong>.</p></div>
+ <div class="step"><span class="step-idx">4</span><p>Hungry, tired, or highly distracted? The chart stays closed.</p></div>
+ <div class="step"><span class="step-idx">5</span><p>A single trade loss exceeds <strong>2% of account balance</strong>→ full stop and system review (stop not respected or severe slippage).</p></div>
+ <div class="step"><span class="step-idx">6</span><p>Feeling FOMO? Close the chart, walk for at least 30 minutes, or do something else.</p></div>
+ <div class="step"><span class="step-idx">7</span><p>A trade moved without you? Do not chase it — neither with it nor against it.</p></div>
+ <div class="step"><span class="step-idx">8</span><p>Minimum timeframe for entry confirmation: <strong>M5</strong>. Never M1 or lower.</p></div>
+ <div class="step"><span class="step-idx">9</span><p>Before a third tier on one instrument → mandatory stop and ask: “Is this a fresh decision or adding to a loss/FOMO?”</p></div>
+ <div class="step"><span class="step-idx">10</span><p>If cumulative loss over the last 7 days exceeds <strong>4%</strong>of capital → stop trading until next week. If cumulative loss over the last 30 days exceeds <strong>8%</strong>→ full stop and system review.</p></div>
+ <div class="step"><span class="step-idx">11</span><p>Maximum <strong>2 new trade ideas</strong>per Kill Zone (add-on tiers of the same idea do not count).</p></div>
+ </div>
+ </div>
+ <div class="guide-panel" id="g-glossary">
+ <div class="card">
+ <h3 style="color:var(--cyan)">Structure and bias</h3>
+ <div class="term" id="term-idm"><span class="term-name" style="--accent:var(--cyan)">IDM</span><p class="term-def"><strong>Inducement</strong>— a smaller, clearer liquidity pool that sits before the main POI and traps early entrants. Example: in step 1, the “nearest valid pullback” is this.</p></div>
+ <div class="term" id="term-choch"><span class="term-name" style="--accent:var(--cyan)">CHoCH</span><p class="term-def"><strong>Change of Character</strong>— first structural break against the dominant trend; sign of a possible reversal. Example: in an uptrend, a body close below the last higher low.</p></div>
+ <div class="term" id="term-bos"><span class="term-name" style="--accent:var(--cyan)">BOS</span><p class="term-def"><strong>Break of Structure</strong>— structural break in the trend direction; confirms continuation (not reversal).</p></div>
+ <div class="term" id="term-sweep"><span class="term-name" style="--accent:var(--cyan)">Sweep</span><p class="term-def">A brief price run (usually wick only) beyond a known high/low to trigger stops there, before the real reversal.</p></div>
+ <div class="term" id="term-insidebar"><span class="term-name" style="--accent:var(--cyan)">Inside Bar</span><p class="term-def">A candle fully inside the prior candle's high/low range — no new high or low. Sign of indecision/compression; analyze the "mother" candle (the larger prior candle), not this candle itself.</p></div>
+ <div class="term" id="term-outsidebar"><span class="term-name" style="--accent:var(--cyan)">Outside Bar</span><p class="term-def">A candle that makes both a higher high and lower low than the prior candle — fully engulfs its range. Sign of strong confirmation/volatility, unlike Inside Bar indecision.</p></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--amber)">Liquidity</h3>
+ <div class="term" id="term-bslssl"><span class="term-name" style="--accent:var(--amber)">BSL / SSL</span><p class="term-def">Buy/sell liquidity — cluster of sellers' stops above highs (BSL) or buyers' stops below lows (SSL).</p></div>
+ <div class="term" id="term-external"><span class="term-name" style="--accent:var(--amber)">External / Internal</span><p class="term-def">External liquidity = main range high/low (final target); internal = liquidity inside the range such as IDM/OB/FVG.</p></div>
+ <div class="term" id="term-eqh"><span class="term-name" style="--accent:var(--amber)">EQH / EQL</span><p class="term-def">Equal highs or lows — two or more nearby levels where many stops cluster above/below.</p></div>
+ <div class="term" id="term-pdh"><span class="term-name" style="--accent:var(--amber)">PDH / PDL</span><p class="term-def">Previous day high/low (PDH/PDL); similarly PWH/PWL for the prior week.</p></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--green)">POI and entry</h3>
+ <div class="term" id="term-poi"><span class="term-name" style="--accent:var(--green)">POI</span><p class="term-def"><strong>Point of Interest</strong>— a zone where institutional price reaction is expected.</p></div>
+ <div class="term" id="term-ob"><span class="term-name" style="--accent:var(--green)">OB</span><p class="term-def"><strong>Order Block</strong>— the last opposing candle before a strong move.</p></div>
+ <div class="term" id="term-fvg"><span class="term-name" style="--accent:var(--green)">FVG</span><p class="term-def"><strong>Fair Value Gap</strong>— a three-candle gap where first and third wicks do not overlap.</p></div>
+ <div class="term" id="term-breaker"><span class="term-name" style="--accent:var(--green)">Breaker Block</span><p class="term-def">A broken OB whose polarity flipped (resistance became support, or vice versa).</p></div>
+ <div class="term" id="term-mitigation"><span class="term-name" style="--accent:var(--green)">Mitigation Block</span><p class="term-def">Similar to a Breaker, but with a different break signature; more common in softer reversals.</p></div>
+ <div class="term" id="term-rejection"><span class="term-name" style="--accent:var(--green)">Rejection Block</span><p class="term-def">A candle with a long wick that was clearly rejected; weakest but most common helper POI.</p></div>
+ <div class="term" id="term-mitigated"><span class="term-name" style="--accent:var(--green)">Mitigated</span><p class="term-def">A zone that was already touched once. Unmitigated means untouched and “fresh”.</p></div>
+ </div>
+ <div class="card">
+ <h3 style="color:var(--purple)">Management and routine</h3>
+ <div class="term" id="term-killzone"><span class="term-name" style="--accent:var(--purple)">Kill Zone</span><p class="term-def">In classic ICT definition, a short high-volume window near a session open (usually 1–2 hours), not the whole session. In this app, the London Kill Zone (08:30–12:30) and New York Kill Zone (15:30–19:30) are intentionally wider to cover the full tradeable day window; highest setup probability is usually in the first 60–90 minutes of each window, not the entire window.</p></div>
+ <div class="term" id="term-tranche"><span class="term-name" style="--accent:var(--purple)">Tranche</span><p class="term-def">Splitting one trade's entry or exit into separate size layers instead of a single fill.</p></div>
+ <div class="term" id="term-consistency"><span class="term-name" style="--accent:var(--purple)">Consistency Rule</span><p class="term-def">A prop-firm rule that caps each day's realized profit relative to total accumulated profit.</p></div>
+ <div class="term" id="term-correlated"><span class="term-name" style="--accent:var(--purple)">Correlated Risk</span><p class="term-def">Risk of several simultaneous positions that are really one repeated thesis (e.g. all on “weak dollar”); must be summed, not treated separately.</p></div>
+
+ <h3 style="color:var(--amber);margin-top:14px;">🎯 Operational translation — one-line execution rules</h3>
+ <div class="term"><span class="term-name" style="--accent:var(--amber)">Sweep ✓</span><p class="term-def">Rule: “level broken, but close back inside the range” → valid. If the body stays outside and returns = Breakout, not Sweep. Action: check only after the close, not the wick.</p></div>
+ <div class="term"><span class="term-name" style="--accent:var(--amber)">CHoCH ✓</span><p class="term-def">Rule: “first close against the latest move”. A wick is not enough. Action: min M5; CHoCH without a prior Sweep = incomplete entry.</p></div>
+ <div class="term"><span class="term-name" style="--accent:var(--amber)">Valid POI ✓</span><p class="term-def">Rule: POI must be “fresh” (from the last impulsive move) and on the Sweep+CHoCH path. Action: if price reaches the POI and you still have no CHoCH, wait — do not cling to the order.</p></div>
+ <div class="term"><span class="term-name" style="--accent:var(--amber)">Judas Swing ✓</span><p class="term-def">Rule: “session's first fake move” — false break of Asia high/low in the first 30–90 minutes of London/NY. Action: true direction = opposite of Judas; enter after return inside the range.</p></div>
+ </div>
+ </div>
+
+ <!-- v5.8: آزمون درک مدل -->
+ <div class="card" id="quiz-card">
+ <h3 style="color:var(--green);margin-bottom:4px;">🎓 Weekly quiz — understanding check</h3>
+ <p class="chart-caption" style="margin-bottom:10px;">One random question each time. Wrong answer → go back to the related lesson.</p>
+ <div id="quiz-container"></div>
+ </div>
+ 
