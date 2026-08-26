@@ -1,0 +1,13 @@
+{
+  "name": "Trade Assist Coach",
+  "short_name": "TradeAssist",
+  "description": "Bilingual (FA/EN) trading coach dashboard — mechanical checklists, journal, liquidity-model guide and analytics.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
